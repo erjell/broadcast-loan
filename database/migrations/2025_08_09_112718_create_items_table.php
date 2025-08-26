@@ -15,10 +15,12 @@ return new class extends Migration
             $table->id();
             $table->string('barcode')->unique();
             $table->string('name');
+            $table->string('serial_number')->nullable();
+            $table->unsignedSmallInteger('procurement_year')->nullable();
+            $table->text('details')->nullable();
             $table->foreignId('category_id')->constrained()->cascadeOnDelete();
             $table->unsignedInteger('stock')->default(0);
             $table->enum('condition', ['baik','rusak_ringan','rusak_berat'])->default('baik');
-            $table->text('notes')->nullable();
             $table->timestamps();
         });
     }
