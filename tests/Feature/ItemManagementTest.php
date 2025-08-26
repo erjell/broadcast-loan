@@ -12,7 +12,7 @@ class ItemManagementTest extends TestCase
 
     public function test_search_returns_stock_from_assets(): void
     {
-        $category = Category::create(['name' => 'Elektronik']);
+        $category = Category::create(['name' => 'Elektronik','code' => 'ELK']);
         $item = Item::create([
             'name' => 'Kamera',
             'details' => 'DSLR',
@@ -34,7 +34,7 @@ class ItemManagementTest extends TestCase
 
     public function test_store_creates_item_and_asset_with_generated_codes(): void
     {
-        $category = Category::create(['name' => 'Elektronik']);
+        $category = Category::create(['name' => 'Elektronik','code' => 'ELK']);
         $response = $this->post('/items', [
             'name' => 'Kamera',
             'details' => 'DSLR',
@@ -47,11 +47,11 @@ class ItemManagementTest extends TestCase
         $response->assertRedirect('/items');
         $this->assertDatabaseHas('items', [
             'name' => 'Kamera',
-            'code' => 'ELE001',
+            'code' => 'ELK001',
         ]);
         $this->assertDatabaseHas('assets', [
             'serial_number' => 'SN123',
-            'code' => 'ELE001-001',
+            'code' => 'ELK001-001',
         ]);
     }
 }
