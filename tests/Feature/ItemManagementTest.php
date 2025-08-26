@@ -12,7 +12,7 @@ class ItemManagementTest extends TestCase
 
     public function test_search_returns_stock_from_assets(): void
     {
-        $category = Category::create(['name' => 'Elektronik']);
+        $category = Category::create(['name' => 'Elektronik','code' => 'ELK']);
         $item = Item::create([
             'name' => 'Kamera',
             'details' => 'DSLR',
@@ -34,7 +34,7 @@ class ItemManagementTest extends TestCase
 
     public function test_store_creates_item_and_asset_with_generated_codes(): void
     {
-        $category = Category::create(['name' => 'Elektronik']);
+        $category = Category::create(['name' => 'Elektronik','code' => 'ELK']);
         $response = $this->post('/items', [
             'name' => 'Kamera',
             'details' => 'DSLR',
@@ -47,11 +47,31 @@ class ItemManagementTest extends TestCase
         $response->assertRedirect('/items');
         $this->assertDatabaseHas('items', [
             'name' => 'Kamera',
-            'code' => 'ELE001',
+            'code' => 'ELK001',
         ]);
         $this->assertDatabaseHas('assets', [
             'serial_number' => 'SN123',
-            'code' => 'ELE001-001',
+            'code' => 'ELK001-001',
         ]);
+    }
+
+    public function test_index_displays_category_name_and_code(): void
+    {
+        $category = Category::create(['name' => 'Elektronik','code' => 'ELK']);
+        $item = Item::create([
+            'name' => 'Kamera',
+            'details' => 'DSLR',
+            'category_id' => $category->id,
+        ]);
+        $item->assets()->create([
+            'serial_number' => 'SN123',
+            'procurement_year' => 2024,
+            'condition' => 'baik',
+        ]);
+
+        $response = $this->get('/items');
+        $response->assertStatus(200);
+        $response->assertSee('Elektronik');
+        $response->assertSee('ELK');
     }
 }
