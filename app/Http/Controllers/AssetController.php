@@ -9,7 +9,7 @@ class AssetController extends Controller
 {
     public function index()
     {
-        return view('items.index', [
+        return view('assets.index', [
             'assets' => Asset::with('item.category')->paginate(20),
             'items' => Item::with('category')->get(),
         ]);

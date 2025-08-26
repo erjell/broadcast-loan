@@ -15,6 +15,7 @@
         <div class="max-w-6xl mx-auto px-4 py-3 flex gap-4 items-center">
             <a href="{{ route('loans.index') }}" class="font-semibold">Peminjaman</a>
             <a href="{{ route('items.index') }}">Master Barang</a>
+            <a href="{{ route('assets.index') }}">Aset</a>
         </div>
     </nav>
 

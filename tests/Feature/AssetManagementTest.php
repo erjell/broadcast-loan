@@ -15,7 +15,7 @@ class AssetManagementTest extends TestCase
         $category = Category::create(['name' => 'Video', 'prefix' => 'AV']);
         $item = Item::create(['name' => 'AV Matrix SDI to HDMI', 'category_id' => $category->id]);
 
-        $this->post('/items', [
+        $this->post('/assets', [
             'item_id' => $item->id,
             'serial_number' => 'SN123',
             'procurement_year' => 2024,
@@ -29,7 +29,7 @@ class AssetManagementTest extends TestCase
         ]);
 
         // second asset should increment code
-        $this->post('/items', [
+        $this->post('/assets', [
             'item_id' => $item->id,
             'serial_number' => 'SN124',
             'procurement_year' => 2024,
