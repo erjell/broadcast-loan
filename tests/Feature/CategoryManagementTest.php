@@ -20,6 +20,15 @@ class CategoryManagementTest extends TestCase
         $response->assertSee('ELE');
     }
 
+    public function test_create_displays_form(): void
+    {
+        $response = $this->get('/categories/create');
+        $response->assertStatus(200);
+        $response->assertSee('Tambah Kategori');
+        $response->assertSee('Kode Kategori');
+        $response->assertSee('Nama Kategori');
+    }
+
     public function test_store_creates_category(): void
     {
         $response = $this->post('/categories', ['name' => 'Furniture', 'code' => 'FUR']);

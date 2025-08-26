@@ -25,10 +25,9 @@ class Asset extends Model
     {
             static::creating(function (Asset $asset) {
                 if (!$asset->code) {
-                    $item = Item::with('category')->find($asset->item_id);
-                    $category = $item->category;
-                    $count = static::whereHas('item', fn($q) => $q->where('category_id', $category->id))->count() + 1;
-                    $asset->code = strtoupper($category->code) . '-' . str_pad($count, 3, '0', STR_PAD_LEFT);
+                    $item = Item::find($asset->item_id);
+                    $count = static::where('item_id', $item->id)->count() + 1;
+                    $asset->code = $item->code . '-' . str_pad($count, 3, '0', STR_PAD_LEFT);
                 }
             });
     }

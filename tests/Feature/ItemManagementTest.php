@@ -51,7 +51,7 @@ class ItemManagementTest extends TestCase
         ]);
         $this->assertDatabaseHas('assets', [
             'serial_number' => 'SN123',
-            'code' => 'ELE-001',
+            'code' => 'ELE001-001',
         ]);
     }
 }

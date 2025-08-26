@@ -2,12 +2,9 @@
 @extends('layouts.app')
 @section('content')
 <h1 class="text-xl font-semibold mb-4">Kategori Barang</h1>
-<form action="{{ route('categories.store') }}" method="post" class="flex gap-2 bg-white p-4 rounded-2xl shadow mb-4">
-    @csrf
-    <input name="code" class="w-32 border rounded p-2" placeholder="Kode" required>
-    <input name="name" class="flex-1 border rounded p-2" placeholder="Nama kategori" required>
-    <button class="px-4 py-2 rounded bg-slate-800 text-white">Simpan</button>
-</form>
+<div class="mb-4 text-right">
+    <a href="{{ route('categories.create') }}" class="px-4 py-2 rounded bg-slate-800 text-white">Tambah Kategori</a>
+</div>
 <div class="bg-white rounded-2xl shadow overflow-auto">
     <table class="w-full text-sm">
         <thead class="bg-slate-100">
