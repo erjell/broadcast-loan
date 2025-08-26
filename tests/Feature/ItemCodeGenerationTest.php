@@ -15,9 +15,9 @@ class ItemCodeGenerationTest extends TestCase
         $video = Category::create(['name' => 'Video', 'prefix' => 'AV']);
         $audio = Category::create(['name' => 'Audio', 'prefix' => 'AU']);
 
-        $first = Item::create(['name' => 'Camera', 'category_id' => $video->id, 'stock' => 0]);
-        $second = Item::create(['name' => 'Switcher', 'category_id' => $video->id, 'stock' => 0]);
-        $third = Item::create(['name' => 'Mic', 'category_id' => $audio->id, 'stock' => 0]);
+        $first = Item::create(['name' => 'Camera', 'category_id' => $video->id]);
+        $second = Item::create(['name' => 'Switcher', 'category_id' => $video->id]);
+        $third = Item::create(['name' => 'Mic', 'category_id' => $audio->id]);
 
         $this->assertEquals('AV001', $first->code);
         $this->assertEquals('AV002', $second->code);

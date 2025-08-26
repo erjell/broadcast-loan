@@ -13,7 +13,7 @@ class AssetManagementTest extends TestCase
     public function test_asset_code_generated_per_category(): void
     {
         $category = Category::create(['name' => 'Video', 'prefix' => 'AV']);
-        $item = Item::create(['name' => 'AV Matrix SDI to HDMI', 'category_id' => $category->id, 'stock' => 0]);
+        $item = Item::create(['name' => 'AV Matrix SDI to HDMI', 'category_id' => $category->id]);
 
         $this->post('/items', [
             'item_id' => $item->id,
@@ -27,7 +27,6 @@ class AssetManagementTest extends TestCase
             'serial_number' => 'SN123',
             'code' => 'AV001',
         ]);
-        $this->assertEquals(1, $item->fresh()->stock);
 
         // second asset should increment code
         $this->post('/items', [

@@ -38,11 +38,13 @@ class LoanController extends Controller {
                 'user_id'=>auth()->id()
             ]);
             foreach ($data['items'] as $row){
-                $item = Item::lockForUpdate()->find($row['id']);
-                if ($item->stock < $row['qty']){
+                $item = Item::lockForUpdate()->withCount('assets')->find($row['id']);
+                $loaned = LoanItem::where('item_id', $item->id)
+                    ->sum(DB::raw('qty - returned_qty'));
+                $available = $item->assets_count - $loaned;
+                if ($available < $row['qty']){
                     abort(422, "Stok {$item->name} tidak mencukupi.");
                 }
-                $item->decrement('stock', $row['qty']);
                 LoanItem::create([
                     'loan_id'=>$loan->id,
                     'item_id'=>$item->id,
@@ -85,10 +87,7 @@ class LoanController extends Controller {
                 $li->return_notes = $row['notes'] ?? null;
                 $li->save();
 
-                // stok hanya bertambah kembali bila kondisi "baik"
-                if ($row['condition'] === 'baik'){
-                    $li->item()->increment('stock', $returnQty);
-                }
+                // catat kondisi pengembalian tanpa memengaruhi stok
             }
 
             // update status pinjaman

@@ -30,7 +30,6 @@ class AssetController extends Controller
         $data['code'] = $prefix . str_pad($count + 1, 3, '0', STR_PAD_LEFT);
 
         Asset::create($data);
-        $item->increment('stock');
 
         return back()->with('ok', 'Aset ditambahkan');
     }

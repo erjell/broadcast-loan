@@ -23,14 +23,12 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Mic Shure SM58'],
             [
                 'category_id' => $audio->id,
-                'stock'       => 10,
             ],
         );
         Item::firstOrCreate(
             ['name' => 'Camera Sony XDCAM'],
             [
                 'category_id' => $video->id,
-                'stock'       => 3,
             ],
         );
 

@@ -11,7 +11,6 @@ class Item extends Model
         'name',
         'details',
         'category_id',
-        'stock',
     ];
 
     protected static function booted()

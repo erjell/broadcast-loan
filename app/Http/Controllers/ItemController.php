@@ -14,8 +14,9 @@ class ItemController extends Controller
         $q = $r->get('q', '');
         $item = Item::query()
             ->when($q, fn($qq) => $qq->where('name', 'like', "%$q%"))
+            ->withCount('assets as stock')
             ->limit(10)
-            ->get(['id','name','stock']);
+            ->get(['id','name']);
         return response()->json($item);
     }
 }
