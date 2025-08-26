@@ -1,7 +1,7 @@
 <?php
 
 // routes/web.php
-use App\Http\Controllers\{ItemController,LoanController};
+use App\Http\Controllers\{ItemController,LoanController,CategoryController};
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn() => redirect()->route('loans.index'));
@@ -10,6 +10,9 @@ Route::get('/', fn() => redirect()->route('loans.index'));
     Route::get('/items', [ItemController::class,'index'])->name('items.index');
     Route::post('/items', [ItemController::class,'store'])->name('items.store');
     Route::get('/items/search', [ItemController::class,'search'])->name('items.search'); // JSON
+
+    Route::get('/categories', [CategoryController::class,'index'])->name('categories.index');
+    Route::post('/categories', [CategoryController::class,'store'])->name('categories.store');
 
     // Loans
     Route::get('/loans', [LoanController::class,'index'])->name('loans.index');
