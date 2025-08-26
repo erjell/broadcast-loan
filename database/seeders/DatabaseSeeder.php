@@ -15,8 +15,8 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // buat kategori default
-        $audio = Category::firstOrCreate(['name' => 'Audio']);
-        $video = Category::firstOrCreate(['name' => 'Video']);
+        $audio = Category::firstOrCreate(['code' => 'AUD'], ['name' => 'Audio']);
+        $video = Category::firstOrCreate(['code' => 'VID'], ['name' => 'Video']);
 
         // buat beberapa barang
         Item::firstOrCreate(

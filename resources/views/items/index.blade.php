@@ -48,6 +48,8 @@
         <thead class="bg-slate-100">
             <tr>
                 <th class="p-2 text-left">Kode</th>
+                <th class="p-2 text-left">Nama Kategori</th>
+                <th class="p-2 text-left">Kode Kategori</th>
                 <th class="p-2 text-left">Serial</th>
                 <th class="p-2 text-left">Tahun</th>
                 <th class="p-2 text-left">Kondisi</th>
@@ -58,6 +60,8 @@
                 @foreach($it->assets as $as)
                 <tr class="border-t">
                     <td class="p-2">{{ $as->code }}</td>
+                    <td class="p-2">{{ $it->category->name }}</td>
+                    <td class="p-2">{{ $it->category->code }}</td>
                     <td class="p-2">{{ $as->serial_number }}</td>
                     <td class="p-2">{{ $as->procurement_year }}</td>
                     <td class="p-2">{{ str_replace('_',' ',$as->condition) }}</td>
