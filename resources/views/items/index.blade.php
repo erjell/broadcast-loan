@@ -39,7 +39,7 @@
     <table class="w-full text-sm">
         <thead class="bg-slate-100">
             <tr>
-                <th class="p-2 text-left">Kode</th>
+                <th class="p-2 text-left">Kode Barang</th>
                 <th class="p-2 text-left">Nama</th>
                 <th class="p-2 text-left">Serial</th>
                 <th class="p-2 text-left">Tahun</th>
