@@ -26,11 +26,11 @@ class Item extends Model
 
     protected static function booted(): void
     {
-        static::creating(function (Item $item) {
-            $category = Category::find($item->category_id);
-            $prefix = strtoupper(substr($category->name, 0, 3));
-            $count = static::where('category_id', $item->category_id)->count() + 1;
-            $item->code = $prefix . str_pad($count, 3, '0', STR_PAD_LEFT);
-        });
+            static::creating(function (Item $item) {
+                $category = Category::find($item->category_id);
+                $prefix = strtoupper($category->code);
+                $count = static::where('category_id', $item->category_id)->count() + 1;
+                $item->code = $prefix . str_pad($count, 3, '0', STR_PAD_LEFT);
+            });
     }
 }

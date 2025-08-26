@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\Item;
 
 class Asset extends Model
 {
@@ -18,5 +19,17 @@ class Asset extends Model
     public function item(): BelongsTo
     {
         return $this->belongsTo(Item::class);
+    }
+
+    protected static function booted(): void
+    {
+            static::creating(function (Asset $asset) {
+                if (!$asset->code) {
+                    $item = Item::with('category')->find($asset->item_id);
+                    $category = $item->category;
+                    $count = static::whereHas('item', fn($q) => $q->where('category_id', $category->id))->count() + 1;
+                    $asset->code = strtoupper($category->code) . '-' . str_pad($count, 3, '0', STR_PAD_LEFT);
+                }
+            });
     }
 }
