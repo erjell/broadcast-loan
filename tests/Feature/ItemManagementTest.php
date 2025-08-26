@@ -54,4 +54,24 @@ class ItemManagementTest extends TestCase
             'code' => 'ELK001-001',
         ]);
     }
+
+    public function test_index_displays_category_name_and_code(): void
+    {
+        $category = Category::create(['name' => 'Elektronik','code' => 'ELK']);
+        $item = Item::create([
+            'name' => 'Kamera',
+            'details' => 'DSLR',
+            'category_id' => $category->id,
+        ]);
+        $item->assets()->create([
+            'serial_number' => 'SN123',
+            'procurement_year' => 2024,
+            'condition' => 'baik',
+        ]);
+
+        $response = $this->get('/items');
+        $response->assertStatus(200);
+        $response->assertSee('Elektronik');
+        $response->assertSee('ELK');
+    }
 }

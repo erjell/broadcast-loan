@@ -12,8 +12,10 @@
     <table class="w-full text-sm">
         <thead class="bg-slate-100">
             <tr>
-                <th class="p-2 text-left">Kode</th>
-                <th class="p-2 text-left">Nama</th>
+
+                <th class="p-2 text-left">Nama Kategori</th>
+                <th class="p-2 text-left">Kode Kategori</th>
+
             </tr>
         </thead>
         <tbody>
@@ -21,6 +23,7 @@
             <tr class="border-t">
                 <td class="p-2">{{ $c->code }}</td>
                 <td class="p-2">{{ $c->name }}</td>
+                <td class="p-2">{{ $c->code }}</td>
             </tr>
             @endforeach
         </tbody>
