@@ -13,6 +13,22 @@
         <label class="block text-sm">Detail Barang</label>
         <textarea name="details" class="w-full border rounded p-2"></textarea>
     </div>
+    <div>
+        <label class="block text-sm">Serial Number</label>
+        <input name="serial_number" class="w-full border rounded p-2">
+    </div>
+    <div>
+        <label class="block text-sm">Tahun Pengadaan</label>
+        <input type="number" name="procurement_year" class="w-full border rounded p-2">
+    </div>
+    <div>
+        <label class="block text-sm">Kondisi</label>
+        <select name="condition" class="w-full border rounded p-2" required>
+            <option value="baik">baik</option>
+            <option value="rusak_ringan">rusak ringan</option>
+            <option value="rusak_berat">rusak berat</option>
+        </select>
+    </div>
     <div class="md:col-span-2">
         <label class="block text-sm">Kategori</label>
         <select name="category_id" class="w-full border rounded p-2" required>

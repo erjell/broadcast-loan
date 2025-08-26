@@ -19,7 +19,6 @@ class ItemManagementTest extends TestCase
             'category_id' => $category->id,
         ]);
         $item->assets()->create([
-            'code' => $item->code.'-001',
             'serial_number' => 'SN123',
             'procurement_year' => 2024,
             'condition' => 'baik',
@@ -30,6 +29,29 @@ class ItemManagementTest extends TestCase
             'code' => $item->code,
             'name' => 'Kamera',
             'stock' => 1,
+        ]);
+    }
+
+    public function test_store_creates_item_and_asset_with_generated_codes(): void
+    {
+        $category = Category::create(['name' => 'Elektronik']);
+        $response = $this->post('/items', [
+            'name' => 'Kamera',
+            'details' => 'DSLR',
+            'category_id' => $category->id,
+            'serial_number' => 'SN123',
+            'procurement_year' => 2024,
+            'condition' => 'baik',
+        ]);
+
+        $response->assertRedirect('/items');
+        $this->assertDatabaseHas('items', [
+            'name' => 'Kamera',
+            'code' => 'ELE001',
+        ]);
+        $this->assertDatabaseHas('assets', [
+            'serial_number' => 'SN123',
+            'code' => 'ELE001-001',
         ]);
     }
 }
