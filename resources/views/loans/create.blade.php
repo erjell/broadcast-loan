@@ -28,12 +28,12 @@
 
     <div class="grid md:grid-cols-2 gap-4">
         <div>
-            <label class="block text-sm">Scan Barcode / Cari Nama</label>
-            <input x-model="query" @keydown.enter.prevent="addByQuery()" class="w-full border rounded p-2" placeholder="Scan barcode atau ketik nama barang...">
+            <label class="block text-sm">Scan Kode / Cari Nama</label>
+            <input x-model="query" @keydown.enter.prevent="addByQuery()" class="w-full border rounded p-2" placeholder="Scan code atau ketik nama barang...">
             <div class="mt-2 bg-slate-50 border rounded max-h-48 overflow-auto" x-show="suggestions.length">
                 <template x-for="s in suggestions" :key="s.id">
                     <button type="button" @click="addItem(s)" class="w-full text-left px-3 py-2 hover:bg-white flex justify-between">
-                        <span x-text="`${s.barcode} — ${s.name}`"></span>
+                        <span x-text="`${s.code} — ${s.name}`"></span>
                         <span class="text-xs" x-text="`Stok: ${s.stock}`"></span>
                     </button>
                 </template>
@@ -51,7 +51,7 @@
         <table class="w-full text-sm border rounded">
             <thead class="bg-slate-100">
                 <tr>
-                    <th class="p-2 text-left">Barcode</th>
+                    <th class="p-2 text-left">Code</th>
                     <th class="p-2 text-left">Nama</th>
                     <th class="p-2 text-center">Jumlah</th>
                     <th class="p-2 text-center">Stok Tersisa</th>
@@ -61,7 +61,7 @@
             <tbody>
                 <template x-for="(row,idx) in items" :key="row.id">
                     <tr class="border-t">
-                        <td class="p-2" x-text="row.barcode"></td>
+                        <td class="p-2" x-text="row.code"></td>
                         <td class="p-2">
                             <span x-text="row.name"></span>
                             <template x-if="row.condition !== 'baik'">

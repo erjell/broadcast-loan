@@ -20,19 +20,17 @@ class DatabaseSeeder extends Seeder
 
         // buat beberapa barang
         Item::firstOrCreate(
-            ['barcode' => 'MIC-0001'],
+            ['code' => 'MIC-0001'],
             [
                 'name'        => 'Mic Shure SM58',
                 'category_id' => $audio->id,
-                'stock'       => 10,
             ],
         );
         Item::firstOrCreate(
-            ['barcode' => 'CAM-0101'],
+            ['code' => 'CAM-0101'],
             [
                 'name'        => 'Camera Sony XDCAM',
                 'category_id' => $video->id,
-                'stock'       => 3,
             ],
         );
 
