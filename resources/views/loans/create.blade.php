@@ -28,12 +28,12 @@
 
     <div class="grid md:grid-cols-2 gap-4">
         <div>
-            <label class="block text-sm">Scan Barcode / Cari Nama</label>
-            <input x-model="query" @keydown.enter.prevent="addByQuery()" class="w-full border rounded p-2" placeholder="Scan barcode atau ketik nama barang...">
+            <label class="block text-sm">Cari Nama Barang</label>
+            <input x-model="query" @keydown.enter.prevent="addByQuery()" class="w-full border rounded p-2" placeholder="Ketik nama barang...">
             <div class="mt-2 bg-slate-50 border rounded max-h-48 overflow-auto" x-show="suggestions.length">
                 <template x-for="s in suggestions" :key="s.id">
                     <button type="button" @click="addItem(s)" class="w-full text-left px-3 py-2 hover:bg-white flex justify-between">
-                        <span x-text="`${s.barcode} — ${s.name}`"></span>
+                        <span x-text="s.name"></span>
                         <span class="text-xs" x-text="`Stok: ${s.stock}`"></span>
                     </button>
                 </template>
@@ -51,7 +51,6 @@
         <table class="w-full text-sm border rounded">
             <thead class="bg-slate-100">
                 <tr>
-                    <th class="p-2 text-left">Barcode</th>
                     <th class="p-2 text-left">Nama</th>
                     <th class="p-2 text-center">Jumlah</th>
                     <th class="p-2 text-center">Stok Tersisa</th>
@@ -61,13 +60,7 @@
             <tbody>
                 <template x-for="(row,idx) in items" :key="row.id">
                     <tr class="border-t">
-                        <td class="p-2" x-text="row.barcode"></td>
-                        <td class="p-2">
-                            <span x-text="row.name"></span>
-                            <template x-if="row.condition !== 'baik'">
-                                <span class="ml-2 px-2 py-0.5 text-xs rounded-full" :class="row.condition==='rusak_berat' ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700' " x-text="row.condition.replace('_',' ')"></span>
-                            </template>
-                        </td>
+                        <td class="p-2" x-text="row.name"></td>
                         <td class="p-2 text-center">
                             <input type="number" min="1" :max="row.stock" class="w-20 border rounded p-1 text-center" x-model.number="row.qty" @change="validateQty(idx)">
                             <input type="hidden" :name="`items[${idx}][id]`" :value="row.id">
@@ -112,14 +105,14 @@
     validateQty(i){
       const r=this.items[i];
       if(r.qty<1) r.qty=1;
-      if(r.qty>r.stock){ 
+      if(r.qty>r.stock){
         r.qty=r.stock;
         this.showModal(`Jumlah melebihi stok untuk <b>${r.name}</b>. Otomatis disesuaikan ke stok maksimum (${r.stock}).`);
       }
     },
     openDamagedInfo(){
       this.showModal(`Barang dengan status <b>rusak</b> tetap bisa dipinjam berdasarkan kebijakan gudang.
-      Catat pada kolom catatan transaksi. Pada saat pengembalian, barang berstatus <b>baik</b> yang kembali akan menambah stok; 
+      Catat pada kolom catatan transaksi. Pada saat pengembalian, barang berstatus <b>baik</b> yang kembali akan menambah stok;
       yang <b>rusak</b> tidak menambah stok.`);
     },
     showModal(html){

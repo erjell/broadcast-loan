@@ -1,15 +1,15 @@
 <?php
 
 // routes/web.php
-use App\Http\Controllers\{ItemController,LoanController};
+use App\Http\Controllers\{AssetController, ItemController, LoanController};
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn() => redirect()->route('loans.index'));
 
 // Route::middleware(['web','auth'])->group(function(){
-    // Items
-    Route::get('/items', [ItemController::class,'index'])->name('items.index');
-    Route::post('/items', [ItemController::class,'store'])->name('items.store');
+    // Assets
+    Route::get('/items', [AssetController::class,'index'])->name('items.index');
+    Route::post('/items', [AssetController::class,'store'])->name('items.store');
     Route::get('/items/search', [ItemController::class,'search'])->name('items.search'); // JSON
 
     // Loans

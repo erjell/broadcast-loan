@@ -21,7 +21,7 @@
             @foreach($loan->items as $i => $li)
             @php $sisa = max(0,$li->qty - $li->returned_qty); @endphp
             <tr class="border-t">
-                <td class="p-2">{{ $li->item->barcode }} — {{ $li->item->name }}</td>
+                <td class="p-2">{{ $li->item->name }}</td>
                 <td class="p-2 text-center">{{ $li->qty }}</td>
                 <td class="p-2 text-center">{{ $li->returned_qty }}</td>
                 <td class="p-2 text-center">
