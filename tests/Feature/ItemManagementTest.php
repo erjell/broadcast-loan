@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Models\Category;
+use App\Models\{Category, Item};
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -10,26 +10,26 @@ class ItemManagementTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_item_can_be_created(): void
+    public function test_search_returns_stock_from_assets(): void
     {
         $category = Category::create(['name' => 'Elektronik']);
-
-        $response = $this->post('/items', [
-            'barcode' => 'BRG001',
+        $item = Item::create([
             'name' => 'Kamera',
-            'serial_number' => 'SN123',
-            'procurement_year' => 2024,
             'details' => 'DSLR',
             'category_id' => $category->id,
-            'stock' => 5,
+        ]);
+        $item->assets()->create([
+            'code' => $item->code.'-001',
+            'serial_number' => 'SN123',
+            'procurement_year' => 2024,
             'condition' => 'baik',
         ]);
 
-        $response->assertSessionHas('ok', 'Barang ditambahkan');
-        $this->assertDatabaseHas('items', [
-            'barcode' => 'BRG001',
-            'serial_number' => 'SN123',
-            'procurement_year' => 2024,
+        $response = $this->get('/items/search?q='.$item->code);
+        $response->assertJsonFragment([
+            'code' => $item->code,
+            'name' => 'Kamera',
+            'stock' => 1,
         ]);
     }
 }
