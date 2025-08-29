@@ -25,9 +25,12 @@ class ItemController extends Controller
             'condition' => 'required|in:baik,rusak_ringan,rusak_berat',
         ]);
 
-        Item::create($data);
-
-        return redirect()->route('items.index')->with('ok', 'Barang berhasil disimpan');
+        try {
+            Item::create($data);
+            return redirect()->route('items.index')->with('ok', 'Barang berhasil disimpan');
+        } catch (\Throwable $e) {
+            return back()->with('error', 'Barang gagal disimpan.')->withInput();
+        }
     }
 
     public function search(Request $r)
