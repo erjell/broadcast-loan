@@ -44,7 +44,9 @@
                 <div class="absolute left-0 right-0 top-full mt-2 bg-white border border-slate-200 rounded-xl shadow-lg max-h-48 overflow-auto z-10" x-show="suggestions.length">
                     <template x-for="s in suggestions" :key="s.id">
                         <button type="button" @click="addItem(s)" class="w-full text-left px-3 py-2 hover:bg-slate-100 flex justify-between">
-                            <span x-text="`${s.barcode} — ${s.name}`"></span>
+
+                            <span x-text="`${s.code} — ${s.name}`"></span>
+
                             <span class="text-xs" x-text="`Stok: ${s.stock}`"></span>
                         </button>
                     </template>
@@ -73,7 +75,7 @@
             <tbody>
                 <template x-for="(row,idx) in items" :key="row.id">
                     <tr class="border-t">
-                        <td class="p-2" x-text="row.barcode"></td>
+                        <td class="p-2" x-text="row.code"></td>
                         <td class="p-2">
                             <span x-text="row.name"></span>
                             <template x-if="row.condition !== 'baik'">
