@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Models\{Category, Item};
+use App\Models\{Category, Item, User};
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -12,6 +12,8 @@ class ItemManagementTest extends TestCase
 
     public function test_search_returns_items(): void
     {
+        $this->actingAs(User::factory()->create());
+
         $category = Category::create(['name' => 'Elektronik', 'code_category' => 'ELK']);
         $item = Item::create([
             'name' => 'Kamera',
@@ -31,6 +33,8 @@ class ItemManagementTest extends TestCase
 
     public function test_search_by_serial_number_returns_item(): void
     {
+        $this->actingAs(User::factory()->create());
+
         $category = Category::create(['name' => 'Elektronik', 'code_category' => 'ELK']);
         $item = Item::create([
             'name' => 'Kamera',
@@ -50,6 +54,8 @@ class ItemManagementTest extends TestCase
 
     public function test_store_creates_item_with_generated_code(): void
     {
+        $this->actingAs(User::factory()->create());
+
         $category = Category::create(['name' => 'Elektronik', 'code_category' => 'ELK']);
         $response = $this->post('/items', [
             'name' => 'Kamera',

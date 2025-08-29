@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Models\Category;
+use App\Models\{Category, User};
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -12,6 +12,8 @@ class CategoryManagementTest extends TestCase
 
     public function test_index_displays_categories(): void
     {
+        $this->actingAs(User::factory()->create());
+
         Category::create(['name' => 'Elektronik', 'code_category' => 'ELK']);
 
         $response = $this->get('/categories');
@@ -21,6 +23,8 @@ class CategoryManagementTest extends TestCase
 
     public function test_store_creates_category(): void
     {
+        $this->actingAs(User::factory()->create());
+
         $response = $this->post('/categories', ['name' => 'Furniture', 'code_category' => 'FUR']);
 
         $response->assertRedirect('/categories');
