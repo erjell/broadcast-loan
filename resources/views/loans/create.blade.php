@@ -43,22 +43,18 @@
                         <path stroke-width="2" d="M2 5h1v14H2m3-14h1v14H5m3-14h2v14H8m5-14h1v14h-1m3-14h2v14h-2m3-14h1v14h-1" />
                     </svg>
                 </button>
-
                 <ul class="absolute left-0 right-0 mt-2 bg-white border border-slate-200 rounded-xl shadow-lg max-h-56 overflow-auto z-10" x-show="suggestions.length">
                     <template x-for="s in suggestions" :key="s.id">
                         <li>
-                            <button type="button" @click="addItem(s)" class="w-full flex justify-between items-start px-4 py-2 text-left hover:bg-slate-50">
-                                <div>
-                                    <div class="font-medium text-slate-700" x-text="s.name"></div>
-                                    <div class="text-xs text-slate-500">
-                                        <span x-text="s.code"></span>
-                                        <template x-if="s.serial_number">
-                                            <span x-text="` • SN: ${s.serial_number}`"></span>
-                                        </template>
-                                    </div>
-
+                            <button type="button" @click="addItem(s)" class="w-full px-4 py-2 text-left hover:bg-slate-50">
+                                <div class="font-medium text-slate-700" x-text="s.name"></div>
+                                <div class="text-xs text-slate-500">
+                                    <span x-text="s.code"></span>
+                                    <template x-if="s.serial_number">
+                                        <span x-text="` • SN: ${s.serial_number}`"></span>
+                                    </template>
                                 </div>
-                                <span class="text-xs text-slate-400" x-text="`Stok: ${s.stock}`"></span>
+
                             </button>
                         </li>
                     </template>
@@ -81,7 +77,6 @@
                     <th class="p-2 text-left">Kode</th>
                     <th class="p-2 text-left">Nama</th>
                     <th class="p-2 text-center">Jumlah</th>
-                    <th class="p-2 text-center">Stok Tersisa</th>
                     <th class="p-2"></th>
                 </tr>
             </thead>
@@ -96,11 +91,10 @@
                             </template>
                         </td>
                         <td class="p-2 text-center">
-                            <input type="number" min="1" :max="row.stock" class="w-20 border rounded p-1 text-center" x-model.number="row.qty" @change="validateQty(idx)">
+                            <input type="number" min="1" class="w-20 border rounded p-1 text-center" x-model.number="row.qty">
                             <input type="hidden" :name="`items[${idx}][id]`" :value="row.id">
                             <input type="hidden" :name="`items[${idx}][qty]`" :value="row.qty">
                         </td>
-                        <td class="p-2 text-center" x-text="row.stock"></td>
                         <td class="p-2 text-center">
                             <button type="button" class="px-2 py-1 rounded bg-rose-100 text-rose-700" @click="remove(idx)">Hapus</button>
                         </td>
@@ -130,7 +124,7 @@
     },
     addItem(it){
       const exist = this.items.find(x=>x.id===it.id);
-      if(exist){ exist.qty = Math.min(exist.qty+1, it.stock); }
+      if(exist){ exist.qty++; }
       else { this.items.push({...it, qty: 1}); }
       this.query=''; this.suggestions=[];
     },
@@ -138,18 +132,10 @@
       if(this.suggestions.length) this.addItem(this.suggestions[0]);
     },
     remove(i){ this.items.splice(i,1); },
-    validateQty(i){
-      const r=this.items[i];
-      if(r.qty<1) r.qty=1;
-      if(r.qty>r.stock){
-        r.qty=r.stock;
-        this.showModal(`Jumlah melebihi stok untuk <b>${r.name}</b>. Otomatis disesuaikan ke stok maksimum (${r.stock}).`);
-      }
-    },
     openDamagedInfo(){
       this.showModal(`Barang dengan status <b>rusak</b> tetap bisa dipinjam berdasarkan kebijakan gudang.
-      Catat pada kolom catatan transaksi. Pada saat pengembalian, barang berstatus <b>baik</b> yang kembali akan menambah stok;
-      yang <b>rusak</b> tidak menambah stok.`);
+      Catat pada kolom catatan transaksi.`);
+
     },
     showModal(html){
       document.getElementById('modal-body').innerHTML = html;

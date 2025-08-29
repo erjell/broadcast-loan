@@ -39,7 +39,8 @@ class ItemController extends Controller
                     ->orWhere('name', 'like', "%$q%");
             })
             ->limit(10)
-            ->get(['id', 'code', 'name', 'serial_number', 'stock', 'condition']);
+            ->get(['id', 'code', 'name', 'serial_number', 'condition']);
+
         return response()->json($items);
     }
 
