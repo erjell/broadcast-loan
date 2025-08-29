@@ -15,14 +15,12 @@ class LoanController extends Controller {
     }
 
     public function create(){
-        return view('loans.create', [
-            'partners'=>Partner::orderBy('name')->get()
-        ]);
+        return view('loans.create');
     }
 
     public function store(Request $r){
         $data = $r->validate([
-            'partner_id' => ['required','exists:partners,id'],
+            'partner_name' => ['required','string','max:255'],
             'purpose'    => ['required','string','max:255'],
             'loan_date'  => ['required','date'],
             'items'      => ['required','array','min:1'],
@@ -31,9 +29,11 @@ class LoanController extends Controller {
         ]);
 
         try {
-            DB::transaction(function() use ($data){
+            $partner = Partner::firstOrCreate(['name'=>$data['partner_name']]);
+
+            DB::transaction(function() use ($data, $partner){
                 $loan = Loan::create([
-                    'partner_id'=>$data['partner_id'],
+                    'partner_id'=>$partner->id,
                     'purpose'=>$data['purpose'],
                     'loan_date'=>$data['loan_date'],
                     'user_id'=>auth()->id()

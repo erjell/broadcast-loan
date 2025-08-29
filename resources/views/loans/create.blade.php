@@ -14,14 +14,8 @@
                 <div class="grid md:grid-cols-4 gap-4">
                     <div>
                         <label class="block text-sm">Nama Peminjam</label>
-                        <select name="partner_id" class="w-full border rounded p-2" required>
-                            <option value="">-- Pilih --</option>
-                            @foreach($partners as $partner)
-                                <option value="{{ $partner->id }}" @selected(old('partner_id')==$partner->id)>
-                                    {{ $partner->name }}
-                                </option>
-                            @endforeach
-                        </select>
+                        <input name="partner_name" class="w-full border rounded p-2" placeholder="Nama Peminjam" value="{{ old('partner_name') }}" required>
+
                     </div>
                     <div>
                         <label class="block text-sm">Keperluan / Lokasi</label>
