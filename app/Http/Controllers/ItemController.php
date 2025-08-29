@@ -9,7 +9,7 @@ class ItemController extends Controller
 {
     public function index()
     {
-        $items = Item::with('assets')->latest()->paginate(10);
+        $items = Item::latest()->paginate(10);
         $categories = Category::all();
         return view('items.index', compact('items', 'categories'));
     }
@@ -25,26 +25,15 @@ class ItemController extends Controller
             'condition' => 'required|in:baik,rusak_ringan,rusak_berat',
         ]);
 
-        $item = Item::firstOrCreate(
-            ['name' => $data['name'], 'category_id' => $data['category_id']],
-            ['details' => $data['details'] ?? null],
-        );
-
-        $item->assets()->create([
-            'serial_number' => $data['serial_number'] ?? null,
-            'procurement_year' => $data['procurement_year'] ?? null,
-            'condition' => $data['condition'],
-        ]);
+        Item::create($data);
 
         return redirect()->route('items.index')->with('ok', 'Barang berhasil disimpan');
     }
 
-    // endpoint JSON untuk scan / pencarian
     public function search(Request $r)
     {
         $q = $r->get('q', '');
-        $items = Item::withCount('assets as stock')
-            ->when($q, function ($qq) use ($q) {
+        $items = Item::when($q, function ($qq) use ($q) {
                 $qq->where('code', $q)
                     ->orWhere('name', 'like', "%$q%");
             })

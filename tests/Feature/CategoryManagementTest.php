@@ -12,7 +12,7 @@ class CategoryManagementTest extends TestCase
 
     public function test_index_displays_categories(): void
     {
-        Category::create(['name' => 'Elektronik']);
+        Category::create(['name' => 'Elektronik', 'code_category' => 'ELK']);
 
         $response = $this->get('/categories');
         $response->assertStatus(200);
@@ -21,7 +21,7 @@ class CategoryManagementTest extends TestCase
 
     public function test_store_creates_category(): void
     {
-        $response = $this->post('/categories', ['name' => 'Furniture']);
+        $response = $this->post('/categories', ['name' => 'Furniture', 'code_category' => 'FUR']);
 
         $response->assertRedirect('/categories');
         $this->assertDatabaseHas('categories', ['name' => 'Furniture']);
