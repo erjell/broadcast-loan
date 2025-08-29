@@ -3,7 +3,7 @@
 // app/Http/Controllers/LoanController.php
 namespace App\Http\Controllers;
 
-use App\Models\{Loan,LoanItem,Item,Partner};
+use App\Models\{Loan,LoanItem,Partner};
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -38,14 +38,9 @@ class LoanController extends Controller {
                 'user_id'=>auth()->id()
             ]);
             foreach ($data['items'] as $row){
-                $item = Item::lockForUpdate()->find($row['id']);
-                if ($item->stock < $row['qty']){
-                    abort(422, "Stok {$item->name} tidak mencukupi.");
-                }
-                $item->decrement('stock', $row['qty']);
                 LoanItem::create([
                     'loan_id'=>$loan->id,
-                    'item_id'=>$item->id,
+                    'item_id'=>$row['id'],
                     'qty'=>$row['qty']
                 ]);
             }
@@ -85,10 +80,7 @@ class LoanController extends Controller {
                 $li->return_notes = $row['notes'] ?? null;
                 $li->save();
 
-                // stok hanya bertambah kembali bila kondisi "baik"
-                if ($row['condition'] === 'baik'){
-                    $li->item()->increment('stock', $returnQty);
-                }
+                // stok tidak lagi diperbarui karena tidak tersedia di basis data
             }
 
             // update status pinjaman
