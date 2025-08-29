@@ -12,6 +12,7 @@
                 <th class="p-2 text-left">Nama Peminjam</th>
                 <th class="p-2 text-left">Keperluan Acara/Lokasi</th>
                 <th class="p-2 text-left">Tanggal Pinjam</th>
+                <th class="p-2 text-left">Petugas</th>
                 <th class="p-2 text-left">Status</th>
                 <th class="p-2"></th>
             </tr>
@@ -22,6 +23,7 @@
                 <td class="p-2">{{ $l->partner->name }}</td>
                 <td class="p-2">{{ $l->purpose }}</td>
                 <td class="p-2">{{ $l->loan_date }}</td>
+                <td class="p-2">{{ optional($l->user)->name }}</td>
                 <td class="p-2">
                     <span class="px-2 py-0.5 rounded-full text-xs"
         @class([

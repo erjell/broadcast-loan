@@ -2,7 +2,7 @@
 @extends('layouts.app')
 @section('content')
 <h1 class="text-xl font-semibold mb-2">Pengembalian — {{ $loan->code }}</h1>
-<p class="text-sm text-slate-600 mb-4">{{ $loan->partner->name }} • {{ $loan->purpose }}</p>
+<p class="text-sm text-slate-600 mb-4">{{ $loan->partner->name }} • {{ $loan->purpose }} • Petugas: {{ optional($loan->user)->name }}</p>
 
 <form action="{{ route('loans.return.process',$loan) }}" method="post" class="bg-white p-4 rounded-2xl shadow">
     @csrf

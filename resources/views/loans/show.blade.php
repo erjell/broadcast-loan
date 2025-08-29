@@ -4,7 +4,7 @@
 @section('content')
 <h1 class="text-xl font-semibold mb-2">Detail Peminjaman {{ $loan->code }}</h1>
 <p class="text-sm text-slate-600 mb-4">
-    {{ $loan->partner->name }} • {{ $loan->purpose }} • {{ $loan->loan_date }}
+    {{ $loan->partner->name }} • {{ $loan->purpose }} • {{ $loan->loan_date }} • Petugas: {{ optional($loan->user)->name }}
 </p>
 
 <a href="{{ route('loans.return.form', $loan) }}" class="px-3 py-2 rounded bg-slate-800 text-white">
