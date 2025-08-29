@@ -30,23 +30,27 @@ class LoanController extends Controller {
             'items.*.qty'=> ['required','integer','min:1']
         ]);
 
-        DB::transaction(function() use ($data){
-            $loan = Loan::create([
-                'partner_id'=>$data['partner_id'],
-                'purpose'=>$data['purpose'],
-                'loan_date'=>$data['loan_date'],
-                'user_id'=>auth()->id()
-            ]);
-            foreach ($data['items'] as $row){
-                LoanItem::create([
-                    'loan_id'=>$loan->id,
-                    'item_id'=>$row['id'],
-                    'qty'=>$row['qty']
+        try {
+            DB::transaction(function() use ($data){
+                $loan = Loan::create([
+                    'partner_id'=>$data['partner_id'],
+                    'purpose'=>$data['purpose'],
+                    'loan_date'=>$data['loan_date'],
+                    'user_id'=>auth()->id()
                 ]);
-            }
-        });
+                foreach ($data['items'] as $row){
+                    LoanItem::create([
+                        'loan_id'=>$loan->id,
+                        'item_id'=>$row['id'],
+                        'qty'=>$row['qty']
+                    ]);
+                }
+            });
 
-        return redirect()->route('loans.index')->with('ok','Peminjaman tersimpan.');
+            return redirect()->route('loans.index')->with('ok','Peminjaman tersimpan.');
+        } catch (\Throwable $e) {
+            return back()->with('error','Peminjaman gagal disimpan.')->withInput();
+        }
     }
 
     public function show(Loan $loan){
@@ -68,29 +72,33 @@ class LoanController extends Controller {
             'returns.*.notes'=>['nullable','string']
         ]);
 
-        DB::transaction(function() use ($data, $loan){
-            foreach ($data['returns'] as $row){
-                /** @var \App\Models\LoanItem $li */
-                $li = LoanItem::lockForUpdate()->find($row['loan_item_id']);
-                $returnQty = min($row['qty'], $li->qty - $li->returned_qty);
-                if ($returnQty <= 0) continue;
+        try {
+            DB::transaction(function() use ($data, $loan){
+                foreach ($data['returns'] as $row){
+                    /** @var \App\Models\LoanItem $li */
+                    $li = LoanItem::lockForUpdate()->find($row['loan_item_id']);
+                    $returnQty = min($row['qty'], $li->qty - $li->returned_qty);
+                    if ($returnQty <= 0) continue;
 
-                $li->returned_qty += $returnQty;
-                $li->return_condition = $row['condition']; // terakhir dipakai
-                $li->return_notes = $row['notes'] ?? null;
-                $li->save();
+                    $li->returned_qty += $returnQty;
+                    $li->return_condition = $row['condition']; // terakhir dipakai
+                    $li->return_notes = $row['notes'] ?? null;
+                    $li->save();
 
-                // stok tidak lagi diperbarui karena tidak tersedia di basis data
-            }
+                    // stok tidak lagi diperbarui karena tidak tersedia di basis data
+                }
 
-            // update status pinjaman
-            $total = $loan->items()->sum('qty');
-            $returned = $loan->items()->sum('returned_qty');
-            $loan->status = $returned === 0 ? 'dipinjam' : ($returned < $total ? 'sebagian_kembali' : 'selesai');
-            $loan->save();
-        });
+                // update status pinjaman
+                $total = $loan->items()->sum('qty');
+                $returned = $loan->items()->sum('returned_qty');
+                $loan->status = $returned === 0 ? 'dipinjam' : ($returned < $total ? 'sebagian_kembali' : 'selesai');
+                $loan->save();
+            });
 
-        return redirect()->route('loans.show',$loan)->with('ok','Pengembalian diproses.');
+            return redirect()->route('loans.show',$loan)->with('ok','Pengembalian diproses.');
+        } catch (\Throwable $e) {
+            return back()->with('error','Pengembalian gagal diproses.');
+        }
     }
 }
 

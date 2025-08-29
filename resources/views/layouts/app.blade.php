@@ -27,6 +27,12 @@
                 </header>
             @endisset
 
+            @if (session('ok'))
+                <x-alert type="success" :message="session('ok')" />
+            @elseif (session('error'))
+                <x-alert type="error" :message="session('error')" />
+            @endif
+
             <!-- Page Content -->
             <main>
                 {{ $slot }}

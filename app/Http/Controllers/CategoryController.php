@@ -20,8 +20,11 @@ class CategoryController extends Controller
             'code_category'=>'required'
         ]);
 
-        Category::create($data);
-
-        return redirect()->route('categories.index')->with('ok', 'Kategori berhasil disimpan');
+        try {
+            Category::create($data);
+            return redirect()->route('categories.index')->with('ok', 'Kategori berhasil disimpan');
+        } catch (\Throwable $e) {
+            return back()->with('error', 'Kategori gagal disimpan.')->withInput();
+        }
     }
 }
