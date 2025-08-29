@@ -40,6 +40,7 @@ class ItemController extends Controller
             })
             ->limit(10)
             ->get(['id', 'code', 'name', 'serial_number', 'condition']);
+
         return response()->json($items);
     }
 
