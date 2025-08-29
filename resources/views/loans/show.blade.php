@@ -19,7 +19,8 @@
                     <thead class="bg-slate-100">
                         <tr>
                             <th class="p-2">Barang</th>
-                            <th class="p-2 text-center">Qty</th>
+                            <th class="p-2">Serial Number</th>
+                            <th class="p-2 text-center">Kondisi</th>
                             <th class="p-2 text-center">Kembali</th>
                             <th class="p-2 text-center">Sisa</th>
                         </tr>
@@ -28,7 +29,15 @@
                         @foreach ($loan->items as $li)
                         <tr class="border-t">
                             <td class="p-2">{{ $li->item->code }} — {{ $li->item->name }}</td>
-                            <td class="p-2 text-center">{{ $li->qty }}</td>
+                            <td class="p-2">{{ $li->item->serial_number }}</td>
+                            <td class="p-2 text-center">
+                                <span class="px-2 py-0.5 text-xs rounded-full"
+                                    @class([
+                                        'bg-emerald-100 text-emerald-700' => $li->item->condition==='baik',
+                                        'bg-amber-100 text-amber-700' => $li->item->condition==='rusak_ringan',
+                                        'bg-red-100 text-red-700' => $li->item->condition==='rusak_berat',
+                                    ])>{{ str_replace('_',' ',$li->item->condition) }}</span>
+                            </td>
                             <td class="p-2 text-center">{{ $li->returned_qty }}</td>
                             <td class="p-2 text-center">{{ max(0, $li->qty - $li->returned_qty) }}</td>
                         </tr>
