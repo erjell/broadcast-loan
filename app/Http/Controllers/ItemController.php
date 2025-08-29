@@ -34,11 +34,12 @@ class ItemController extends Controller
     {
         $q = $r->get('q', '');
         $items = Item::when($q, function ($qq) use ($q) {
-                $qq->where('code', $q)
+                $qq->where('code', 'like', "%$q%")
+                    ->orWhere('serial_number', 'like', "%$q%")
                     ->orWhere('name', 'like', "%$q%");
             })
             ->limit(10)
-            ->get(['id', 'code', 'name']);
+            ->get(['id', 'code', 'name', 'serial_number', 'stock', 'condition']);
         return response()->json($items);
     }
 
