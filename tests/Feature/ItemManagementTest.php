@@ -10,15 +10,13 @@ class ItemManagementTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_search_returns_stock_from_assets(): void
+    public function test_search_returns_items(): void
     {
-        $category = Category::create(['name' => 'Elektronik']);
+        $category = Category::create(['name' => 'Elektronik', 'code_category' => 'ELK']);
         $item = Item::create([
             'name' => 'Kamera',
             'details' => 'DSLR',
             'category_id' => $category->id,
-        ]);
-        $item->assets()->create([
             'serial_number' => 'SN123',
             'procurement_year' => 2024,
             'condition' => 'baik',
@@ -28,13 +26,12 @@ class ItemManagementTest extends TestCase
         $response->assertJsonFragment([
             'code' => $item->code,
             'name' => 'Kamera',
-            'stock' => 1,
         ]);
     }
 
-    public function test_store_creates_item_and_asset_with_generated_codes(): void
+    public function test_store_creates_item_with_generated_code(): void
     {
-        $category = Category::create(['name' => 'Elektronik']);
+        $category = Category::create(['name' => 'Elektronik', 'code_category' => 'ELK']);
         $response = $this->post('/items', [
             'name' => 'Kamera',
             'details' => 'DSLR',
@@ -48,10 +45,7 @@ class ItemManagementTest extends TestCase
         $this->assertDatabaseHas('items', [
             'name' => 'Kamera',
             'code' => 'ELE001',
-        ]);
-        $this->assertDatabaseHas('assets', [
             'serial_number' => 'SN123',
-            'code' => 'ELE001-001',
         ]);
     }
 }

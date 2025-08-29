@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use App\Models\{Asset, Category};
+use App\Models\Category;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\{BelongsTo, HasMany};
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Item extends Model
 {
@@ -12,16 +12,14 @@ class Item extends Model
         'name',
         'details',
         'category_id',
+        'serial_number',
+        'procurement_year',
+        'condition',
     ];
 
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
-    }
-
-    public function assets(): HasMany
-    {
-        return $this->hasMany(Asset::class);
     }
 
     protected static function booted(): void
