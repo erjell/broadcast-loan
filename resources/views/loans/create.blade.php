@@ -15,6 +15,7 @@
                     <div>
                         <label class="block text-sm">Nama Peminjam</label>
                         <input name="partner_name" class="w-full border rounded p-2" placeholder="Nama Peminjam" value="{{ old('partner_name') }}" required>
+
                     </div>
                     <div>
                         <label class="block text-sm">Keperluan / Lokasi</label>
