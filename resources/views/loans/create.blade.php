@@ -6,9 +6,9 @@
 <form action="{{ route('loans.store') }}" method="post" x-data="loanForm()" x-init="init()" class="grid gap-4 bg-white p-4 rounded-2xl shadow">
     @csrf
 
-    <div class="grid md:grid-cols-3 gap-4">
+    <div class="grid md:grid-cols-4 gap-4">
         <div>
-            <label class="block text-sm">Partner</label>
+            <label class="block text-sm">Nama Peminjam</label>
             <select name="partner_id" class="w-full border rounded p-2" required>
                 <option value="">-- Pilih --</option>
                 @foreach($partners as $p)
@@ -23,6 +23,10 @@
         <div>
             <label class="block text-sm">Tanggal Pinjam</label>
             <input type="datetime-local" name="loan_date" class="w-full border rounded p-2" value="{{ now()->format('Y-m-d\TH:i') }}" required>
+        </div>
+        <div>
+            <label class="block text-sm">Petugas</label>
+            <input value="{{ auth()->user()->name }}" class="w-full border rounded p-2" disabled>
         </div>
     </div>
 

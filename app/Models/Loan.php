@@ -15,4 +15,5 @@ class Loan extends Model
     }
     public function partner(){ return $this->belongsTo(Partner::class); }
     public function items(){ return $this->hasMany(LoanItem::class); }
+    public function user(){ return $this->belongsTo(User::class); }
 }

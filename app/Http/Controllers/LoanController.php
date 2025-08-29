@@ -10,7 +10,7 @@ use Illuminate\Validation\Rule;
 
 class LoanController extends Controller {
     public function index(){
-        $loans = Loan::with('partner','items.item')->latest()->paginate(15);
+        $loans = Loan::with('partner','items.item','user')->latest()->paginate(15);
         return view('loans.index', compact('loans'));
     }
 
@@ -50,12 +50,12 @@ class LoanController extends Controller {
     }
 
     public function show(Loan $loan){
-        $loan->load('partner','items.item');
+        $loan->load('partner','items.item','user');
         return view('loans.show', compact('loan'));
     }
 
     public function returnForm(Loan $loan){
-        $loan->load('items.item','partner');
+        $loan->load('items.item','partner','user');
         return view('loans.return', compact('loan'));
     }
 
