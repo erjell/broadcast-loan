@@ -74,7 +74,8 @@
                             <tr>
                                 <th class="p-2 text-left">Kode</th>
                                 <th class="p-2 text-left">Nama</th>
-                                <th class="p-2 text-center">Jumlah</th>
+                                <th class="p-2 text-left">Serial Number</th>
+                                <th class="p-2 text-center">Kondisi</th>
                                 <th class="p-2"></th>
                             </tr>
                         </thead>
@@ -82,14 +83,12 @@
                             <template x-for="(row,idx) in items" :key="row.id">
                                 <tr class="border-t">
                                     <td class="p-2" x-text="row.code"></td>
-                                    <td class="p-2">
-                                        <span x-text="row.name"></span>
-                                        <template x-if="row.condition !== 'baik'">
-                                            <span class="ml-2 px-2 py-0.5 text-xs rounded-full" :class="row.condition==='rusak_berat' ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700' " x-text="row.condition.replace('_',' ')"></span>
-                                        </template>
-                                    </td>
+                                    <td class="p-2" x-text="row.name"></td>
+                                    <td class="p-2" x-text="row.serial_number ?? '-'" ></td>
                                     <td class="p-2 text-center">
-                                        <input type="number" min="1" class="w-20 border rounded p-1 text-center" x-model.number="row.qty">
+                                        <span class="px-2 py-0.5 text-xs rounded-full"
+                                            :class="row.condition==='rusak_berat' ? 'bg-red-100 text-red-700' : (row.condition==='rusak_ringan' ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700')"
+                                            x-text="row.condition.replace('_',' ')"></span>
                                         <input type="hidden" :name="`items[${idx}][id]`" :value="row.id">
                                         <input type="hidden" :name="`items[${idx}][qty]`" :value="row.qty">
                                     </td>
@@ -124,8 +123,8 @@
     },
     addItem(it){
       const exist = this.items.find(x=>x.id===it.id);
-      if(exist){ exist.qty++; }
-      else { this.items.push({...it, qty: 1}); }
+      if(exist) return;
+      this.items.push({...it, qty: 1});
       this.query=''; this.suggestions=[];
     },
     addByQuery(){
