@@ -29,30 +29,38 @@
     <div class="grid md:grid-cols-2 gap-4">
         <div>
             <label class="block text-sm">Scan Barcode / Cari Nama</label>
-            <div class="relative mt-1">
+
+            <div class="relative mt-1" @click.away="suggestions=[]">
+
                 <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                     <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1016.65 16.65z" />
                     </svg>
                 </span>
-                <input x-model="query" @keydown.enter.prevent="addByQuery()" class="w-full pl-10 pr-10 py-2 border border-slate-300 rounded-full focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500" placeholder="Scan barcode atau ketik nama barang...">
-                <button type="button" @click="addByQuery()" class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-500 hover:text-slate-700">
+                <input x-model.debounce.300ms="query" @keydown.enter.prevent="addByQuery()" class="w-full pl-10 pr-10 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500" placeholder="Scan barcode atau ketik nama barang...">
+                <button type="button" @click="addByQuery()" class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600">
+
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-width="2" d="M2 5h1v14H2m3-14h1v14H5m3-14h2v14H8m5-14h1v14h-1m3-14h2v14h-2m3-14h1v14h-1" />
                     </svg>
                 </button>
-                <div class="absolute left-0 right-0 top-full mt-2 bg-white border border-slate-200 rounded-xl shadow-lg max-h-48 overflow-auto z-10" x-show="suggestions.length">
+
+                <ul class="absolute left-0 right-0 mt-2 bg-white border border-slate-200 rounded-xl shadow-lg max-h-56 overflow-auto z-10" x-show="suggestions.length">
                     <template x-for="s in suggestions" :key="s.id">
-                        <button type="button" @click="addItem(s)" class="w-full text-left px-3 py-2 hover:bg-slate-100 flex justify-between">
-
-                            <span x-text="`${s.code} — ${s.name}`"></span>
-
-                            <span class="text-xs" x-text="`Stok: ${s.stock}`"></span>
-                        </button>
+                        <li>
+                            <button type="button" @click="addItem(s)" class="w-full flex justify-between items-start px-4 py-2 text-left hover:bg-slate-50">
+                                <div>
+                                    <div class="font-medium text-slate-700" x-text="s.name"></div>
+                                    <div class="text-xs text-slate-500" x-text="s.code"></div>
+                                </div>
+                                <span class="text-xs text-slate-400" x-text="`Stok: ${s.stock}`"></span>
+                            </button>
+                        </li>
                     </template>
-                </div>
+                </ul>
+
             </div>
-            <p class="text-xs text-slate-500 mt-1">Tekan Enter untuk menambahkan berdasarkan input.</p>
+            <p class="text-xs text-slate-500 mt-1">Tekan Enter untuk menambahkan pilihan teratas.</p>
         </div>
         <div class="self-end">
             <button type="button" @click="openDamagedInfo()" class="px-3 py-2 rounded bg-amber-100 text-amber-700 border border-amber-300">
@@ -65,7 +73,7 @@
         <table class="w-full text-sm border rounded">
             <thead class="bg-slate-100">
                 <tr>
-                    <th class="p-2 text-left">Barcode</th>
+                    <th class="p-2 text-left">Kode</th>
                     <th class="p-2 text-left">Nama</th>
                     <th class="p-2 text-center">Jumlah</th>
                     <th class="p-2 text-center">Stok Tersisa</th>
@@ -106,9 +114,12 @@
     function loanForm(){
   return {
     query: '', items: [], suggestions: [],
-    async init(){},
+    init(){
+      this.$watch('query', q => this.fetchSuggestions(q));
+    },
     async fetchSuggestions(q){
-      if(!q) { this.suggestions=[]; return; }
+      q = q ? q.trim() : '';
+      if(!q){ this.suggestions = []; return; }
       const res = await fetch(`{{ route('items.search') }}?q=${encodeURIComponent(q)}`);
       this.suggestions = await res.json();
     },
@@ -118,22 +129,21 @@
       else { this.items.push({...it, qty: 1}); }
       this.query=''; this.suggestions=[];
     },
-    async addByQuery(){
-      await this.fetchSuggestions(this.query);
+    addByQuery(){
       if(this.suggestions.length) this.addItem(this.suggestions[0]);
     },
     remove(i){ this.items.splice(i,1); },
     validateQty(i){
       const r=this.items[i];
       if(r.qty<1) r.qty=1;
-      if(r.qty>r.stock){ 
+      if(r.qty>r.stock){
         r.qty=r.stock;
         this.showModal(`Jumlah melebihi stok untuk <b>${r.name}</b>. Otomatis disesuaikan ke stok maksimum (${r.stock}).`);
       }
     },
     openDamagedInfo(){
       this.showModal(`Barang dengan status <b>rusak</b> tetap bisa dipinjam berdasarkan kebijakan gudang.
-      Catat pada kolom catatan transaksi. Pada saat pengembalian, barang berstatus <b>baik</b> yang kembali akan menambah stok; 
+      Catat pada kolom catatan transaksi. Pada saat pengembalian, barang berstatus <b>baik</b> yang kembali akan menambah stok;
       yang <b>rusak</b> tidak menambah stok.`);
     },
     showModal(html){
@@ -142,15 +152,5 @@
     }
   }
 }
-document.addEventListener('alpine:init', () => {
-  Alpine.effect(() => {
-    const el = document.querySelector('input[x-model="query"]');
-    if(!el) return;
-    el.addEventListener('input', e => {
-      const comp = Alpine.closestRoot(el).__x.$data;
-      comp.fetchSuggestions(e.target.value);
-    });
-  });
-});
 </script>
 @endsection
