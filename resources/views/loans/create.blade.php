@@ -30,6 +30,7 @@
         <div>
             <label class="block text-sm">Scan Kode / Serial / Cari Nama</label>
             <div class="relative mt-1" @click.away="suggestions=[]">
+
                 <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                     <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1016.65 16.65z" />
@@ -37,10 +38,12 @@
                 </span>
                 <input x-model.debounce.300ms="query" @keydown.enter.prevent="addByQuery()" class="w-full pl-10 pr-10 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500" placeholder="Scan kode barang / serial number atau ketik nama barang...">
                 <button type="button" @click="addByQuery()" class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600">
+
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-width="2" d="M2 5h1v14H2m3-14h1v14H5m3-14h2v14H8m5-14h1v14h-1m3-14h2v14h-2m3-14h1v14h-1" />
                     </svg>
                 </button>
+
                 <ul class="absolute left-0 right-0 mt-2 bg-white border border-slate-200 rounded-xl shadow-lg max-h-56 overflow-auto z-10" x-show="suggestions.length">
                     <template x-for="s in suggestions" :key="s.id">
                         <li>
@@ -53,12 +56,14 @@
                                             <span x-text="` • SN: ${s.serial_number}`"></span>
                                         </template>
                                     </div>
+
                                 </div>
                                 <span class="text-xs text-slate-400" x-text="`Stok: ${s.stock}`"></span>
                             </button>
                         </li>
                     </template>
                 </ul>
+
             </div>
             <p class="text-xs text-slate-500 mt-1">Tekan Enter untuk menambahkan pilihan teratas.</p>
         </div>
