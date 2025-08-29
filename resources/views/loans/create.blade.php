@@ -29,14 +29,26 @@
     <div class="grid md:grid-cols-2 gap-4">
         <div>
             <label class="block text-sm">Scan Barcode / Cari Nama</label>
-            <input x-model="query" @keydown.enter.prevent="addByQuery()" class="w-full border rounded p-2" placeholder="Scan barcode atau ketik nama barang...">
-            <div class="mt-2 bg-slate-50 border rounded max-h-48 overflow-auto" x-show="suggestions.length">
-                <template x-for="s in suggestions" :key="s.id">
-                    <button type="button" @click="addItem(s)" class="w-full text-left px-3 py-2 hover:bg-white flex justify-between">
-                        <span x-text="`${s.barcode} — ${s.name}`"></span>
-                        <span class="text-xs" x-text="`Stok: ${s.stock}`"></span>
-                    </button>
-                </template>
+            <div class="relative mt-1">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                    <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1016.65 16.65z" />
+                    </svg>
+                </span>
+                <input x-model="query" @keydown.enter.prevent="addByQuery()" class="w-full pl-10 pr-10 py-2 border border-slate-300 rounded-full focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500" placeholder="Scan barcode atau ketik nama barang...">
+                <button type="button" @click="addByQuery()" class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-500 hover:text-slate-700">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-width="2" d="M2 5h1v14H2m3-14h1v14H5m3-14h2v14H8m5-14h1v14h-1m3-14h2v14h-2m3-14h1v14h-1" />
+                    </svg>
+                </button>
+                <div class="absolute left-0 right-0 top-full mt-2 bg-white border border-slate-200 rounded-xl shadow-lg max-h-48 overflow-auto z-10" x-show="suggestions.length">
+                    <template x-for="s in suggestions" :key="s.id">
+                        <button type="button" @click="addItem(s)" class="w-full text-left px-3 py-2 hover:bg-slate-100 flex justify-between">
+                            <span x-text="`${s.barcode} — ${s.name}`"></span>
+                            <span class="text-xs" x-text="`Stok: ${s.stock}`"></span>
+                        </button>
+                    </template>
+                </div>
             </div>
             <p class="text-xs text-slate-500 mt-1">Tekan Enter untuk menambahkan berdasarkan input.</p>
         </div>
