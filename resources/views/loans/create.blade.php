@@ -1,12 +1,17 @@
 <!-- resources/views/loans/create.blade.php -->
-@extends('layouts.app')
-@section('content')
-<h1 class="text-xl font-semibold mb-4">Buat Peminjaman</h1>
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            {{ __('Buat Peminjaman') }}
+        </h2>
+    </x-slot>
 
-<form action="{{ route('loans.store') }}" method="post" x-data="loanForm()" x-init="init()" class="grid gap-4 bg-white p-4 rounded-2xl shadow">
-    @csrf
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <form action="{{ route('loans.store') }}" method="post" x-data="loanForm()" x-init="init()" class="grid gap-4 bg-white p-4 rounded-2xl shadow">
+                @csrf
 
-    <div class="grid md:grid-cols-4 gap-4">
+                <div class="grid md:grid-cols-4 gap-4">
         <div>
             <label class="block text-sm">Nama Peminjam</label>
             <select name="partner_id" class="w-full border rounded p-2" required>
@@ -112,8 +117,10 @@
         <button class="px-4 py-2 rounded bg-slate-800 text-white">Simpan Peminjaman</button>
     </div>
 </form>
+        </div>
+    </div>
 
-<script>
+    <script>
     function loanForm(){
   return {
     query: '', items: [], suggestions: [],
@@ -147,5 +154,5 @@
     }
   }
 }
-</script>
-@endsection
+    </script>
+</x-app-layout>
