@@ -15,24 +15,26 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // buat kategori default
-        $audio = Category::firstOrCreate(['name' => 'Audio']);
-        $video = Category::firstOrCreate(['name' => 'Video']);
+        $audio = Category::firstOrCreate([
+            'name' => 'Audio',
+            'code_category'=>'AUD']);
+        $video = Category::firstOrCreate([
+            'name' => 'Video',
+            'code_category'=>'VID']);
 
         // buat beberapa barang
         Item::firstOrCreate(
-            ['barcode' => 'MIC-0001'],
+            ['code' => 'MIC-0001'],
             [
                 'name'        => 'Mic Shure SM58',
-                'category_id' => $audio->id,
-                'stock'       => 10,
+                'category_id' => $audio->id
             ],
         );
         Item::firstOrCreate(
-            ['barcode' => 'CAM-0101'],
+            ['code' => 'CAM-0101'],
             [
                 'name'        => 'Camera Sony XDCAM',
-                'category_id' => $video->id,
-                'stock'       => 3,
+                'category_id' => $video->id
             ],
         );
 

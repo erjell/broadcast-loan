@@ -17,6 +17,7 @@ class CategoryController extends Controller
     {
         $data = $r->validate([
             'name' => 'required|unique:categories,name',
+            'code_category'=>'required'
         ]);
 
         Category::create($data);

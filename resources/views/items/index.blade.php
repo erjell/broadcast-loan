@@ -19,8 +19,12 @@
     </div>
     <div>
         <label class="block text-sm">Tahun Pengadaan</label>
-        <input type="number" name="procurement_year" class="w-full border rounded p-2">
+        <input type="number" name="procurement_year" class="w-full border rounded p-2" value="{{ now()->year }}" disabled>
     </div>
+    {{-- <div>
+        <label class=" block text-sm">Kode Barang</label>
+        <input type="number" name="" class="w-full border rounded p-2">
+    </div> --}}
     <div>
         <label class="block text-sm">Kondisi</label>
         <select name="condition" class="w-full border rounded p-2" required>
@@ -55,14 +59,14 @@
         </thead>
         <tbody>
             @foreach($items as $it)
-                @foreach($it->assets as $as)
-                <tr class="border-t">
-                    <td class="p-2">{{ $as->code }}</td>
-                    <td class="p-2">{{ $as->serial_number }}</td>
-                    <td class="p-2">{{ $as->procurement_year }}</td>
-                    <td class="p-2">{{ str_replace('_',' ',$as->condition) }}</td>
-                </tr>
-                @endforeach
+            @foreach($it->assets as $as)
+            <tr class="border-t">
+                <td class="p-2">{{ $as->code }}</td>
+                <td class="p-2">{{ $as->serial_number }}</td>
+                <td class="p-2">{{ $as->procurement_year }}</td>
+                <td class="p-2">{{ str_replace('_',' ',$as->condition) }}</td>
+            </tr>
+            @endforeach
             @endforeach
         </tbody>
     </table>
