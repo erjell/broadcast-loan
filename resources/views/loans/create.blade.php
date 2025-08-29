@@ -12,116 +12,105 @@
                 @csrf
 
                 <div class="grid md:grid-cols-4 gap-4">
-        <div>
-            <label class="block text-sm">Nama Peminjam</label>
-            <select name="partner_id" class="w-full border rounded p-2" required>
-                <option value="">-- Pilih --</option>
-                @foreach($partners as $p)
-                <option value="{{ $p->id }}">{{ $p->name }} @if($p->unit) ({{ $p->unit }}) @endif</option>
-                @endforeach
-            </select>
-        </div>
-        <div>
-            <label class="block text-sm">Keperluan</label>
-            <input name="purpose" class="w-full border rounded p-2" placeholder="Liputan, Talkshow, dsb" required>
-        </div>
-        <div>
-            <label class="block text-sm">Tanggal Pinjam</label>
-            <input type="datetime-local" name="loan_date" class="w-full border rounded p-2" value="{{ now()->format('Y-m-d\TH:i') }}" required>
-        </div>
-        <div>
-            <label class="block text-sm">Petugas</label>
-            <input value="{{ auth()->user()->name }}" class="w-full border rounded p-2" disabled>
-        </div>
-    </div>
+                    <div>
+                        <label class="block text-sm">Nama Peminjam</label>
+                        <input name="partner_id" class="w-full border rounded p-2" placeholder="" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm">Keperluan / Lokasi</label>
+                        <input name="purpose" class="w-full border rounded p-2" placeholder="Liputan, Talkshow, dsb" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm">Tanggal Pinjam</label>
+                        <input type="datetime-local" name="loan_date" class="w-full border rounded p-2" value="{{ now()->format('Y-m-d\TH:i') }}" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm">Petugas</label>
+                        <input value="{{ auth()->user()->name }}" class="w-full border rounded p-2" disabled>
+                    </div>
+                </div>
 
-    <div class="grid md:grid-cols-2 gap-4">
-        <div>
-            <label class="block text-sm">Scan Kode / Serial / Cari Nama</label>
-            <div class="relative mt-1" @click.away="suggestions=[]">
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm">Scan Kode / Serial / Cari Nama</label>
+                        <div class="relative mt-1" @click.away="suggestions=[]">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1016.65 16.65z" />
+                                </svg>
+                            </span>
+                            <input x-model.debounce.300ms="query" @keydown.enter.prevent="addByQuery()" class="w-full pl-10 pr-10 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500" placeholder="Scan kode barang / serial number atau ketik nama barang...">
+                            <button type="button" @click="addByQuery()" class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600">
 
-                <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                    <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1016.65 16.65z" />
-                    </svg>
-                </span>
-                <input x-model.debounce.300ms="query" @keydown.enter.prevent="addByQuery()" class="w-full pl-10 pr-10 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500" placeholder="Scan kode barang / serial number atau ketik nama barang...">
-                <button type="button" @click="addByQuery()" class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600">
-
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-width="2" d="M2 5h1v14H2m3-14h1v14H5m3-14h2v14H8m5-14h1v14h-1m3-14h2v14h-2m3-14h1v14h-1" />
-                    </svg>
-                </button>
-                <ul class="absolute left-0 right-0 mt-2 bg-white border border-slate-200 rounded-xl shadow-lg max-h-56 overflow-auto z-10" x-show="suggestions.length">
-                    <template x-for="s in suggestions" :key="s.id">
-                        <li>
-                            <button type="button" @click="addItem(s)" class="w-full px-4 py-2 text-left hover:bg-slate-50">
-                                <div class="font-medium text-slate-700" x-text="s.name"></div>
-                                <div class="text-xs text-slate-500">
-                                    <span x-text="s.code"></span>
-                                    <template x-if="s.serial_number">
-                                        <span x-text="` • SN: ${s.serial_number}`"></span>
-                                    </template>
-                                </div>
-
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-width="2" d="M2 5h1v14H2m3-14h1v14H5m3-14h2v14H8m5-14h1v14h-1m3-14h2v14h-2m3-14h1v14h-1" />
+                                </svg>
                             </button>
-                        </li>
-                    </template>
-                </ul>
+                            <ul class="absolute left-0 right-0 mt-2 bg-white border border-slate-200 rounded-xl shadow-lg max-h-56 overflow-auto z-10" x-show="suggestions.length">
+                                <template x-for="s in suggestions" :key="s.id">
+                                    <li>
+                                        <button type="button" @click="addItem(s)" class="w-full px-4 py-2 text-left hover:bg-slate-50">
+                                            <div class="font-medium text-slate-700" x-text="s.name"></div>
+                                            <div class="text-xs text-slate-500">
+                                                <span x-text="s.code"></span>
+                                                <template x-if="s.serial_number">
+                                                    <span x-text="` • SN: ${s.serial_number}`"></span>
+                                                </template>
+                                            </div>
 
-            </div>
-            <p class="text-xs text-slate-500 mt-1">Tekan Enter untuk menambahkan pilihan teratas.</p>
-        </div>
-        <div class="self-end">
-            <button type="button" @click="openDamagedInfo()" class="px-3 py-2 rounded bg-amber-100 text-amber-700 border border-amber-300">
-                Info: Penanganan barang rusak
-            </button>
-        </div>
-    </div>
+                                        </button>
+                                    </li>
+                                </template>
+                            </ul>
 
-    <div class="overflow-auto">
-        <table class="w-full text-sm border rounded">
-            <thead class="bg-slate-100">
-                <tr>
-                    <th class="p-2 text-left">Kode</th>
-                    <th class="p-2 text-left">Nama</th>
-                    <th class="p-2 text-center">Jumlah</th>
-                    <th class="p-2"></th>
-                </tr>
-            </thead>
-            <tbody>
-                <template x-for="(row,idx) in items" :key="row.id">
-                    <tr class="border-t">
-                        <td class="p-2" x-text="row.code"></td>
-                        <td class="p-2">
-                            <span x-text="row.name"></span>
-                            <template x-if="row.condition !== 'baik'">
-                                <span class="ml-2 px-2 py-0.5 text-xs rounded-full" :class="row.condition==='rusak_berat' ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700' " x-text="row.condition.replace('_',' ')"></span>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-1">Tekan Enter untuk menambahkan pilihan teratas.</p>
+                    </div>
+                </div>
+
+                <div class="overflow-auto">
+                    <table class="w-full text-sm border rounded">
+                        <thead class="bg-slate-100">
+                            <tr>
+                                <th class="p-2 text-left">Kode</th>
+                                <th class="p-2 text-left">Nama</th>
+                                <th class="p-2 text-center">Jumlah</th>
+                                <th class="p-2"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template x-for="(row,idx) in items" :key="row.id">
+                                <tr class="border-t">
+                                    <td class="p-2" x-text="row.code"></td>
+                                    <td class="p-2">
+                                        <span x-text="row.name"></span>
+                                        <template x-if="row.condition !== 'baik'">
+                                            <span class="ml-2 px-2 py-0.5 text-xs rounded-full" :class="row.condition==='rusak_berat' ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700' " x-text="row.condition.replace('_',' ')"></span>
+                                        </template>
+                                    </td>
+                                    <td class="p-2 text-center">
+                                        <input type="number" min="1" class="w-20 border rounded p-1 text-center" x-model.number="row.qty">
+                                        <input type="hidden" :name="`items[${idx}][id]`" :value="row.id">
+                                        <input type="hidden" :name="`items[${idx}][qty]`" :value="row.qty">
+                                    </td>
+                                    <td class="p-2 text-center">
+                                        <button type="button" class="px-2 py-1 rounded bg-rose-100 text-rose-700" @click="remove(idx)">Hapus</button>
+                                    </td>
+                                </tr>
                             </template>
-                        </td>
-                        <td class="p-2 text-center">
-                            <input type="number" min="1" class="w-20 border rounded p-1 text-center" x-model.number="row.qty">
-                            <input type="hidden" :name="`items[${idx}][id]`" :value="row.id">
-                            <input type="hidden" :name="`items[${idx}][qty]`" :value="row.qty">
-                        </td>
-                        <td class="p-2 text-center">
-                            <button type="button" class="px-2 py-1 rounded bg-rose-100 text-rose-700" @click="remove(idx)">Hapus</button>
-                        </td>
-                    </tr>
-                </template>
-            </tbody>
-        </table>
-    </div>
+                        </tbody>
+                    </table>
+                </div>
 
-    <div class="text-right">
-        <button class="px-4 py-2 rounded bg-slate-800 text-white">Simpan Peminjaman</button>
-    </div>
-</form>
+                <div class="text-right">
+                    <button class="px-4 py-2 rounded bg-slate-800 text-white">Simpan Peminjaman</button>
+                </div>
+            </form>
         </div>
     </div>
 
     <script>
-    function loanForm(){
+        function loanForm(){
   return {
     query: '', items: [], suggestions: [],
     init(){
