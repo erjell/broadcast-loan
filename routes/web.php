@@ -10,6 +10,7 @@ Route::get('/', fn() => redirect()->route('loans.index'));
     Route::get('/items', [ItemController::class,'index'])->name('items.index');
     Route::post('/items', [ItemController::class,'store'])->name('items.store');
     Route::get('/items/search', [ItemController::class,'search'])->name('items.search'); // JSON
+    Route::get('/items/code', [ItemController::class,'code'])->name('items.code'); // JSON
 
     Route::get('/categories', [CategoryController::class,'index'])->name('categories.index');
     Route::post('/categories', [CategoryController::class,'store'])->name('categories.store');

@@ -9,7 +9,7 @@ class ItemController extends Controller
 {
     public function index()
     {
-        $items = Item::latest()->paginate(10);
+        $items = Item::with('category')->latest()->paginate(10);
         $categories = Category::all();
         return view('items.index', compact('items', 'categories'));
     }
@@ -40,5 +40,19 @@ class ItemController extends Controller
             ->limit(10)
             ->get(['id', 'code', 'name']);
         return response()->json($items);
+    }
+
+    public function code(Request $r)
+    {
+        $data = $r->validate([
+            'category_id' => 'required|exists:categories,id',
+        ]);
+
+        $category = Category::find($data['category_id']);
+        $prefix = strtoupper($category->code_category);
+        $count = Item::where('category_id', $category->id)->count() + 1;
+        $code = $prefix . str_pad($count, 3, '0', STR_PAD_LEFT);
+
+        return response()->json(['code' => $code]);
     }
 }

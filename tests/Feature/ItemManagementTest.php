@@ -44,7 +44,7 @@ class ItemManagementTest extends TestCase
         $response->assertRedirect('/items');
         $this->assertDatabaseHas('items', [
             'name' => 'Kamera',
-            'code' => 'ELE001',
+            'code' => 'ELK001',
             'serial_number' => 'SN123',
         ]);
     }
