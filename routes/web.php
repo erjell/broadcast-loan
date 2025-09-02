@@ -21,6 +21,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/items/{item}', [ItemController::class, 'destroy'])->name('items.destroy');
     Route::get('/items/search', [ItemController::class, 'search'])->name('items.search'); // JSON
     Route::get('/items/code', [ItemController::class, 'code'])->name('items.code'); // JSON
+    Route::get('/items/print', [ItemController::class, 'print'])->name('items.print');
 
     // Categories
     Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');

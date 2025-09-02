@@ -100,4 +100,20 @@ class ItemController extends Controller
 
         return response()->json(['code' => $code]);
     }
+    public function print(Request $request)
+    {
+        $id = $request->query('id');
+        $type = $request->query('type', 'code'); // 'code' or 'serial'
+
+        if (!$id) {
+            abort(404);
+        }
+
+        $item = Item::findOrFail($id);
+
+        return view('items.printBarcode', [
+            'item' => $item,
+            'type' => in_array($type, ['code', 'serial']) ? $type : 'code',
+        ]);
+    }
 }

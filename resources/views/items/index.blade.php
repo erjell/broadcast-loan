@@ -147,15 +147,43 @@
                             </td>
                             <td>
                                 <div class="flex items-center gap-2">
-                                    <button type="button" @click="$dispatch('open-modal', 'edit-item-{{ $it->id }}')" class="inline-flex items-center px-3 py-1.5 text-xs rounded-md border border-slate-300 text-slate-700 hover:bg-slate-50">Edit</button>
-                                    <form action="{{ route('items.destroy', $it) }}" method="post" onsubmit="return confirm('Yakin hapus barang ini?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button class="inline-flex items-center px-3 py-1.5 text-xs rounded-md border border-red-300 text-red-600 hover:bg-red-50">Hapus</button>
-                                    </form>
+                                    <button type="button" @click="$dispatch('open-modal', 'cetak-{{ $it->id }}')" class="inline-flex items-center px-3 py-1.5 text-xs rounded-md border border-slate-300 text-slate-700 hover:bg-slate-50">Cetak</button>
+                                    <button type="button" @click="$dispatch('open-modal', 'edit-item-{{ $it->id }}')" class="inline-flex items-center px-3 py-1.5 text-xs rounded-md border border-blue-300 text-blue-700 hover:bg-blue-50">Edit</button>
+                                    <button type="button" @click="$dispatch('open-modal', 'delete-item-{{ $it->id }}')" class="inline-flex items-center px-3 py-1.5 text-xs rounded-md border border-red-300 text-red-600 hover:bg-red-50">Hapus</button>
                                 </div>
                             </td>
                         </tr>
+                        {{-- Modal Cetak Barcode --}}
+                        <x-modal name="cetak-{{ $it->id }}" :show="false" maxWidth="md">
+                            <div class="p-6">
+                                <h3 class="text-lg font-semibold mb-2">Cetak Barcode: <span class="text-lg font-normal">{{ $it->name }}</span></h3>
+                                <div class="flex justify-end gap-2 mt-6">
+                                    <button type="button" class="px-3 py-2 rounded border" onclick="window.open('{{ route('items.print', ['id' => $it->id, 'type' => 'code']) }}', '_blank')">Kode</button>
+                                    <button type="button" class="px-3 py-2 rounded border" onclick="window.open('{{ route('items.print', ['id' => $it->id, 'type' => 'serial']) }}', '_blank')">Serial Number</button>
+                                </div>
+                            </div>
+                        </x-modal>
+
+                        <!-- Modal: Konfirmasi Hapus Barang -->
+                        <x-modal name="delete-item-{{ $it->id }}" :show="false" maxWidth="md">
+                            <div class="p-6">
+                                <h3 class="text-lg font-semibold mb-2">Konfirmasi Hapus</h3>
+                                <p class="text-sm text-slate-600">Yakin ingin menghapus barang
+                                    <span class="font-semibold">"{{ $it->name }}"</span> dengan kode <span class="font-mono">{{ $it->code }}</span>?
+                                    Tindakan ini tidak dapat dibatalkan.
+                                </p>
+                                <div class="flex justify-end gap-2 mt-6">
+                                    <button type="button" @click="$dispatch('close-modal', 'delete-item-{{ $it->id }}')" class="px-4 py-2 rounded border">Batal</button>
+                                    <form action="{{ route('items.destroy', $it) }}" method="post">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button class="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700">Hapus</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </x-modal>
+
+                        {{-- Modal Edit Barang --}}
                         <x-modal name="edit-item-{{ $it->id }}" :show="false" maxWidth="2xl">
                             <div id="edit-item-modal-{{ $it->id }}">
                                 <div class="px-6 pt-6 pb-2 border-b">
@@ -233,117 +261,6 @@
                 </table>
             </div>
 
-            {{-- <div class="">
-                <table id="tabelBarang">
-                    <thead>
-                        <tr>
-                            <th class="">Kode</th>
-                            <th class="">Nama</th>
-                            <th class="">Kategori</th>
-                            <th class="">Serial</th>
-                            <th class="">Tahun</th>
-                            <th class="">Kondisi</th>
-                            <th class="">Detail</th>
-                            <th class="">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($items as $it)
-                        <tr class="">
-                            <td>{{ $it->code }}</td>
-                            <td>{{ $it->name }}</td>
-                            <td>{{ $it->category->name }}</td>
-                            <td>{{ $it->serial_number }}</td>
-                            <td>{{ $it->procurement_year }}</td>
-                            <td>{{ str_replace('_',' ',$it->condition) }}</td>
-                            <td>{{ $it->details }}</td>
-                            <td>
-                                <div class="flex items-center gap-2">
-                                    <button type="button" @click="$dispatch('open-modal', 'edit-item-{{ $it->id }}')" class="inline-flex items-center px-3 py-1.5 text-xs rounded-md border border-slate-300 text-slate-700 hover:bg-slate-50">Edit</button>
-                                    <form action="{{ route('items.destroy', $it) }}" method="post" onsubmit="return confirm('Yakin hapus barang ini?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button class="inline-flex items-center px-3 py-1.5 text-xs rounded-md border border-red-300 text-red-600 hover:bg-red-50">Hapus</button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                        <x-modal name="edit-item-{{ $it->id }}" :show="false" maxWidth="2xl">
-                            <div id="edit-item-modal-{{ $it->id }}">
-                                <div class="px-6 pt-6 pb-2 border-b">
-                                    <h3 class="text-lg font-semibold">Edit Barang</h3>
-                                </div>
-                                <form action="{{ route('items.update', $it) }}" method="post" class="grid md:grid-cols-2 gap-4 p-6">
-                                    @csrf
-                                    @method('PUT')
-                                    <div class="md:col-span-2">
-                                        <label class="block text-sm">Nama Barang</label>
-                                        <input name="name" class="w-full border rounded p-2" value="{{ $it->name }}" required>
-                                    </div>
-                                    <div class="md:col-span-2">
-                                        <label class="block text-sm">Detail Barang</label>
-                                        <textarea name="details" class="w-full border rounded p-2">{{ $it->details }}</textarea>
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm">Serial Number</label>
-                                        <input name="serial_number" class="w-full border rounded p-2" value="{{ $it->serial_number }}">
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm">Tahun Pengadaan</label>
-                                        <input type="number" name="procurement_year" class="w-full border rounded p-2" value="{{ $it->procurement_year }}">
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm">Kondisi</label>
-                                        <select name="condition" class="w-full border rounded p-2" required>
-                                            <option value="baik" @selected($it->condition==='baik')>baik</option>
-                                            <option value="rusak_ringan" @selected($it->condition==='rusak_ringan')>rusak ringan</option>
-                                            <option value="rusak_berat" @selected($it->condition==='rusak_berat')>rusak berat</option>
-                                        </select>
-                                    </div>
-                                    <div class="md:col-span-2">
-                                        <div class="flex items-end gap-2">
-                                            <div class="flex-1">
-                                                <label class="block text-sm">Kategori</label>
-                                                <select name="category_id" class="w-full border rounded p-2" required>
-                                                    <option value="">-- Pilih --</option>
-                                                    @foreach($categories as $c)
-                                                    <option value="{{ $c->id }}" @selected($it->category_id==$c->id)>{{ $c->name }}</option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="md:col-span-2">
-                                        <label class="block text-sm">Kode Barang</label>
-                                        <input name="code" class="w-full border rounded p-2 bg-slate-100" value="{{ $it->code }}" readonly>
-                                    </div>
-                                    <div class="md:col-span-2 flex justify-end gap-2 pt-2">
-                                        <button type="button" @click="$dispatch('close-modal', 'edit-item-{{ $it->id }}')" class="px-4 py-2 rounded border">Batal</button>
-                                        <button class="px-4 py-2 rounded bg-slate-800 text-white">Simpan</button>
-                                    </div>
-                                </form>
-                            </div>
-                            <script>
-                                (function(){
-                                                        const root = document.getElementById('edit-item-modal-{{ $it->id }}');
-                                                        if (!root) return;
-                                                        root.addEventListener('change', async function(e){
-                                                            const sel = e.target.closest('select[name="category_id"]');
-                                                            if (!sel) return;
-                                                            const codeInput = root.querySelector('input[name="code"]');
-                                                            const catId = sel.value;
-                                                            if (!catId) { codeInput.value = ''; return; }
-                                                            const res = await fetch(`{{ route('items.code') }}?category_id=${catId}`);
-                                                            const data = await res.json();
-                                                            codeInput.value = data.code;
-                                                        });
-                                                    })();
-                            </script>
-                        </x-modal>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div> --}}
 
             {{-- <div class="mt-3">{{ $items->links() }}</div> --}}
         </div>

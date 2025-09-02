@@ -1,7 +1,7 @@
 import "./bootstrap";
 
 import Alpine from "alpinejs";
-
+import JsBarcode from "jsbarcode";
 import jszip from "jszip";
 import pdfmake from "pdfmake";
 
@@ -46,6 +46,7 @@ import pdfmake from "pdfmake";
 window.Alpine = Alpine;
 Alpine.start();
 
+window.JsBarcode = JsBarcode;
 // import * as bootstrap from "bootstrap";
 // import jQuery from "jquery";
 // import jszip from "jszip";
