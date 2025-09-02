@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('loan_id')->constrained()->cascadeOnDelete();
             $table->foreignId('item_id')->constrained()->cascadeOnDelete();
-            $table->unsignedInteger('qty');
-            $table->unsignedInteger('returned_qty')->default(0);
+            // $table->unsignedInteger('qty');
+            // $table->unsignedInteger('returned_qty')->default(0);
             $table->enum('return_condition', ['baik','rusak_ringan','rusak_berat'])->nullable();
             $table->text('return_notes')->nullable();
             $table->timestamps();

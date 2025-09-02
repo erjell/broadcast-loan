@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 use App\Http\Controllers\{ItemController, LoanController, CategoryController, ProfileController};
 use Illuminate\Support\Facades\Route;
@@ -17,12 +17,16 @@ Route::middleware('auth')->group(function () {
     // Items
     Route::get('/items', [ItemController::class, 'index'])->name('items.index');
     Route::post('/items', [ItemController::class, 'store'])->name('items.store');
+    Route::put('/items/{item}', [ItemController::class, 'update'])->name('items.update');
+    Route::delete('/items/{item}', [ItemController::class, 'destroy'])->name('items.destroy');
     Route::get('/items/search', [ItemController::class, 'search'])->name('items.search'); // JSON
     Route::get('/items/code', [ItemController::class, 'code'])->name('items.code'); // JSON
 
     // Categories
     Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
     Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
+    Route::put('/categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
+    Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
 
     // Loans
     Route::get('/loans', [LoanController::class, 'index'])->name('loans.index');

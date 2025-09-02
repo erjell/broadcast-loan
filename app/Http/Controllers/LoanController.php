@@ -64,12 +64,20 @@ class LoanController extends Controller {
     }
 
     public function processReturn(Request $r, Loan $loan){
+        // Ambil hanya baris yang dicentang (selected)
+        $filtered = collect($r->input('returns', []))
+            ->filter(fn($row) => !empty($row['selected']))
+            ->values()
+            ->all();
+
+        // Gantikan input 'returns' dengan yang sudah difilter
+        $r->merge(['returns' => $filtered]);
+
         $data = $r->validate([
-            'returns'=>'required|array|min:1',
-            'returns.*.loan_item_id'=>['required', Rule::exists('loan_items','id')->where('loan_id',$loan->id)],
-            'returns.*.qty'=>['required','integer','min:1'],
-            'returns.*.condition'=>['required','in:baik,rusak_ringan,rusak_berat'],
-            'returns.*.notes'=>['nullable','string']
+            'returns' => 'required|array|min:1',
+            'returns.*.loan_item_id' => ['required', Rule::exists('loan_items','id')->where('loan_id',$loan->id)],
+            'returns.*.condition' => ['required','in:baik,rusak_ringan,rusak_berat'],
+            'returns.*.notes' => ['nullable','string']
         ]);
 
         try {
@@ -77,28 +85,25 @@ class LoanController extends Controller {
                 foreach ($data['returns'] as $row){
                     /** @var \App\Models\LoanItem $li */
                     $li = LoanItem::lockForUpdate()->find($row['loan_item_id']);
-                    $returnQty = min($row['qty'], $li->qty - $li->returned_qty);
-                    if ($returnQty <= 0) continue;
 
-                    $li->returned_qty += $returnQty;
-                    $li->return_condition = $row['condition']; // terakhir dipakai
+                    // Tandai item sebagai sudah kembali dengan menyimpan kondisi & catatan
+                    $li->return_condition = $row['condition'];
                     $li->return_notes = $row['notes'] ?? null;
                     $li->save();
-
-                    // stok tidak lagi diperbarui karena tidak tersedia di basis data
                 }
 
-                // update status pinjaman
-                $total = $loan->items()->sum('qty');
-                $returned = $loan->items()->sum('returned_qty');
-                $loan->status = $returned === 0 ? 'dipinjam' : ($returned < $total ? 'sebagian_kembali' : 'selesai');
+                // Perbarui status pinjaman berdasarkan jumlah item yang sudah kembali
+                $total = $loan->items()->count();
+                $returned = $loan->items()->whereNotNull('return_condition')->count();
+                $loan->status = $returned === 0
+                    ? 'dipinjam'
+                    : ($returned < $total ? 'sebagian_kembali' : 'selesai');
                 $loan->save();
             });
 
-            return redirect()->route('loans.show',$loan)->with('ok','Pengembalian diproses.');
+            return redirect()->route('loans.show', $loan)->with('ok','Pengembalian diproses.');
         } catch (\Throwable $e) {
             return back()->with('error','Pengembalian gagal diproses.');
         }
     }
 }
-

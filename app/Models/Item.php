@@ -3,8 +3,11 @@
 namespace App\Models;
 
 use App\Models\Category;
+use App\Models\LoanItem;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Item extends Model
 {
@@ -20,6 +23,20 @@ class Item extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function loanItems(): HasMany
+    {
+        return $this->hasMany(LoanItem::class);
+    }
+
+    public function activeLoanItem(): HasOne
+    {
+        return $this->hasOne(LoanItem::class)
+            ->whereNull('return_condition')
+            ->whereHas('loan', function($q){
+                $q->whereIn('status', ['dipinjam','sebagian_kembali']);
+            });
     }
 
     protected static function booted(): void

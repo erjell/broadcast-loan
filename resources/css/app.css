@@ -1,3 +1,56 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@import "tailwindcss";
+/* @import "datatables.net-dt";
+@import "datatables.net-buttons-dt";
+@import "datatables.net-colreorder-dt";
+@import "datatables.net-columncontrol-dt";
+@import "datatables.net-fixedcolumns-dt";
+@import "datatables.net-fixedheader-dt";
+@import "datatables.net-keytable-dt";
+@import "datatables.net-responsive-dt";
+@import "datatables.net-rowgroup-dt";
+@import "datatables.net-rowreorder-dt";
+@import "datatables.net-scroller-dt";
+@import "datatables.net-searchbuilder-dt";
+@import "datatables.net-searchpanes-dt";
+@import "datatables.net-select-dt"; */
+
+/* Navigation: normalize size and active effect */
+.nav-link {
+    @apply relative inline-flex items-center h-16 px-4 text-base font-medium leading-5 text-gray-500 border-b-2 border-transparent transition-colors duration-150 ease-in-out;
+}
+.nav-link:hover {
+    @apply text-gray-700 border-gray-300;
+}
+.nav-link.active {
+    @apply text-indigo-600 border-indigo-500;
+}
+/* Optional subtle gradient underline for active */
+.nav-link.active::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 2px;
+    background-image: linear-gradient(to right, #6366f1, #22d3ee);
+}
+
+/* @import url("bootstrap");
+@import url("datatables.net-bs5");
+@import url("datatables.net-buttons-bs5");
+@import url("datatables.net-colreorder-bs5");
+@import url("datatables.net-columncontrol-bs5");
+@import url("datatables.net-fixedcolumns-bs5");
+@import url("datatables.net-fixedheader-bs5");
+@import url("datatables.net-keytable-bs5");
+@import url("datatables.net-responsive-bs5");
+@import url("datatables.net-rowgroup-bs5");
+@import url("datatables.net-rowreorder-bs5");
+@import url("datatables.net-scroller-bs5");
+@import url("datatables.net-searchbuilder-bs5");
+@import url("datatables.net-searchpanes-bs5");
+@import url("datatables.net-select-bs5"); */

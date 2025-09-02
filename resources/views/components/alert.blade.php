@@ -1,5 +1,7 @@
 @props(['type' => 'success', 'message'])
 
+@props(['type' => 'success', 'message'])
+
 @php
     $styles = [
         'success' => 'bg-green-50 border-green-400 text-green-800',
