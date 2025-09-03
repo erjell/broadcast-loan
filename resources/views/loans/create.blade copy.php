@@ -46,26 +46,35 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h2m14 0h2M5 7v10m14-10v10M8 7h8m-8 10h8" />
                                 </svg>
                             </span>
-                            <input x-ref="scan" x-model="scan" @keydown.enter.prevent="addByScan()" @keydown.tab.prevent="addByScan()" autocomplete="off" class="w-full pl-10 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500" placeholder="Arahkan scanner ke sini dan scan barcode">
-                            <span class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-width="2" d="M2 5h1v14H2m3-14h1v14H5m3-14h2v14H8m5-14h1v14h-1m3-14h2v14h-2m3-14h1v14h-1" />
-                                </svg>
-                            </span>
+                            <input x-ref="scan"
+                                   x-model="scan"
+                                   @keydown.enter.prevent="addByScan()"
+                                   @keydown.tab.prevent="addByScan()"
+                                   autocomplete="off"
+                                   class="w-full pl-10 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
+                                   placeholder="Arahkan scanner ke sini dan scan barcode">
                         </div>
                         <p class="text-xs text-slate-500 mt-1">Scanner biasanya mengirim Enter/Tab otomatis setelah scan.</p>
                     </div>
                     <div>
-                        <label class="block text-sm">Cari Nama / Kode / Serial</label>
+                        <label class="block text-sm">Scan Kode / Serial / Cari Nama</label>
                         <div class="relative mt-1" @click.away="suggestions=[]">
                             <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                                 <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1016.65 16.65z" />
                                 </svg>
                             </span>
-                            <input x-ref="search" x-model="query" @keydown.enter.prevent="addByQuery()" @keydown.tab.prevent="addByQuery()" class="w-full pl-10 pr-10 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500" placeholder="Ketik untuk mencari nama / kode / serial...">
+                            <input x-ref="search"
+                                   x-model.debounce.300ms="query"
+                                   @keydown.enter.prevent="addByQuery()"
+                                   @keydown.tab.prevent="addByQuery()"
+                                   class="w-full pl-10 pr-10 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
+                                   placeholder="Scan kode barang / serial number atau ketik nama barang...">
                             <button type="button" @click="addByQuery()" class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600">
 
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-width="2" d="M2 5h1v14H2m3-14h1v14H5m3-14h2v14H8m5-14h1v14h-1m3-14h2v14h-2m3-14h1v14h-1" />
+                                </svg>
                             </button>
                             <ul class="absolute left-0 right-0 mt-2 bg-white border border-slate-200 rounded-xl shadow-lg max-h-56 overflow-auto z-10" x-show="suggestions.length">
                                 <template x-for="s in suggestions" :key="s.id">
@@ -105,9 +114,11 @@
                                 <tr class="border-t">
                                     <td class="p-2" x-text="row.code"></td>
                                     <td class="p-2" x-text="row.name"></td>
-                                    <td class="p-2" x-text="row.serial_number ?? '-'"></td>
+                                    <td class="p-2" x-text="row.serial_number ?? '-'" ></td>
                                     <td class="p-2 text-center">
-                                        <span class="px-2 py-0.5 text-xs rounded-full" :class="row.condition==='rusak_berat' ? 'bg-red-100 text-red-700' : (row.condition==='rusak_ringan' ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700')" x-text="row.condition.replace('_',' ')"></span>
+                                        <span class="px-2 py-0.5 text-xs rounded-full"
+                                            :class="row.condition==='rusak_berat' ? 'bg-red-100 text-red-700' : (row.condition==='rusak_ringan' ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700')"
+                                            x-text="row.condition.replace('_',' ')"></span>
                                         <input type="hidden" :name="`items[${idx}][id]`" :value="row.id">
                                         <input type="hidden" :name="`items[${idx}][qty]`" :value="row.qty">
                                     </td>
@@ -124,30 +135,6 @@
                     <button class="px-4 py-2 rounded bg-slate-800 text-white">Simpan Peminjaman</button>
                 </div>
             </form>
-            <!-- Toast Alert -->
-            <div aria-live="assertive" class="fixed inset-0 flex items-start justify-end px-4 py-6 pointer-events-none sm:p-6 z-50">
-                <div class="w-full flex flex-col items-end space-y-2">
-                    <div x-show="toast.show"
-                         x-transition:enter="transform ease-out duration-300 transition"
-                         x-transition:enter-start="translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2"
-                         x-transition:enter-end="translate-y-0 opacity-100 sm:translate-x-0"
-                         x-transition:leave="transition ease-in duration-100"
-                         x-transition:leave-start="opacity-100"
-                         x-transition:leave-end="opacity-0"
-                         class="pointer-events-auto max-w-sm w-full overflow-hidden rounded-lg shadow-lg border"
-                         :class="toast.type==='error' ? 'bg-red-50 border-red-200' : (toast.type==='warning' ? 'bg-amber-50 border-amber-200' : 'bg-emerald-50 border-emerald-200')">
-                        <div class="p-4 flex items-start gap-3">
-                            <div class="shrink-0">
-                                <svg x-show="toast.type==='error'" class="h-5 w-5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10 3l9 16H1L10 3z"/></svg>
-                                <svg x-show="toast.type==='warning'" class="h-5 w-5 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10 3l9 16H1L10 3z"/></svg>
-                                <svg x-show="toast.type==='success'" class="h-5 w-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                            </div>
-                            <div class="flex-1 text-sm text-slate-800" x-text="toast.message"></div>
-                            <button type="button" class="text-slate-500 hover:text-slate-700" @click="toast.show=false">&times;</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -155,7 +142,6 @@
         function loanForm(){
   return {
     query: '', scan: '', items: [], suggestions: [],
-    toast: { show: false, message: '', type: 'success', timer: null },
     init(){
       this.$watch('query', q => this.fetchSuggestions(q));
       // Autofocus to scanner input for quick scanning
@@ -169,19 +155,9 @@
     },
     addItem(it){
       const exist = this.items.find(x=>x.id===it.id);
-      if(exist){
-        this.showToast('Barang sudah ada di daftar', 'warning');
-        return;
-      }
+      if(exist) return;
       this.items.push({...it, qty: 1});
       this.query=''; this.suggestions=[];
-    },
-    showToast(message, type='success', duration=2000){
-      this.toast.message = message;
-      this.toast.type = type;
-      this.toast.show = true;
-      if(this.toast.timer) clearTimeout(this.toast.timer);
-      this.toast.timer = setTimeout(() => { this.toast.show = false; }, duration);
     },
     async addByScan(){
       const code = (this.scan || '').trim();
