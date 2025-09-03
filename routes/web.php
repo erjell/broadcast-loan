@@ -20,6 +20,7 @@ Route::middleware('auth')->group(function () {
     Route::put('/items/{item}', [ItemController::class, 'update'])->name('items.update');
     Route::delete('/items/{item}', [ItemController::class, 'destroy'])->name('items.destroy');
     Route::get('/items/search', [ItemController::class, 'search'])->name('items.search'); // JSON
+    Route::get('/items/lookup', [ItemController::class, 'lookup'])->name('items.lookup'); // JSON exact by code/serial
     Route::get('/items/code', [ItemController::class, 'code'])->name('items.code'); // JSON
     Route::get('/items/print', [ItemController::class, 'print'])->name('items.print');
 

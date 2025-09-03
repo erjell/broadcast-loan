@@ -133,7 +133,15 @@
                             <td>{{ $it->category->name }}</td>
                             <td>{{ $it->serial_number }}</td>
                             <td>{{ $it->procurement_year }}</td>
-                            <td>{{ str_replace('_',' ',$it->condition) }}</td>
+                            <td>
+                                @if(str_replace('_',' ',$it->condition == "baik"))
+                                <span class="inline-flex items-center px-2 py-1 text-xs rounded bg-emerald-100 text-emerald-800">Baik</span>
+                                @elseif(str_replace('_',' ',$it->condition == "rusak_ringan"))
+                                <span class="inline-flex items-center px-2 py-1 text-xs rounded bg-amber-100 text-amber-800 hover:bg-amber-200">Rusak Ringan</span>
+                                @else
+                                <span class="inline-flex items-center px-2 py-1 text-xs rounded bg-red-100 text-red-800 hover:bg-red-200">Rusak</span>
+                                @endif
+                            </td>
 
                             <td>{{ $it->details }}</td>
                             <td>
@@ -156,10 +164,21 @@
                         {{-- Modal Cetak Barcode --}}
                         <x-modal name="cetak-{{ $it->id }}" :show="false" maxWidth="md">
                             <div class="p-6">
-                                <h3 class="text-lg font-semibold mb-2">Cetak Barcode: <span class="text-lg font-normal">{{ $it->name }}</span></h3>
+                                <h3 class="text-lg font-semibold">Cetak Barcode</h3>
+                                <p class="text-sm text-slate-600 mt-1">{{ $it->name }}</p>
                                 <div class="flex justify-end gap-2 mt-6">
-                                    <button type="button" class="px-3 py-2 rounded border" onclick="window.open('{{ route('items.print', ['id' => $it->id, 'type' => 'code']) }}', '_blank')">Kode</button>
-                                    <button type="button" class="px-3 py-2 rounded border" onclick="window.open('{{ route('items.print', ['id' => $it->id, 'type' => 'serial']) }}', '_blank')">Serial Number</button>
+                                    <button type="button"
+                                        class="inline-flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium bg-slate-800 text-white hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-500"
+                                        onclick="window.open('{{ route('items.print',['id' => $it->code, 'type' => 'code']) }}', '_blank')">
+                                        Kode
+                                    </button>
+                                    @php $hasSerial = !empty($it->serial_number); @endphp
+                                    <button type="button"
+                                        class="inline-flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium border border-slate-300 text-slate-700 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-400 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        @disabled(!$hasSerial)
+                                        onclick="if(!this.disabled){ window.open('{{ route('items.print',['id' => $it->serial_number, 'type' => 'serial_number']) }}', '_blank'); }">
+                                        Serial Number
+                                    </button>
                                 </div>
                             </div>
                         </x-modal>

@@ -37,11 +37,19 @@
                             <td class="p-2">{{ $l->purpose }}</td>
                             <td class="p-2">{{ $l->loan_date }}</td>
                             <td class="p-2">{{ optional($l->user)->name }}</td>
-                            <td class="p-2">
-                                <span class="px-2 py-0.5 rounded-full text-xs" @class([ 'bg-amber-100 text-amber-700'=> $l->status==='dipinjam',
+                            <td class="p-2 text-center">
+                                @if ($l->status==='dipinjam')
+                                <span class="inline-flex items-center px-2 py-1 text-xs rounded bg-red-100 text-red-800">Dipinjam</span>
+                                @elseif($l->status==='sebagian_kembali')
+                                <span class="inline-flex items-center px-2 py-1 text-xs rounded bg-amber-100 text-amber-800">Kembali Sebagian</span>
+                                @else
+                                <span class="inline-flex items-center px-2 py-1 text-xs rounded bg-emerald-100 text-emerald-800">Selesai</span>
+                                @endif
+                                {{-- <span class="px-2 py-0.5 rounded-full text-xs" @class([ 'bg-amber-100 text-amber-700'=> $l->status==='dipinjam',
                                     'bg-sky-100 text-sky-700' => $l->status==='sebagian_kembali',
-                                    'bg-emerald-100 text-emerald-700' => $l->status==='selesai',
-                                    ])>{{ str_replace('_',' ',$l->status) }}</span>
+                                    'inline-flex items-center px-2 py-1 text-xs rounded bg-emerald-100 text-emerald-800' => $l->status==='selesai',
+                                    ])>{{ str_replace('_',' ',$l->status) }}
+                                </span> --}}
                             </td>
                             <td class="p-2 text-right">
                                 <a href="{{ route('loans.show',$l) }}" class="px-2 py-1 rounded bg-slate-800 text-white">Detail</a>

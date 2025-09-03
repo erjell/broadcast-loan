@@ -99,21 +99,21 @@
 <body>
 
     @php
-    $label = $type === 'serial' ? ($item->serial_number ?: '-') : $item->code;
-    $caption = $type === 'serial' ? 'Serial' : 'Kode';
+        $label = ($type ?? 'code') === 'serial_number' ? ($item->serial_number ?: '-') : $item->code;
+        $caption = ($type ?? 'code') === 'serial_number' ? 'Serial Number' : 'Kode';
     @endphp
     <div class="wrap">
         <div class="card">
-            <div class="title">{{ $item->name }}</div>
+            <div class="title">{{ $item->name }} • {{ $caption }}</div>
             <div class="barcode-wrap">
-                @if($type === 'serial')
-                @if(!empty($item->serial_number))
-                {!! $dns->getBarcodeSVG($item->serial_number, 'C128', 2, 60, 'black', true) !!}
+                @if(($type ?? 'code') === 'serial_number')
+                    @if(!empty($item->serial_number))
+                        {!! $dns->getBarcodeSVG($item->serial_number, 'C128', 2, 60, 'black', true) !!}
+                    @else
+                        <div class="meta">Serial number tidak tersedia</div>
+                    @endif
                 @else
-                <div class="meta">Serial number tidak tersedia</div>
-                @endif
-                @else
-                {!! $dns->getBarcodeSVG($item->code, 'C128', 2, 60, 'black', true) !!}
+                    {!! $dns->getBarcodeSVG($item->code, 'C128', 2, 60, 'black', true) !!}
                 @endif
             </div>
             <div class="controls">

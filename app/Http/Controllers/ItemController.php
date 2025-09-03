@@ -87,6 +87,25 @@ class ItemController extends Controller
         return response()->json($items);
     }
 
+    public function lookup(Request $r)
+    {
+        // Exact, fast lookup for barcode scanners (code or serial_number)
+        $q = trim((string) $r->get('q', ''));
+        if ($q === '') {
+            return response()->json(['message' => 'Query required'], 422);
+        }
+
+        $item = Item::where('code', $q)
+            ->orWhere('serial_number', $q)
+            ->first(['id', 'code', 'name', 'serial_number', 'condition']);
+
+        if (!$item) {
+            return response()->json(['message' => 'Item not found'], 404);
+        }
+
+        return response()->json($item);
+    }
+
     public function code(Request $r)
     {
         $data = $r->validate([
@@ -102,18 +121,39 @@ class ItemController extends Controller
     }
     public function print(Request $request)
     {
-        $id = $request->query('id');
-        $type = $request->query('type', 'code'); // 'code' or 'serial'
-
-        if (!$id) {
+        $input = trim((string) $request->query('id', ''));
+        if ($input === '') {
             abort(404);
         }
 
-        $item = Item::findOrFail($id);
+        // Resolve item by id (if numeric), or by code/serial_number
+        $item = null;
+        if (ctype_digit($input)) {
+            $item = Item::find($input);
+        }
+        if (!$item) {
+            $item = Item::where('code', $input)
+                ->orWhere('serial_number', $input)
+                ->first();
+        }
+        if (!$item) {
+            abort(404);
+        }
+
+        // Determine which value to print; allow explicit override via ?type=
+        $explicitType = $request->query('type'); // 'code' | 'serial_number'
+        if ($explicitType === 'serial_number') {
+            $type = 'serial_number';
+        } elseif ($explicitType === 'code') {
+            $type = 'code';
+        } else {
+            // Infer from input match, fallback to 'code'
+            $type = ($item->serial_number && $input === $item->serial_number) ? 'serial_number' : 'code';
+        }
 
         return view('items.printBarcode', [
             'item' => $item,
-            'type' => in_array($type, ['code', 'serial']) ? $type : 'code',
+            'type' => $type,
         ]);
     }
 }

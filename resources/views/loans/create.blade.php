@@ -63,7 +63,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1016.65 16.65z" />
                                 </svg>
                             </span>
-                            <input x-ref="search" x-model="query" @keydown.enter.prevent="addByQuery()" @keydown.tab.prevent="addByQuery()" class="w-full pl-10 pr-10 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500" placeholder="Ketik untuk mencari nama / kode / serial...">
+                            <input x-ref="search" x-model.debounce.300ms="query" @keydown.enter.prevent="addByQuery()" @keydown.tab.prevent="addByQuery()" class="w-full pl-10 pr-10 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500" placeholder="Ketik untuk mencari nama / kode / serial...">
                             <button type="button" @click="addByQuery()" class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600">
 
                             </button>
@@ -123,39 +123,31 @@
                 <div class="text-right">
                     <button class="px-4 py-2 rounded bg-slate-800 text-white">Simpan Peminjaman</button>
                 </div>
-            </form>
-            <!-- Toast Alert -->
-            <div aria-live="assertive" class="fixed inset-0 flex items-start justify-end px-4 py-6 pointer-events-none sm:p-6 z-50">
-                <div class="w-full flex flex-col items-end space-y-2">
-                    <div x-show="toast.show"
-                         x-transition:enter="transform ease-out duration-300 transition"
-                         x-transition:enter-start="translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2"
-                         x-transition:enter-end="translate-y-0 opacity-100 sm:translate-x-0"
-                         x-transition:leave="transition ease-in duration-100"
-                         x-transition:leave-start="opacity-100"
-                         x-transition:leave-end="opacity-0"
-                         class="pointer-events-auto max-w-sm w-full overflow-hidden rounded-lg shadow-lg border"
-                         :class="toast.type==='error' ? 'bg-red-50 border-red-200' : (toast.type==='warning' ? 'bg-amber-50 border-amber-200' : 'bg-emerald-50 border-emerald-200')">
-                        <div class="p-4 flex items-start gap-3">
-                            <div class="shrink-0">
-                                <svg x-show="toast.type==='error'" class="h-5 w-5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10 3l9 16H1L10 3z"/></svg>
-                                <svg x-show="toast.type==='warning'" class="h-5 w-5 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10 3l9 16H1L10 3z"/></svg>
-                                <svg x-show="toast.type==='success'" class="h-5 w-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                            </div>
-                            <div class="flex-1 text-sm text-slate-800" x-text="toast.message"></div>
-                            <button type="button" class="text-slate-500 hover:text-slate-700" @click="toast.show=false">&times;</button>
+
+                <!-- Modal: Duplikasi Barang (dalam scope form/x-data) -->
+                <x-modal name="duplicate-item" :show="false" maxWidth="md">
+                    <div class="p-6">
+                        <h3 class="text-lg font-semibold mb-2 text-red-700">Barang sudah ada di daftar</h3>
+                        <p class="text-sm text-slate-700">Barang yang Anda coba tambahkan sudah ada pada daftar peminjaman.</p>
+                        <div class="mt-3 p-3 rounded bg-red-50 border border-red-200 text-sm">
+                            <div><span class="text-slate-500">Nama:</span> <span class="font-medium" id="dup-name">-</span></div>
+                            <div><span class="text-slate-500">Kode:</span> <span class="font-mono" id="dup-code">-</span></div>
+                            <div id="dup-serial-row" style="display:none;"><span class="text-slate-500">Serial:</span> <span class="font-mono" id="dup-serial"></span></div>
+                        </div>
+                        <div class="flex justify-end gap-2 mt-6">
+                            <button type="button" @click="$dispatch('close-modal', 'duplicate-item')" class="px-4 py-2 rounded bg-slate-800 text-white">OK</button>
                         </div>
                     </div>
-                </div>
-            </div>
+                </x-modal>
+            </form>
+
         </div>
     </div>
 
     <script>
         function loanForm(){
   return {
-    query: '', scan: '', items: [], suggestions: [],
-    toast: { show: false, message: '', type: 'success', timer: null },
+    query: '', scan: '', items: [], suggestions: [], lastDuplicate: null,
     init(){
       this.$watch('query', q => this.fetchSuggestions(q));
       // Autofocus to scanner input for quick scanning
@@ -170,18 +162,24 @@
     addItem(it){
       const exist = this.items.find(x=>x.id===it.id);
       if(exist){
-        this.showToast('Barang sudah ada di daftar', 'warning');
+        // Isi konten modal duplikat tanpa mengandalkan scope Alpine
+        const nameEl = document.getElementById('dup-name');
+        const codeEl = document.getElementById('dup-code');
+        const serialRow = document.getElementById('dup-serial-row');
+        const serialEl = document.getElementById('dup-serial');
+        if(nameEl) nameEl.textContent = exist.name || '-';
+        if(codeEl) codeEl.textContent = exist.code || '-';
+        if(exist.serial_number){
+          if(serialEl) serialEl.textContent = exist.serial_number;
+          if(serialRow) serialRow.style.display = '';
+        } else {
+          if(serialRow) serialRow.style.display = 'none';
+        }
+        this.$dispatch('open-modal', 'duplicate-item');
         return;
       }
       this.items.push({...it, qty: 1});
       this.query=''; this.suggestions=[];
-    },
-    showToast(message, type='success', duration=2000){
-      this.toast.message = message;
-      this.toast.type = type;
-      this.toast.show = true;
-      if(this.toast.timer) clearTimeout(this.toast.timer);
-      this.toast.timer = setTimeout(() => { this.toast.show = false; }, duration);
     },
     async addByScan(){
       const code = (this.scan || '').trim();
