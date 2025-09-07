@@ -18,10 +18,10 @@
                     <x-nav-link :href="route('loans.index')" :active="request()->routeIs('loans.*')">
                         {{ __('Peminjaman') }}
                     </x-nav-link>
-                    @php
+                    {{-- @php
                     $laporanActive = request()->routeIs('reports.*');
-                    @endphp
-                    <x-dropdown align="left" width="48">
+                    @endphp --}}
+                    {{-- <x-dropdown align="left" width="48">
                         <x-slot name="trigger">
                             <button class="nav-link{{ $laporanActive ? ' active' : '' }}">
                                 <span>Laporan</span>
@@ -33,9 +33,12 @@
                         <x-slot name="content">
                             <x-dropdown-link :href="route('reports.damages')">{{ __('Log Kerusakan') }}</x-dropdown-link>
                         </x-slot>
-                    </x-dropdown>
+                    </x-dropdown> --}}
+
                     @php
-                    $masterActive = request()->routeIs('items.*') || request()->routeIs('categories.*');
+                    $masterActive = request()->routeIs('items.*')
+                    || request()->routeIs('categories.*')
+                    || request()->routeIs('reports.*');
                     @endphp
                     <x-dropdown align="left" width="48">
                         <x-slot name="trigger">
@@ -49,6 +52,7 @@
                         <x-slot name="content">
                             <x-dropdown-link :href="route('items.index')">{{ __('Barang') }}</x-dropdown-link>
                             <x-dropdown-link :href="route('categories.index')">{{ __('Kategori') }}</x-dropdown-link>
+                            <x-dropdown-link :href="route('reports.damages')">{{ __('Log Kerusakan') }}</x-dropdown-link>
                         </x-slot>
                     </x-dropdown>
                 </div>
