@@ -69,6 +69,10 @@
         <x-alert type="error" :message="session('error')" />
         @endif
 
+        @if ($errors->any())
+        <x-alert type="error" :message="$errors->first()" />
+        @endif
+
         <!-- Page Content -->
         <!-- Page Content -->
         <main>

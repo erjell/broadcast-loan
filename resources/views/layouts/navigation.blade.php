@@ -19,6 +19,22 @@
                         {{ __('Peminjaman') }}
                     </x-nav-link>
                     @php
+                    $laporanActive = request()->routeIs('reports.*');
+                    @endphp
+                    <x-dropdown align="left" width="48">
+                        <x-slot name="trigger">
+                            <button class="nav-link{{ $laporanActive ? ' active' : '' }}">
+                                <span>Laporan</span>
+                                <svg class="ms-1 -me-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                    <path fill="currentColor" d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 10.94l3.71-3.71a.75.75 0 0 1 1.06 1.06l-4.24 4.24a.75.75 0 0 1-1.06 0L5.25 8.29a.75.75 0 0 1-.02-1.08z" />
+                                </svg>
+                            </button>
+                        </x-slot>
+                        <x-slot name="content">
+                            <x-dropdown-link :href="route('reports.damages')">{{ __('Log Kerusakan') }}</x-dropdown-link>
+                        </x-slot>
+                    </x-dropdown>
+                    @php
                     $masterActive = request()->routeIs('items.*') || request()->routeIs('categories.*');
                     @endphp
                     <x-dropdown align="left" width="48">
@@ -92,6 +108,7 @@
             <x-responsive-nav-link :href="route('loans.index')" :active="request()->routeIs('loans.*')">
                 {{ __('Peminjaman') }}
             </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('reports.damages')" :active="request()->routeIs('reports.*')">{{ __('Log Kerusakan') }}</x-responsive-nav-link>
             <x-responsive-nav-link :href="route('items.index')" :active="request()->routeIs('items.*')">{{ __('Barang') }}</x-responsive-nav-link>
             <x-responsive-nav-link :href="route('categories.index')" :active="request()->routeIs('categories.*')">{{ __('Kategori') }}</x-responsive-nav-link>
         </div>

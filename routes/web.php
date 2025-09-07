@@ -1,6 +1,6 @@
 ﻿<?php
 
-use App\Http\Controllers\{ItemController, LoanController, CategoryController, ProfileController};
+use App\Http\Controllers\{ItemController, LoanController, CategoryController, ProfileController, ReportController};
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => redirect()->route('loans.index'));
@@ -39,6 +39,9 @@ Route::middleware('auth')->group(function () {
     // Returns
     Route::get('/loans/{loan}/return', [LoanController::class, 'returnForm'])->name('loans.return.form');
     Route::post('/loans/{loan}/return', [LoanController::class, 'processReturn'])->name('loans.return.process');
+
+    // Reports
+    Route::get('/reports/damages', [ReportController::class, 'damageLogs'])->name('reports.damages');
 });
 
 require __DIR__.'/auth.php';

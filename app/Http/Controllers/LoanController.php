@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 use App\Models\{Loan,LoanItem,Partner};
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 
 class LoanController extends Controller {
@@ -24,8 +25,7 @@ class LoanController extends Controller {
             'purpose'    => ['required','string','max:255'],
             'loan_date'  => ['required','date'],
             'items'      => ['required','array','min:1'],
-            'items.*.id' => ['required','exists:items,id'],
-            'items.*.qty'=> ['required','integer','min:1']
+            'items.*.id' => ['required','exists:items,id']
         ]);
 
         try {
@@ -41,15 +41,18 @@ class LoanController extends Controller {
                 foreach ($data['items'] as $row){
                     LoanItem::create([
                         'loan_id'=>$loan->id,
-                        'item_id'=>$row['id'],
-                        'qty'=>$row['qty']
+                        'item_id'=>$row['id']
                     ]);
                 }
             });
 
             return redirect()->route('loans.index')->with('ok','Peminjaman tersimpan.');
         } catch (\Throwable $e) {
-            return back()->with('error','Peminjaman gagal disimpan.')->withInput();
+            Log::error('Gagal menyimpan peminjaman', [
+                'error' => $e->getMessage(),
+                'trace' => collect($e->getTrace())->take(3),
+            ]);
+            return back()->with('error','Peminjaman gagal disimpan: '.$e->getMessage())->withInput();
         }
     }
 
@@ -90,6 +93,17 @@ class LoanController extends Controller {
                     $li->return_condition = $row['condition'];
                     $li->return_notes = $row['notes'] ?? null;
                     $li->save();
+
+                    // Sinkronkan kondisi barang aktual dengan kondisi saat dikembalikan
+                    if ($li->relationLoaded('item')) {
+                        $item = $li->item;
+                    } else {
+                        $item = $li->item()->lockForUpdate()->first();
+                    }
+                    if ($item && $item->condition !== $row['condition']) {
+                        $item->condition = $row['condition'];
+                        $item->save();
+                    }
                 }
 
                 // Perbarui status pinjaman berdasarkan jumlah item yang sudah kembali
@@ -103,7 +117,11 @@ class LoanController extends Controller {
 
             return redirect()->route('loans.show', $loan)->with('ok','Pengembalian diproses.');
         } catch (\Throwable $e) {
-            return back()->with('error','Pengembalian gagal diproses.');
+            Log::error('Pengembalian gagal', [
+                'loan_id' => $loan->id,
+                'error' => $e->getMessage(),
+            ]);
+            return back()->with('error','Pengembalian gagal diproses: '.$e->getMessage())->withInput();
         }
     }
 }
