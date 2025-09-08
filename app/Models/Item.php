@@ -39,6 +39,17 @@ class Item extends Model
             });
     }
 
+    /**
+     * Latest loan-item record that already has a return condition (with notes).
+     * Used to display the last return notes as tooltip on the item condition badge.
+     */
+    public function lastReturn(): HasOne
+    {
+        return $this->hasOne(LoanItem::class)
+            ->whereNotNull('return_condition')
+            ->latestOfMany();
+    }
+
     protected static function booted(): void
     {
         static::creating(function (Item $item) {

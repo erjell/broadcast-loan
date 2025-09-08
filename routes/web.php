@@ -3,7 +3,7 @@
 use App\Http\Controllers\{ItemController, LoanController, CategoryController, ProfileController, ReportController};
 use Illuminate\Support\Facades\Route;
 
-// Route::get('/', fn () => redirect()->route('loans.index'));
+Route::get('/', fn () => redirect()->route('login'));
 
 Route::get('/dashboard', function () {
     return view('dashboard');

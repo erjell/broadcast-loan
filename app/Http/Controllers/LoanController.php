@@ -11,7 +11,11 @@ use Illuminate\Validation\Rule;
 
 class LoanController extends Controller {
     public function index(){
-        $loans = Loan::with('partner','items.item','user')->latest()->paginate(15);
+        $loans = Loan::with('partner','items.item','user')
+            ->orderByDesc('loan_date')
+            ->paginate(1000);
+        // Jika ingin menampilkan lebih banyak per halaman, ubah angka di atas.
+
         return view('loans.index', compact('loans'));
     }
 

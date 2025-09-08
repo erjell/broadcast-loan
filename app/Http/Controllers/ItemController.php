@@ -9,7 +9,9 @@ class ItemController extends Controller
 {
     public function index()
     {
-        $items = Item::with(['category','activeLoanItem.loan'])->get();
+        // Eager-load latest return info (with notes) for tooltip rendering
+        $items = Item::with(['category','activeLoanItem.loan','lastReturn'])
+            ->get();
         // $items = Item::with('category')->latest()->paginate(10);
         
         $categories = Category::all();

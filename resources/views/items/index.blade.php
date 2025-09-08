@@ -137,9 +137,27 @@
                                 @if(str_replace('_',' ',$it->condition == "baik"))
                                 <span class="inline-flex items-center px-2 py-1 text-xs rounded bg-emerald-100 text-emerald-800">Baik</span>
                                 @elseif(str_replace('_',' ',$it->condition == "rusak_ringan"))
-                                <span class="inline-flex items-center px-2 py-1 text-xs rounded bg-amber-100 text-amber-800 hover:bg-amber-200">Rusak Ringan</span>
+                                <div class="group relative inline-block">
+                                    <span class="inline-flex items-center px-2 py-1 text-xs rounded bg-amber-100 text-amber-800 hover:bg-amber-200">Rusak Ringan</span>
+                                    @if(optional($it->lastReturn)->return_notes)
+                                    <div class="invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-opacity duration-150 absolute z-20 left-1/2 -translate-x-1/2 mt-2 w-72 max-w-[18rem] rounded-lg bg-slate-800 text-white text-xs p-3 shadow-xl">
+                                        <div class="font-semibold mb-1">Catatan terakhir</div>
+                                        <div class="whitespace-pre-line">{{ $it->lastReturn->return_notes }}</div>
+                                        <div class="absolute -top-1 left-1/2 -translate-x-1/2 w-3 h-3 rotate-45 bg-slate-800"></div>
+                                    </div>
+                                    @endif
+                                </div>
                                 @else
-                                <span class="inline-flex items-center px-2 py-1 text-xs rounded bg-red-100 text-red-800 hover:bg-red-200">Rusak</span>
+                                <div class="group relative inline-block">
+                                    <span class="inline-flex items-center px-2 py-1 text-xs rounded bg-red-100 text-red-800 hover:bg-red-200">Rusak</span>
+                                    @if(optional($it->lastReturn)->return_notes)
+                                    <div class="invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-opacity duration-150 absolute z-20 left-1/2 -translate-x-1/2 mt-2 w-72 max-w-[18rem] rounded-lg bg-slate-800 text-white text-xs p-3 shadow-xl">
+                                        <div class="font-semibold mb-1">Catatan terakhir</div>
+                                        <div class="whitespace-pre-line">{{ $it->lastReturn->return_notes }}</div>
+                                        <div class="absolute -top-1 left-1/2 -translate-x-1/2 w-3 h-3 rotate-45 bg-slate-800"></div>
+                                    </div>
+                                    @endif
+                                </div>
                                 @endif
                             </td>
 

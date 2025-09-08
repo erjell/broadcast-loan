@@ -23,4 +23,5 @@ new DataTable("#tabelBarang", {
 });
 new DataTable("#tabelPeminjaman", {
     responsive: true,
+    order: [[2, "desc"]],
 });
