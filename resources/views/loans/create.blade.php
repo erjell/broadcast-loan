@@ -102,7 +102,7 @@
                         </thead>
                         <tbody>
                             <template x-for="(row,idx) in items" :key="row.id">
-                                <tr class="border-t">
+                                <tr class="odd:bg-white even:bg-gray-50 border-b border-gray-200">
                                     <td class="p-2" x-text="row.code"></td>
                                     <td class="p-2" x-text="row.name"></td>
                                     <td class="p-2" x-text="row.serial_number ?? '-'"></td>

@@ -22,17 +22,17 @@
                 <table id="tabelPeminjaman" class="w-full text-sm">
                     <thead class="bg-slate-100">
                         <tr>
-                            <th class="p-2 text-left">Nama Peminjam</th>
-                            <th class="p-2 text-left">Keperluan Acara/Lokasi</th>
-                            <th class="p-2 text-left">Tanggal Pinjam</th>
-                            <th class="p-2 text-left">Petugas</th>
-                            <th class="p-2 text-left">Status</th>
+                            <th class="p-2 text-center">Nama Peminjam</th>
+                            <th class="p-2 text-center">Keperluan Acara/Lokasi</th>
+                            <th class="p-2 text-center">Tanggal Pinjam</th>
+                            <th class="p-2 text-center">Petugas</th>
+                            <th class="p-2 text-center">Status</th>
                             <th class=""></th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($loans as $l)
-                        <tr class="border-t">
+                        <tr class="odd:bg-white even:bg-gray-50 border-b border-gray-200">
                             <td class="p-2">{{ $l->partner->name }}</td>
                             <td class="p-2">{{ $l->purpose }}</td>
                             <td class="p-2">{{ $l->loan_date }}</td>

@@ -15,7 +15,7 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            
+
             <p class="text-sm text-slate-600 mb-4">{{ $loan->partner->name }} • {{ $loan->purpose }} • Petugas: {{ optional($loan->user)->name }}</p>
             <form action="{{ route('loans.return.process',$loan) }}" method="post" class="bg-white p-4 rounded-2xl shadow">
                 @csrf
@@ -36,7 +36,7 @@
                     <tbody>
                         @foreach($loan->items as $i => $li)
                         @php $sisa = max(0,$li->qty - $li->returned_qty); @endphp
-                        <tr class="border-t">
+                        <tr class="odd:bg-white even:bg-gray-50 border-b border-gray-200">
                             <td>
                                 <input type="checkbox" name="returns[{{ $i }}][selected]" value="1">
                                 <input type="hidden" name="returns[{{ $i }}][loan_item_id]" value="{{ $li->id }}">

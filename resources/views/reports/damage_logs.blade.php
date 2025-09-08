@@ -24,9 +24,9 @@
                             <label class="block text-sm text-slate-600">Kondisi Saat Kembali</label>
                             <select name="condition" class="w-full border rounded p-2">
                                 <option value="">Semua</option>
-                                <option value="rusak_ringan" @selected(($condition ?? '')==='rusak_ringan')>rusak ringan</option>
-                                <option value="rusak_berat" @selected(($condition ?? '')==='rusak_berat')>rusak berat</option>
-                                <option value="baik" @selected(($condition ?? '')==='baik')>baik</option>
+                                <option value="rusak_ringan" @selected(($condition ?? '' )==='rusak_ringan' )>rusak ringan</option>
+                                <option value="rusak_berat" @selected(($condition ?? '' )==='rusak_berat' )>rusak berat</option>
+                                <option value="baik" @selected(($condition ?? '' )==='baik' )>baik</option>
                             </select>
                         </div>
                         <div>
@@ -47,7 +47,7 @@
                 <div class="p-6">
                     <div class="overflow-x-auto">
                         <table class="min-w-full text-sm">
-                            <thead>
+                            <thead class="bg-slate-100">
                                 <tr class="text-left text-slate-600 border-b">
                                     <th class="py-2 pr-4">Tanggal Kembali</th>
                                     <th class="py-2 pr-4">Barang</th>
@@ -59,34 +59,34 @@
                             </thead>
                             <tbody>
                                 @forelse($logs as $row)
-                                    <tr class="border-b align-top">
-                                        <td class="py-2 pr-4 whitespace-nowrap">{{ $row->updated_at?->format('Y-m-d H:i') }}</td>
-                                        <td class="py-2 pr-4">
-                                            <div class="font-medium">{{ $row->item?->name }}</div>
-                                            <div class="text-xs text-slate-500">{{ $row->item?->code }}</div>
-                                        </td>
-                                        <td class="py-2 pr-4">
-                                            @php $cond = $row->return_condition; @endphp
-                                            @if($cond==='rusak_berat')
-                                                <span class="inline-flex items-center px-2 py-0.5 text-xs rounded bg-red-100 text-red-800">Rusak Berat</span>
-                                            @elseif($cond==='rusak_ringan')
-                                                <span class="inline-flex items-center px-2 py-0.5 text-xs rounded bg-amber-100 text-amber-800">Rusak Ringan</span>
-                                            @else
-                                                <span class="inline-flex items-center px-2 py-0.5 text-xs rounded bg-emerald-100 text-emerald-800">Baik</span>
-                                            @endif
-                                        </td>
-                                        <td class="py-2 pr-4 max-w-[28rem]">
-                                            <div class="whitespace-pre-wrap">{{ $row->return_notes ?: '-' }}</div>
-                                        </td>
-                                        <td class="py-2 pr-4">
-                                            <a href="{{ route('loans.show', $row->loan) }}" class="text-slate-800 hover:underline">{{ $row->loan?->code }}</a>
-                                        </td>
-                                        <td class="py-2 pr-4">{{ $row->loan?->partner?->name }}</td>
-                                    </tr>
+                                <tr class="odd:bg-white even:bg-gray-50 border-b align-top border-gray-200">
+                                    <td class="py-2 pr-4 whitespace-nowrap">{{ $row->updated_at?->format('Y-m-d H:i') }}</td>
+                                    <td class="py-2 pr-4">
+                                        <div class="font-medium">{{ $row->item?->name }}</div>
+                                        <div class="text-xs text-slate-500">{{ $row->item?->code }}</div>
+                                    </td>
+                                    <td class="py-2 pr-4">
+                                        @php $cond = $row->return_condition; @endphp
+                                        @if($cond==='rusak_berat')
+                                        <span class="inline-flex items-center px-2 py-0.5 text-xs rounded bg-red-100 text-red-800">Rusak Berat</span>
+                                        @elseif($cond==='rusak_ringan')
+                                        <span class="inline-flex items-center px-2 py-0.5 text-xs rounded bg-amber-100 text-amber-800">Rusak Ringan</span>
+                                        @else
+                                        <span class="inline-flex items-center px-2 py-0.5 text-xs rounded bg-emerald-100 text-emerald-800">Baik</span>
+                                        @endif
+                                    </td>
+                                    <td class="py-2 pr-4 max-w-[28rem]">
+                                        <div class="whitespace-pre-wrap">{{ $row->return_notes ?: '-' }}</div>
+                                    </td>
+                                    <td class="py-2 pr-4">
+                                        <a href="{{ route('loans.show', $row->loan) }}" class="text-slate-800 hover:underline">{{ $row->loan?->code }}</a>
+                                    </td>
+                                    <td class="py-2 pr-4">{{ $row->loan?->partner?->name }}</td>
+                                </tr>
                                 @empty
-                                    <tr>
-                                        <td colspan="6" class="py-6 text-center text-slate-500">Tidak ada data</td>
-                                    </tr>
+                                <tr>
+                                    <td colspan="6" class="py-6 text-center text-slate-500">Tidak ada data</td>
+                                </tr>
                                 @endforelse
                             </tbody>
                         </table>
@@ -98,4 +98,3 @@
         </div>
     </div>
 </x-app-layout>
-

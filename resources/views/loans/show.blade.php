@@ -14,7 +14,7 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            
+
             <p class="text-sm text-slate-600 mb-4">
                 {{ $loan->partner->name }} • {{ $loan->purpose }} • {{ $loan->loan_date }} • Petugas: {{ optional($loan->user)->name }}
             </p>
@@ -36,7 +36,7 @@
                     </thead>
                     <tbody>
                         @foreach ($loan->items as $li)
-                        <tr class="border-t">
+                        <tr class="odd:bg-white even:bg-gray-50 border-b border-gray-200">
                             <td class="p-2">{{ $li->item->code }}</td>
                             <td class="p-2">{{ $li->item->name }}</td>
                             <td class="p-2">{{ $li->item->serial_number }}</td>
@@ -48,9 +48,9 @@
                             </td>
                             <td class="p-2 text-center">
                                 @if ($li->return_condition)
-                                    <span class="px-2 py-0.5 text-xs rounded-full bg-emerald-100 text-emerald-700">Dikembalikan</span>
+                                <span class="px-2 py-0.5 text-xs rounded-full bg-emerald-100 text-emerald-700">Dikembalikan</span>
                                 @else
-                                    <span class="px-2 py-0.5 text-xs rounded-full bg-slate-200 text-slate-700">Dipinjam</span>
+                                <span class="px-2 py-0.5 text-xs rounded-full bg-slate-200 text-slate-700">Dipinjam</span>
                                 @endif
                             </td>
                             {{-- <td class="p-2 text-center">{{ $li->returned_qty }}</td>

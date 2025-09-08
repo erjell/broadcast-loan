@@ -1,5 +1,6 @@
 new DataTable("#tabelBarang", {
     responsive: true,
+    // fixedHeader: true,
     columnControl: [["search"]],
     layout: {
         top1: [
@@ -29,3 +30,5 @@ new DataTable("#tabelPeminjaman", {
 new DataTable("#tabelKategori", {
     responsive: true,
 });
+
+table.fixedHeader.adjust();

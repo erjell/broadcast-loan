@@ -25,7 +25,7 @@
                     </thead>
                     <tbody>
                         @foreach($categories as $c)
-                        <tr class="border-t">
+                        <tr class="odd:bg-white even:bg-gray-50 border-b border-gray-200">
                             <td class="p-2">{{ $c->name }}</td>
                             <td class="p-2">{{ $c->code_category }}</td>
                             <td class="p-2">
