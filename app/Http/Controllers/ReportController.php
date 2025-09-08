@@ -47,7 +47,7 @@ class ReportController extends Controller
                 $query->whereDate('updated_at', '<=', $dateTo);
             })
             ->latest('updated_at')
-            ->paginate(20)
+            ->paginate(1000)
             ->withQueryString();
 
         return view('reports.damage_logs', compact('logs', 'q', 'condition', 'dateFrom', 'dateTo'));

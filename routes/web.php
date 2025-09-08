@@ -18,7 +18,26 @@ Route::get('/dashboard', function () {
 
     $totalItems = Item::count();
 
-    return view('dashboard', compact('totalLoans', 'totalUnreturned', 'totalItems'));
+    // Transaksi aktif dan selesai
+    $totalActiveLoans = Loan::whereIn('status', ['dipinjam','sebagian_kembali'])->count();
+    $totalCompletedLoans = Loan::where('status','selesai')->count();
+
+    // Top 5 barang paling sering dipinjam (berdasarkan frekuensi kemunculan di loan_items)
+    $topItems = LoanItem::selectRaw('item_id, COUNT(*) as total')
+        ->groupBy('item_id')
+        ->orderByDesc('total')
+        ->with('item:id,name,code')
+        ->take(5)
+        ->get();
+
+    return view('dashboard', compact(
+        'totalLoans',
+        'totalUnreturned',
+        'totalItems',
+        'totalActiveLoans',
+        'totalCompletedLoans',
+        'topItems'
+    ));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
