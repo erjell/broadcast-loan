@@ -2,11 +2,23 @@
 
 use App\Http\Controllers\{ItemController, LoanController, CategoryController, ProfileController, ReportController};
 use Illuminate\Support\Facades\Route;
+use App\Models\{Loan, LoanItem, Item};
 
 Route::get('/', fn () => redirect()->route('login'));
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    $totalLoans = Loan::count();
+
+    // Total barang yang belum dikembalikan (berdasarkan baris loan_items yang belum memiliki return_condition)
+    $totalUnreturned = LoanItem::whereNull('return_condition')
+        ->whereHas('loan', function ($q) {
+            $q->whereIn('status', ['dipinjam', 'sebagian_kembali']);
+        })
+        ->count();
+
+    $totalItems = Item::count();
+
+    return view('dashboard', compact('totalLoans', 'totalUnreturned', 'totalItems'));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {

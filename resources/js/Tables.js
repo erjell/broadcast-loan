@@ -1,10 +1,10 @@
 new DataTable("#tabelBarang", {
     responsive: true,
-    columnControl: [["orderAsc", "orderDesc", "search"]],
+    columnControl: [["search"]],
     layout: {
         top1: [
             {
-                // buttons: ["excel", "pdf"],
+                buttons: ["excel", "pdf"],
             },
             {
                 div: {
@@ -24,4 +24,8 @@ new DataTable("#tabelBarang", {
 new DataTable("#tabelPeminjaman", {
     responsive: true,
     order: [[2, "desc"]],
+});
+
+new DataTable("#tabelKategori", {
+    responsive: true,
 });

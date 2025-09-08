@@ -24,7 +24,11 @@
 
     {{-- DataTables.net --}}
 
-
+    <!-- Scripts -->
+    @vite([
+    'resources/css/app.css',
+    'resources/js/app.js'
+    ])
     <link href="https://cdn.datatables.net/v/dt/jq-3.7.0/jszip-3.10.1/dt-2.3.3/b-3.2.4/b-colvis-3.2.4/b-html5-3.2.4/b-print-3.2.4/cr-2.1.1/cc-1.0.7/date-1.5.6/fc-5.0.4/fh-4.0.3/kt-2.12.1/r-3.0.6/rg-1.5.2/rr-1.5.0/sc-2.4.3/sb-1.8.3/sp-2.3.5/sl-3.1.0/datatables.min.css" rel="stylesheet" integrity="sha384-oeXCSIAxz6d8DmNeNcgpyWtlX9T0AgmIY8GJYCDbndbpOjRueK5s/E9ZRKbUkwY9" crossorigin="anonymous">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js" integrity="sha384-VFQrHzqBh5qiJIU0uGU5CIW3+OWpdGGJM9LBnGbuIH2mkICcFZ7lPd/AAtI7SNf7" crossorigin="anonymous"></script>

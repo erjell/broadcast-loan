@@ -14,8 +14,8 @@
                 <input name="code_category" class="flex-1 border rounded p-2" placeholder="Kode Kategori" required>
                 <button class="px-4 py-2 rounded bg-slate-800 text-white">Simpan</button>
             </form>
-            <div class="bg-white rounded-2xl shadow overflow-auto">
-                <table class="w-full text-sm">
+            <div class="bg-white rounded-2xl shadow overflow-auto p-4">
+                <table id="tabelKategori" class="w-full text-sm">
                     <thead class="bg-slate-100">
                         <tr>
                             <th class="p-2 text-left">Nama</th>

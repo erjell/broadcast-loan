@@ -54,3 +54,23 @@
 @import url("datatables.net-searchbuilder-bs5");
 @import url("datatables.net-searchpanes-bs5");
 @import url("datatables.net-select-bs5"); */
+
+/* DataTables length select: normalize caret in Tailwind setup */
+.dt-container .dt-length select.dt-input {
+    appearance: auto;
+    -webkit-appearance: auto;
+    -moz-appearance: auto;
+    background-image: none;
+    padding-right: 0.5rem;
+}
+/* Paksa tombol sort selalu di kanan */
+table.dataTable thead th {
+    text-align: left !important; /* atau center kalau lebih enak */
+}
+
+table.dataTable thead th.sorting,
+table.dataTable thead th.sorting_asc,
+table.dataTable thead th.sorting_desc {
+    background-position: right center !important;
+    padding-right: 20px; /* beri jarak biar teks ga tabrakan */
+}
