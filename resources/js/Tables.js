@@ -30,5 +30,3 @@ new DataTable("#tabelPeminjaman", {
 new DataTable("#tabelKategori", {
     responsive: true,
 });
-
-table.fixedHeader.adjust();

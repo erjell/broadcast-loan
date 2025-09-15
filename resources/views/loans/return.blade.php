@@ -22,20 +22,25 @@
                 <table class="w-full text-sm">
                     <thead class="bg-slate-100">
                         <tr>
-                            <th class="p-2"></th>
+                            <th class="p-2"><input type="checkbox" onClick="toggle(this)" /> Toggle All<br /></th>
                             <th class="p-2 text-left">Kode</th>
                             <th class="p-2 text-left">Barang</th>
                             <th class="p-2 text-left">Serial Number</th>
-                            {{-- <th class="p-2 text-center">Dipinjam</th>
-                            <th class="p-2 text-center">Sudah Kembali</th>
-                            <th class="p-2 text-center">Kembalikan</th> --}}
                             <th class="p-2 text-center">Kondisi</th>
                             <th class="p-2">Catatan</th>
                         </tr>
                     </thead>
                     <tbody>
+
                         @foreach($loan->items as $i => $li)
-                        @php $sisa = max(0,$li->qty - $li->returned_qty); @endphp
+                        <script language="JavaScript">
+                            function toggle(source) {
+                                checkboxes = document.getElementsByName('returns[{{')+($i)+('}}]');
+                                for(var checkbox in checkboxes)
+                                checkboxes[checkbox].checked = source.checked;
+                            }
+                        </script>
+
                         <tr class="odd:bg-white even:bg-gray-50 border-b border-gray-200">
                             <td>
                                 <input type="checkbox" name="returns[{{ $i }}][selected]" value="1">

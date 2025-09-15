@@ -37,9 +37,9 @@
 
     <!-- Scripts -->
     @vite([
-    'resources/css/app.css',
-    'resources/js/app.js'
+    
     ])
+    
     {{-- @vite([
     'resources/css/app.css',
     'resources/css/dataTables.tailwindcss.css',
@@ -84,7 +84,9 @@
         </main>
     </div>
     @vite([
-    'resources/js/Tables.js'
+    'resources/js/Tables.js',
+    'resources/css/app.css',
+    'resources/js/app.js'
     ])
 </body>
 
