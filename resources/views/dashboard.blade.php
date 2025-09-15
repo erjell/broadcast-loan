@@ -23,7 +23,37 @@
                         </div>
                     </div>
                 </div>
+                <!-- Transaksi Aktif -->
+                <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <div class="text-sm font-medium text-gray-500">Transaksi Aktif</div>
+                            <div class="mt-2 text-3xl font-semibold text-gray-900">{{ $totalActiveLoans ?? 0 }}</div>
+                        </div>
+                        <div class="rounded-lg p-2 bg-sky-50 text-sky-600">
+                            <!-- Play Icon -->
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-6 w-6" aria-hidden="true">
+                                <path d="M4.5 5.653c0-1.46 1.584-2.366 2.847-1.606l10.163 6.097c1.275.766 1.275 2.446 0 3.212L7.347 19.453C6.084 20.213 4.5 19.307 4.5 17.847V5.653z" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
 
+                <!-- Transaksi Selesai -->
+                <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <div class="text-sm font-medium text-gray-500">Transaksi Selesai</div>
+                            <div class="mt-2 text-3xl font-semibold text-gray-900">{{ $totalCompletedLoans ?? 0 }}</div>
+                        </div>
+                        <div class="rounded-lg p-2 bg-green-50 text-green-600">
+                            <!-- Check Badge Icon -->
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-6 w-6" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M8.603 2.25c-.866 0-1.65.498-2.028 1.276l-.768 1.54-1.7.247c-.93.135-1.672.877-1.807 1.807l-.247 1.7-1.54.768A2.25 2.25 0 00.75 12c0 .866.498 1.65 1.276 2.028l1.54.768.247 1.7c.135.93.877 1.672 1.807 1.807l1.7.247.768 1.54a2.25 2.25 0 002.028 1.276c.866 0 1.65-.498 2.028-1.276l.768-1.54 1.7-.247c.93-.135 1.672-.877 1.807-1.807l.247-1.7 1.54-.768A2.25 2.25 0 0023.25 12c0-.866-.498-1.65-1.276-2.028l-1.54-.768-.247-1.7a2.25 2.25 0 00-1.807-1.807l-1.7-.247-.768-1.54A2.25 2.25 0 0015.397 2.25h-6.794zm6.72 7.28a.75.75 0 10-1.146-.96l-4.032 4.81-1.614-1.614a.75.75 0 10-1.06 1.06l2.25 2.25a.75.75 0 001.1-.04l4.502-5.506z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
                 <!-- Total Barang yang Belum Dikembalikan -->
                 <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
                     <div class="flex items-start justify-between">
@@ -57,37 +87,23 @@
                     </div>
                 </div>
 
-                <!-- Transaksi Aktif -->
+                <!-- Total Barang Rusak -->
                 <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
                     <div class="flex items-start justify-between">
                         <div>
-                            <div class="text-sm font-medium text-gray-500">Transaksi Aktif</div>
-                            <div class="mt-2 text-3xl font-semibold text-gray-900">{{ $totalActiveLoans ?? 0 }}</div>
+                            <div class="text-sm font-medium text-gray-500">Barang Rusak</div>
+                            <div class="mt-2 text-3xl font-semibold text-gray-900">{{ $totalDamagedItems ?? 0 }}</div>
                         </div>
-                        <div class="rounded-lg p-2 bg-sky-50 text-sky-600">
-                            <!-- Play Icon -->
+                        <div class="rounded-lg p-2 bg-rose-50 text-rose-600">
+                            <!-- Exclamation Triangle Icon -->
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-6 w-6" aria-hidden="true">
-                                <path d="M4.5 5.653c0-1.46 1.584-2.366 2.847-1.606l10.163 6.097c1.275.766 1.275 2.446 0 3.212L7.347 19.453C6.084 20.213 4.5 19.307 4.5 17.847V5.653z" />
+                                <path fill-rule="evenodd" d="M10.788 3.21c.448-.772 1.572-.772 2.02 0l8.68 14.97c.447.772-.112 1.74-1.01 1.74H3.118c-.898 0-1.457-.968-1.01-1.74l8.68-14.97zM12 8.25a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100 1.5.75.75 0 000-1.5z" clip-rule="evenodd" />
                             </svg>
                         </div>
                     </div>
                 </div>
 
-                <!-- Transaksi Selesai -->
-                <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-                    <div class="flex items-start justify-between">
-                        <div>
-                            <div class="text-sm font-medium text-gray-500">Transaksi Selesai</div>
-                            <div class="mt-2 text-3xl font-semibold text-gray-900">{{ $totalCompletedLoans ?? 0 }}</div>
-                        </div>
-                        <div class="rounded-lg p-2 bg-green-50 text-green-600">
-                            <!-- Check Badge Icon -->
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-6 w-6" aria-hidden="true">
-                                <path fill-rule="evenodd" d="M8.603 2.25c-.866 0-1.65.498-2.028 1.276l-.768 1.54-1.7.247c-.93.135-1.672.877-1.807 1.807l-.247 1.7-1.54.768A2.25 2.25 0 00.75 12c0 .866.498 1.65 1.276 2.028l1.54.768.247 1.7c.135.93.877 1.672 1.807 1.807l1.7.247.768 1.54a2.25 2.25 0 002.028 1.276c.866 0 1.65-.498 2.028-1.276l.768-1.54 1.7-.247c.93-.135 1.672-.877 1.807-1.807l.247-1.7 1.54-.768A2.25 2.25 0 0023.25 12c0-.866-.498-1.65-1.276-2.028l-1.54-.768-.247-1.7a2.25 2.25 0 00-1.807-1.807l-1.7-.247-.768-1.54A2.25 2.25 0 0015.397 2.25h-6.794zm6.72 7.28a.75.75 0 10-1.146-.96l-4.032 4.81-1.614-1.614a.75.75 0 10-1.06 1.06l2.25 2.25a.75.75 0 001.1-.04l4.502-5.506z" clip-rule="evenodd" />
-                            </svg>
-                        </div>
-                    </div>
-                </div>
+
             </div>
 
             <!-- Top 5 Barang Paling Sering Dipinjam -->
@@ -119,6 +135,45 @@
                         @empty
                         <div class="py-6 text-sm text-gray-500">Belum ada data peminjaman.</div>
                         @endforelse
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top 20 Barang Paling Sering Rusak (paginate 5 per halaman) -->
+            <div class="mt-8">
+                <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+                    <div class="flex items-center justify-between">
+                        <div class="text-sm font-medium text-gray-500">Top 20 Barang Paling Sering Rusak</div>
+                        <div class="rounded-lg p-2 bg-rose-50 text-rose-600">
+                            <!-- Exclamation Triangle Icon -->
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-6 w-6" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M10.788 3.21c.448-.772 1.572-.772 2.02 0l8.68 14.97c.447.772-.112 1.74-1.01 1.74H3.118c-.898 0-1.457-.968-1.01-1.74l8.68-14.97zM12 8.25a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100 1.5.75.75 0 000-1.5z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 divide-y divide-gray-100">
+                        @php($offset = ($topDamaged->currentPage() - 1) * $topDamaged->perPage())
+                        @forelse($topDamaged as $index => $row)
+                        <div class="py-3 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <span class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-slate-100 text-slate-700 text-sm font-semibold">{{ $offset + $index + 1 }}</span>
+                                <div>
+                                    <div class="text-sm font-medium text-gray-900">{{ optional($row->item)->name ?? ('Item #' . $row->item_id) }}</div>
+                                    @if(optional($row->item)->code)
+                                    <div class="text-xs text-gray-500">Kode: {{ $row->item->code }}</div>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="text-sm font-semibold text-gray-800">{{ $row->total_damages }}x</div>
+                        </div>
+                        @empty
+                        <div class="py-6 text-sm text-gray-500">Belum ada data kerusakan.</div>
+                        @endforelse
+                    </div>
+
+                    <div class="mt-4">
+                        {{ $topDamaged->onEachSide(1)->links() }}
                     </div>
                 </div>
             </div>

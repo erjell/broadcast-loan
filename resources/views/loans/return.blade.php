@@ -22,7 +22,9 @@
                 <table class="w-full text-sm">
                     <thead class="bg-slate-100">
                         <tr>
-                            <th class="p-2"><input type="checkbox" onClick="toggle(this)" /> Toggle All<br /></th>
+                            <th class="p-2 text-center align-middle w-12">
+                                <input id="check-all" type="checkbox" class="rounded" onclick="toggleAllCheckboxes(this)">
+                            </th>
                             <th class="p-2 text-left">Kode</th>
                             <th class="p-2 text-left">Barang</th>
                             <th class="p-2 text-left">Serial Number</th>
@@ -31,30 +33,15 @@
                         </tr>
                     </thead>
                     <tbody>
-
                         @foreach($loan->items as $i => $li)
-                        <script language="JavaScript">
-                            function toggle(source) {
-                                checkboxes = document.getElementsByName('returns[{{')+($i)+('}}]');
-                                for(var checkbox in checkboxes)
-                                checkboxes[checkbox].checked = source.checked;
-                            }
-                        </script>
-
                         <tr class="odd:bg-white even:bg-gray-50 border-b border-gray-200">
-                            <td>
-                                <input type="checkbox" name="returns[{{ $i }}][selected]" value="1">
+                            <td class="p-2 text-center align-middle w-12">
+                                <input type="checkbox" name="returns[{{ $i }}][selected]" value="1" class="rounded itemCheckbox">
                                 <input type="hidden" name="returns[{{ $i }}][loan_item_id]" value="{{ $li->id }}">
                             </td>
                             <td class="p-2 text-center">{{ $li->item->code }}</td>
                             <td class="p-2 ">{{ $li->item->name }}</td>
                             <td class="p-2 ">{{ $li->item->serial_number }}</td>
-                            {{-- <td class="p-2 text-center">{{ $li->qty }}</td>
-                            <td class="p-2 text-center">{{ $li->returned_qty }}</td>
-                            <td class="p-2 text-center">
-                                <input type="number" name="returns[{{ $i }}][qty]" min="0" max="{{ $sisa }}" value="{{ $sisa }}" class="w-20 border rounded p-1 text-center">
-                                <input type="hidden" name="returns[{{ $i }}][loan_item_id]" value="{{ $li->id }}">
-                            </td> --}}
                             <td class="p-2 text-center">
                                 <select name="returns[{{ $i }}][condition]" class="border rounded p-1">
                                     <option value="baik">Baik</option>
@@ -69,6 +56,7 @@
                         @endforeach
                     </tbody>
                 </table>
+
                 <div class="text-right mt-4">
                     <button class="px-4 py-2 rounded bg-slate-800 text-white">Simpan Pengembalian</button>
                 </div>

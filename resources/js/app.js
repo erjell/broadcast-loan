@@ -76,3 +76,11 @@ window.JsBarcode = JsBarcode;
 
 // let table = new DataTable("#tabelBarang");
 // $("#tabelBarang").DataTable();
+
+// Simple global function to toggle all checkboxes by class
+window.toggleAllCheckboxes = function (source) {
+    const checkboxes = document.querySelectorAll('.itemCheckbox');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = source.checked;
+    });
+};

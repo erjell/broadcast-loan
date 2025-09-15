@@ -3,6 +3,8 @@
 use App\Http\Controllers\{ItemController, LoanController, CategoryController, ProfileController, ReportController};
 use Illuminate\Support\Facades\Route;
 use App\Models\{Loan, LoanItem, Item};
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 
 Route::get('/', fn () => redirect()->route('login'));
 
@@ -17,6 +19,7 @@ Route::get('/dashboard', function () {
         ->count();
 
     $totalItems = Item::count();
+    $totalDamagedItems = Item::whereIn('condition', ['rusak_ringan','rusak_berat'])->count();
 
     // Transaksi aktif dan selesai
     $totalActiveLoans = Loan::whereIn('status', ['dipinjam','sebagian_kembali'])->count();
@@ -30,13 +33,40 @@ Route::get('/dashboard', function () {
         ->take(5)
         ->get();
 
+    // Top 20 barang paling sering rusak (return_condition rusak_*), paginate 5 per halaman
+    $topDamagedAll = LoanItem::selectRaw('item_id, COUNT(*) as total_damages')
+        ->whereIn('return_condition', ['rusak_ringan', 'rusak_berat'])
+        ->groupBy('item_id')
+        ->orderByDesc('total_damages')
+        ->with('item:id,name,code')
+        ->take(20)
+        ->get();
+
+    $perPage = 5;
+    $pageName = 'rusak_page';
+    $currentPage = Paginator::resolveCurrentPage($pageName);
+    $itemsForCurrentPage = $topDamagedAll->slice(($currentPage - 1) * $perPage, $perPage)->values();
+    $topDamaged = new LengthAwarePaginator(
+        $itemsForCurrentPage,
+        $topDamagedAll->count(),
+        $perPage,
+        $currentPage,
+        [
+            'path' => request()->url(),
+            'pageName' => $pageName,
+            'query' => request()->query(),
+        ]
+    );
+
     return view('dashboard', compact(
         'totalLoans',
         'totalUnreturned',
         'totalItems',
+        'totalDamagedItems',
         'totalActiveLoans',
         'totalCompletedLoans',
-        'topItems'
+        'topItems',
+        'topDamaged'
     ));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
