@@ -78,7 +78,9 @@ class ItemController extends Controller
     public function search(Request $r)
     {
         $q = $r->get('q', '');
-        $items = Item::when($q, function ($qq) use ($q) {
+
+        $items = Item::with('lastReturn')
+            ->when($q, function ($qq) use ($q) {
                 $qq->where('code', 'like', "%$q%")
                     ->orWhere('serial_number', 'like', "%$q%")
                     ->orWhere('name', 'like', "%$q%");
@@ -86,7 +88,18 @@ class ItemController extends Controller
             ->limit(10)
             ->get(['id', 'code', 'name', 'serial_number', 'condition']);
 
-        return response()->json($items);
+        $payload = $items->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'code' => $item->code,
+                'name' => $item->name,
+                'serial_number' => $item->serial_number,
+                'condition' => $item->condition,
+                'last_return_notes' => optional($item->lastReturn)->return_notes,
+            ];
+        });
+
+        return response()->json($payload);
     }
 
     public function lookup(Request $r)
@@ -97,7 +110,8 @@ class ItemController extends Controller
             return response()->json(['message' => 'Query required'], 422);
         }
 
-        $item = Item::where('code', $q)
+        $item = Item::with('lastReturn')
+            ->where('code', $q)
             ->orWhere('serial_number', $q)
             ->first(['id', 'code', 'name', 'serial_number', 'condition']);
 
@@ -105,7 +119,14 @@ class ItemController extends Controller
             return response()->json(['message' => 'Item not found'], 404);
         }
 
-        return response()->json($item);
+        return response()->json([
+            'id' => $item->id,
+            'code' => $item->code,
+            'name' => $item->name,
+            'serial_number' => $item->serial_number,
+            'condition' => $item->condition,
+            'last_return_notes' => optional($item->lastReturn)->return_notes,
+        ]);
     }
 
     public function code(Request $r)

@@ -97,6 +97,7 @@
                                 <th class="p-2 text-left">Nama</th>
                                 <th class="p-2 text-left">Serial Number</th>
                                 <th class="p-2 text-center">Kondisi</th>
+                                <th class="p-2">Catatan Kondisi</th>
                                 <th class="p-2"></th>
                             </tr>
                         </thead>
@@ -111,6 +112,7 @@
                                         <input type="hidden" :name="`items[${idx}][id]`" :value="row.id">
                                         <input type="hidden" :name="`items[${idx}][qty]`" :value="row.qty">
                                     </td>
+                                    <td class="p-2 whitespace-pre-line text-slate-600" x-text="row.last_return_notes ? row.last_return_notes : '-'"></td>
                                     <td class="p-2 text-center">
                                         <button type="button" class="px-2 py-1 rounded bg-rose-100 text-rose-700" @click="remove(idx)">Hapus</button>
                                     </td>
@@ -178,7 +180,7 @@
         this.$dispatch('open-modal', 'duplicate-item');
         return;
       }
-      this.items.push({...it, qty: 1});
+      this.items.push({...it, qty: 1, last_return_notes: it.last_return_notes || ""});
       this.query=''; this.suggestions=[];
     },
     async addByScan(){

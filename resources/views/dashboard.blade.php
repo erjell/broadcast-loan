@@ -69,7 +69,21 @@
                         </div>
                     </div>
                 </div>
-
+                <!-- Total Barang Rusak -->
+                <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <div class="text-sm font-medium text-gray-500">Barang Rusak</div>
+                            <div class="mt-2 text-3xl font-semibold text-gray-900">{{ $totalDamagedItems ?? 0 }}</div>
+                        </div>
+                        <div class="rounded-lg p-2 bg-rose-50 text-rose-600">
+                            <!-- Exclamation Triangle Icon -->
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-6 w-6" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M10.788 3.21c.448-.772 1.572-.772 2.02 0l8.68 14.97c.447.772-.112 1.74-1.01 1.74H3.118c-.898 0-1.457-.968-1.01-1.74l8.68-14.97zM12 8.25a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100 1.5.75.75 0 000-1.5z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
                 <!-- Total Barang -->
                 <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
                     <div class="flex items-start justify-between">
@@ -87,21 +101,7 @@
                     </div>
                 </div>
 
-                <!-- Total Barang Rusak -->
-                <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-                    <div class="flex items-start justify-between">
-                        <div>
-                            <div class="text-sm font-medium text-gray-500">Barang Rusak</div>
-                            <div class="mt-2 text-3xl font-semibold text-gray-900">{{ $totalDamagedItems ?? 0 }}</div>
-                        </div>
-                        <div class="rounded-lg p-2 bg-rose-50 text-rose-600">
-                            <!-- Exclamation Triangle Icon -->
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-6 w-6" aria-hidden="true">
-                                <path fill-rule="evenodd" d="M10.788 3.21c.448-.772 1.572-.772 2.02 0l8.68 14.97c.447.772-.112 1.74-1.01 1.74H3.118c-.898 0-1.457-.968-1.01-1.74l8.68-14.97zM12 8.25a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100 1.5.75.75 0 000-1.5z" clip-rule="evenodd" />
-                            </svg>
-                        </div>
-                    </div>
-                </div>
+
 
 
             </div>

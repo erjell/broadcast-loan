@@ -30,6 +30,7 @@
                             <th class="p-2">Serial Number</th>
                             <th class="p-2 text-center">Kondisi</th>
                             <th class="p-2 text-center">Status</th>
+                            <th class="p-2">Catatan Kondisi</th>
                             {{-- <th class="p-2 text-center">Kembali</th>
                             <th class="p-2 text-center">Sisa</th> --}}
                         </tr>
@@ -53,6 +54,7 @@
                                 <span class="px-2 py-0.5 text-xs rounded-full bg-slate-200 text-slate-700">Dipinjam</span>
                                 @endif
                             </td>
+                            <td class="p-2 whitespace-pre-line text-slate-600">{{ $li->return_notes ?: '-' }}</td>
                             {{-- <td class="p-2 text-center">{{ $li->returned_qty }}</td>
                             <td class="p-2 text-center">{{ max(0, $li->qty - $li->returned_qty) }}</td> --}}
                         </tr>
