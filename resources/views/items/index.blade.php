@@ -7,7 +7,7 @@
     </x-slot>
 
     <div class="py-12">
-        <div x-data class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div x-data class="max-w-full mx-auto sm:px-6 lg:px-8">
             <div x-data class="flex items-center justify-between mb-4">
                 <div class="text-sm text-slate-600"></div>
                 <div class="flex gap-2">
@@ -86,29 +86,6 @@
                         });
                     })();
                 </script>
-            </x-modal>
-
-            <!-- Modal: Tambah Kategori -->
-            <x-modal name="add-category" :show="false" maxWidth="xl">
-                <div class="px-6 pt-6 pb-2 border-b">
-                    <h3 class="text-lg font-semibold">Tambah Kategori</h3>
-                </div>
-                <form action="{{ route('categories.store') }}" method="post" class="p-6 flex flex-col gap-4">
-                    @csrf
-                    <input type="hidden" name="redirect_to" value="{{ route('items.index') }}">
-                    <div>
-                        <label class="block text-sm">Nama Kategori</label>
-                        <input name="name" class="w-full border rounded p-2" placeholder="Nama kategori" required>
-                    </div>
-                    <div>
-                        <label class="block text-sm">Kode Kategori</label>
-                        <input name="code_category" class="w-full border rounded p-2" placeholder="Kode Kategori" required>
-                    </div>
-                    <div class="flex justify-end gap-2">
-                        <button type="button" @click="$dispatch('close-modal', 'add-category')" class="px-4 py-2 rounded border">Batal</button>
-                        <button class="px-4 py-2 rounded bg-slate-800 text-white">Simpan</button>
-                    </div>
-                </form>
             </x-modal>
             <div class="bg-white rounded-lg shadow overflow-x-auto p-3">
                 <div class="">
