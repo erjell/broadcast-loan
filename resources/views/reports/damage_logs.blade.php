@@ -37,9 +37,9 @@
                             <label class="block text-sm text-slate-600">Sampai</label>
                             <input type="date" name="to" value="{{ optional($dateTo)->format('Y-m-d') }}" class="w-full border rounded p-2">
                         </div>
-                        <div class="md:col-span-5 flex gap-2 justify-end">
-                            <a href="{{ route('reports.damages') }}" class="px-3 py-2 border rounded">Reset</a>
-                            <button class="px-3 py-2 rounded bg-slate-800 text-white">Terapkan</button>
+                        <div class="md:col-span-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+                            <a href="{{ route('reports.damages') }}" class="w-full sm:w-auto px-3 py-2 border rounded text-center">Reset</a>
+                            <button class="w-full sm:w-auto px-3 py-2 rounded bg-slate-800 text-white">Terapkan</button>
                         </div>
                     </form>
                 </div>

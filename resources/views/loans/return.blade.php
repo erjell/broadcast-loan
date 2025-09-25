@@ -17,9 +17,10 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
             <p class="text-sm text-slate-600 mb-4">{{ $loan->partner->name }} • {{ $loan->purpose }} • Petugas: {{ optional($loan->user)->name }}</p>
-            <form action="{{ route('loans.return.process',$loan) }}" method="post" class="bg-white p-4 rounded-2xl shadow">
+            <form action="{{ route('loans.return.process',$loan) }}" method="post" class="bg-white p-4 rounded-2xl shadow space-y-4">
                 @csrf
-                <table class="w-full text-sm">
+                <div class="overflow-x-auto">
+                    <table class="min-w-[60rem] w-full text-sm">
                     <thead class="bg-slate-100">
                         <tr>
                             <th class="p-2 text-center align-middle w-12">
@@ -55,10 +56,11 @@
                         </tr>
                         @endforeach
                     </tbody>
-                </table>
+                    </table>
+                </div>
 
-                <div class="text-right mt-4">
-                    <button class="px-4 py-2 rounded bg-slate-800 text-white">Simpan Pengembalian</button>
+                <div class="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+                    <button class="w-full sm:w-auto px-4 py-2 rounded bg-slate-800 text-white">Simpan Pengembalian</button>
                 </div>
             </form>
         </div>

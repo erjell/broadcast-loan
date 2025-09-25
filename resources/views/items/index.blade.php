@@ -8,9 +8,9 @@
 
     <div class="py-12">
         <div x-data class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div x-data class="flex items-center justify-between mb-4">
-                <div class="text-sm text-slate-600"></div>
-                <div class="flex gap-2">
+            <div x-data class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
+                <div class="text-sm text-slate-600 w-full sm:w-auto"></div>
+                <div class="flex flex-wrap gap-2 w-full sm:w-auto sm:justify-end">
                     <button type="button" @click="$dispatch('open-modal', 'add-item')" class="px-3 py-2 rounded bg-slate-800 text-white">Tambah Barang</button>
                 </div>
             </div>
@@ -48,7 +48,7 @@
                             </select>
                         </div>
                         <div class="md:col-span-2">
-                            <div class="flex items-end gap-2">
+                            <div class="flex flex-col gap-2 sm:flex-row sm:items-end">
                                 <div class="flex-1">
                                     <label class="block text-sm">Kategori</label>
                                     <select name="category_id" class="w-full border rounded p-2" required>
@@ -64,9 +64,9 @@
                             <label class="block text-sm">Kode Barang</label>
                             <input name="code" class="w-full border rounded p-2 bg-slate-100" readonly>
                         </div>
-                        <div class="md:col-span-2 flex justify-end gap-2 pt-2">
-                            <button type="button" @click="$dispatch('close-modal', 'add-item')" class="px-4 py-2 rounded border">Batal</button>
-                            <button class="px-4 py-2 rounded bg-slate-800 text-white">Simpan</button>
+                        <div class="md:col-span-2 flex flex-col-reverse gap-2 pt-2 sm:flex-row sm:justify-end">
+                            <button type="button" @click="$dispatch('close-modal', 'add-item')" class="w-full sm:w-auto px-4 py-2 rounded border">Batal</button>
+                            <button class="w-full sm:w-auto px-4 py-2 rounded bg-slate-800 text-white">Simpan</button>
                         </div>
                     </form>
                 </div>
@@ -104,15 +104,15 @@
                         <label class="block text-sm">Kode Kategori</label>
                         <input name="code_category" class="w-full border rounded p-2" placeholder="Kode Kategori" required>
                     </div>
-                    <div class="flex justify-end gap-2">
-                        <button type="button" @click="$dispatch('close-modal', 'add-category')" class="px-4 py-2 rounded border">Batal</button>
-                        <button class="px-4 py-2 rounded bg-slate-800 text-white">Simpan</button>
+                    <div class="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+                        <button type="button" @click="$dispatch('close-modal', 'add-category')" class="w-full sm:w-auto px-4 py-2 rounded border">Batal</button>
+                        <button class="w-full sm:w-auto px-4 py-2 rounded bg-slate-800 text-white">Simpan</button>
                     </div>
                 </form>
             </x-modal>
-            <div class="bg-white rounded-lg shadow overflow-x-auto p-3">
-                <div class="">
-                    <table id="tabelBarang" class="table-auto">
+            <div class="bg-white rounded-lg shadow">
+                <div class="p-3 overflow-x-auto">
+                    <table id="tabelBarang" class="min-w-[60rem] w-full text-sm">
                         <thead class="bg-slate-100">
                             <tr>
                                 <th>Kode</th>
@@ -181,10 +181,10 @@
                                     @endif
                                 </td>
                                 <td>
-                                    <div class="flex items-center gap-2">
-                                        <button type="button" @click="$dispatch('open-modal', 'cetak-{{ $it->id }}')" class="inline-flex items-center px-3 py-1.5 text-xs rounded-md border border-slate-300 text-slate-700 hover:bg-slate-50">Cetak</button>
-                                        <button type="button" @click="$dispatch('open-modal', 'edit-item-{{ $it->id }}')" class="inline-flex items-center px-3 py-1.5 text-xs rounded-md border border-blue-300 text-blue-700 hover:bg-blue-50">Edit</button>
-                                        <button type="button" @click="$dispatch('open-modal', 'delete-item-{{ $it->id }}')" class="inline-flex items-center px-3 py-1.5 text-xs rounded-md border border-red-300 text-red-600 hover:bg-red-50">Hapus</button>
+                                    <div class="flex flex-wrap items-center gap-2">
+                                        <button type="button" @click="$dispatch('open-modal', 'cetak-{{ $it->id }}')" class="inline-flex w-full sm:w-auto items-center justify-center px-3 py-1.5 text-xs rounded-md border border-slate-300 text-slate-700 hover:bg-slate-50">Cetak</button>
+                                        <button type="button" @click="$dispatch('open-modal', 'edit-item-{{ $it->id }}')" class="inline-flex w-full sm:w-auto items-center justify-center px-3 py-1.5 text-xs rounded-md border border-blue-300 text-blue-700 hover:bg-blue-50">Edit</button>
+                                        <button type="button" @click="$dispatch('open-modal', 'delete-item-{{ $it->id }}')" class="inline-flex w-full sm:w-auto items-center justify-center px-3 py-1.5 text-xs rounded-md border border-red-300 text-red-600 hover:bg-red-50">Hapus</button>
                                     </div>
                                 </td>
                             </tr>
@@ -193,12 +193,12 @@
                                 <div class="p-6">
                                     <h3 class="text-lg font-semibold">Cetak Barcode</h3>
                                     <p class="text-sm text-slate-600 mt-1">{{ $it->name }}</p>
-                                    <div class="flex justify-end gap-2 mt-6">
-                                        <button type="button" class="inline-flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium bg-slate-800 text-white hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-500" onclick="window.open('{{ route('items.print',['id' => $it->code, 'type' => 'code']) }}', '_blank')">
+                                    <div class="flex flex-col-reverse gap-2 mt-6 sm:flex-row sm:justify-end">
+                                        <button type="button" class="inline-flex w-full sm:w-auto items-center justify-center gap-2 px-3 py-2 rounded-md text-sm font-medium bg-slate-800 text-white hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-500" onclick="window.open('{{ route('items.print',['id' => $it->code, 'type' => 'code']) }}', '_blank')">
                                             Kode
                                         </button>
                                         @php $hasSerial = !empty($it->serial_number); @endphp
-                                        <button type="button" class="inline-flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium border border-slate-300 text-slate-700 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-400 disabled:opacity-50 disabled:cursor-not-allowed" @disabled(!$hasSerial) onclick="if(!this.disabled){ window.open('{{ route('items.print',['id' => $it->serial_number, 'type' => 'serial_number']) }}', '_blank'); }">
+                                        <button type="button" class="inline-flex w-full sm:w-auto items-center justify-center gap-2 px-3 py-2 rounded-md text-sm font-medium border border-slate-300 text-slate-700 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-400 disabled:opacity-50 disabled:cursor-not-allowed" @disabled(!$hasSerial) onclick="if(!this.disabled){ window.open('{{ route('items.print',['id' => $it->serial_number, 'type' => 'serial_number']) }}', '_blank'); }">
                                             Serial Number
                                         </button>
                                     </div>
@@ -213,12 +213,12 @@
                                         <span class="font-semibold">"{{ $it->name }}"</span> dengan kode <span class="font-mono">{{ $it->code }}</span>?
                                         Tindakan ini tidak dapat dibatalkan.
                                     </p>
-                                    <div class="flex justify-end gap-2 mt-6">
-                                        <button type="button" @click="$dispatch('close-modal', 'delete-item-{{ $it->id }}')" class="px-4 py-2 rounded border">Batal</button>
-                                        <form action="{{ route('items.destroy', $it) }}" method="post">
+                                    <div class="flex flex-col-reverse gap-2 mt-6 sm:flex-row sm:justify-end">
+                                        <button type="button" @click="$dispatch('close-modal', 'delete-item-{{ $it->id }}')" class="w-full sm:w-auto px-4 py-2 rounded border">Batal</button>
+                                        <form action="{{ route('items.destroy', $it) }}" method="post" class="w-full sm:w-auto">
                                             @csrf
                                             @method('DELETE')
-                                            <button class="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700">Hapus</button>
+                                            <button class="w-full sm:w-auto px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700">Hapus</button>
                                         </form>
                                     </div>
                                 </div>
@@ -258,7 +258,7 @@
                                             </select>
                                         </div>
                                         <div class="md:col-span-2">
-                                            <div class="flex items-end gap-2">
+                                            <div class="flex flex-col gap-2 sm:flex-row sm:items-end">
                                                 <div class="flex-1">
                                                     <label class="block text-sm">Kategori</label>
                                                     <select name="category_id" class="w-full border rounded p-2" required>
@@ -274,9 +274,9 @@
                                             <label class="block text-sm">Kode Barang</label>
                                             <input name="code" class="w-full border rounded p-2 bg-slate-100" value="{{ $it->code }}" readonly>
                                         </div>
-                                        <div class="md:col-span-2 flex justify-end gap-2 pt-2">
-                                            <button type="button" @click="$dispatch('close-modal', 'edit-item-{{ $it->id }}')" class="px-4 py-2 rounded border">Batal</button>
-                                            <button class="px-4 py-2 rounded bg-slate-800 text-white">Simpan</button>
+                                        <div class="md:col-span-2 flex flex-col-reverse gap-2 pt-2 sm:flex-row sm:justify-end">
+                                            <button type="button" @click="$dispatch('close-modal', 'edit-item-{{ $it->id }}')" class="w-full sm:w-auto px-4 py-2 rounded border">Batal</button>
+                                            <button class="w-full sm:w-auto px-4 py-2 rounded bg-slate-800 text-white">Simpan</button>
                                         </div>
                                     </form>
                                 </div>

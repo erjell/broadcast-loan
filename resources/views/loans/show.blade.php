@@ -15,14 +15,15 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
-            <p class="text-sm text-slate-600 mb-4">
+            <p class="text-sm text-slate-600 mb-4 break-words">
                 {{ $loan->partner->name }} • {{ $loan->purpose }} • {{ $loan->loan_date }} • Petugas: {{ optional($loan->user)->name }}
             </p>
-            <a href="{{ route('loans.return.form', $loan) }}" class="px-3 py-2 rounded bg-slate-800 text-white">
+            <a href="{{ route('loans.return.form', $loan) }}" class="inline-flex w-full sm:w-auto justify-center px-3 py-2 rounded bg-slate-800 text-white">
                 Proses Pengembalian
             </a>
-            <div class="mt-4 bg-white rounded-2xl shadow overflow-hidden">
-                <table class="w-full text-sm">
+            <div class="mt-4 bg-white rounded-2xl shadow">
+                <div class="overflow-x-auto">
+                    <table class="min-w-[60rem] w-full text-sm">
                     <thead class="bg-slate-100">
                         <tr>
                             <th class="p-2">Kode Barang</th>
@@ -60,7 +61,8 @@
                         </tr>
                         @endforeach
                     </tbody>
-                </table>
+                    </table>
+                </div>
             </div>
         </div>
     </div>

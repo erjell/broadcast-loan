@@ -89,8 +89,8 @@
                     </div>
                 </div>
 
-                <div class="overflow-auto">
-                    <table class="w-full text-sm border rounded">
+                <div class="overflow-x-auto">
+                    <table class="min-w-[60rem] w-full text-sm border rounded">
                         <thead class="bg-slate-100">
                             <tr>
                                 <th class="p-2 text-left">Kode</th>
@@ -136,7 +136,7 @@
                             <div><span class="text-slate-500">Kode:</span> <span class="font-mono" id="dup-code">-</span></div>
                             <div id="dup-serial-row" style="display:none;"><span class="text-slate-500">Serial:</span> <span class="font-mono" id="dup-serial"></span></div>
                         </div>
-                        <div class="flex justify-end gap-2 mt-6">
+                        <div class="flex flex-col-reverse gap-2 mt-6 sm:flex-row sm:justify-end">
                             <button type="button" @click="$dispatch('close-modal', 'duplicate-item')" class="px-4 py-2 rounded bg-slate-800 text-white">OK</button>
                         </div>
                     </div>
