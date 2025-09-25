@@ -128,7 +128,7 @@ $date = now()->format('d F Y');
     </table>
 
     <p class="mb-2">
-        Barang tersebut di atas sudah dilakukan perbaikan dan sudah dilakukan uji coba dalam keadaan baik. Selanjutnya akan diserahkan kembali ke {{ $loan->partner->name }}.
+        Barang tersebut di atas sudah dilakukan pengujian dan dalam keadaan baik. Selanjutnya akan diserahkan kembali ke {{ $loan->partner->name }}.
     </p>
     <p class="mb-3">
         Demikian surat tanda terima barang tersebut, untuk dapat dipergunakan dengan sebagaimana mestinya.
