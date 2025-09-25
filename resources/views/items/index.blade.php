@@ -7,12 +7,12 @@
     </x-slot>
 
     <div class="py-12">
-        <div x-data class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div x-data class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
+        <div x-data="{}" class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div x-data="{}" class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
                 <div class="text-sm text-slate-600 w-full sm:w-auto"></div>
                 <div class="flex flex-wrap gap-2 w-full sm:w-auto sm:justify-end">
-                    <a href="{{ route('items.export') }}" class="px-3 py-2 rounded border border-slate-300 text-slate-700 hover:bg-slate-50">Export Excel</a>
-                    <button type="button" @click="$dispatch('open-modal', 'add-item')" class="px-3 py-2 rounded bg-slate-800 text-white">Tambah Barang</button>
+                    <a href="{{ route('items.export') }}" class="inline-flex items-center justify-center rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-100">Export Excel</a>
+                    <button type="button" @click="$dispatch('open-modal', 'add-item')" class="inline-flex items-center justify-center rounded-lg bg-slate-800 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-slate-900">Tambah Barang</button>
                 </div>
             </div>
 
@@ -159,20 +159,20 @@
                     </div>
                 </div>
                 <div class="overflow-x-auto">
-                    <table data-sortable id="tabelBarang" class="min-w-[60rem] w-full text-sm text-slate-700" x-data="tableSorterV2()" x-init="init($el)">
-                        <thead class="bg-slate-50 text-slate-600">
-                            <tr>
-                                <th class="text-left font-semibold px-4 py-3">Kode</th>
-                                <th class="text-left font-semibold px-4 py-3">Nama</th>
-                                <th class="text-left font-semibold px-4 py-3">Kategori</th>
-                                <th class="text-left font-semibold px-4 py-3">Serial</th>
-                                <th class="text-left font-semibold px-4 py-3">Tahun</th>
-                                <th class="text-left font-semibold px-4 py-3">
+                    <table data-sortable id="tabelBarang" class="min-w-[64rem] w-full text-sm text-slate-700">
+                        <thead class="sticky top-0 z-10 bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/60 text-slate-700">
+                            <tr class="border-b border-slate-200">
+                                <th class="text-left uppercase text-[11px] tracking-[0.08em] font-semibold px-4 py-3">Kode</th>
+                                <th class="text-left uppercase text-[11px] tracking-[0.08em] font-semibold px-4 py-3">Nama</th>
+                                <th class="text-left uppercase text-[11px] tracking-[0.08em] font-semibold px-4 py-3">Kategori</th>
+                                <th class="text-left uppercase text-[11px] tracking-[0.08em] font-semibold px-4 py-3">Serial</th>
+                                <th class="text-left uppercase text-[11px] tracking-[0.08em] font-semibold px-4 py-3">Tahun</th>
+                                <th class="text-left uppercase text-[11px] tracking-[0.08em] font-semibold px-4 py-3">
                                     Kondisi
                                 </th>
-                                <th class="text-left font-semibold px-4 py-3">Detail</th>
-                                <th class="text-left font-semibold px-4 py-3">Status</th>
-                                <th class="text-left font-semibold px-4 py-3" data-nosort></th>
+                                <th class="text-left uppercase text-[11px] tracking-[0.08em] font-semibold px-4 py-3">Detail</th>
+                                <th class="text-left uppercase text-[11px] tracking-[0.08em] font-semibold px-4 py-3">Status</th>
+                                <th class="text-left uppercase text-[11px] tracking-[0.08em] font-semibold px-4 py-3" data-nosort></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -243,6 +243,7 @@
                                     </div>
                                 </td>
                             </tr>
+                            @push('modals')
                             {{-- Modal Cetak Barcode --}}
                             <x-modal name="cetak-{{ $it->id }}" :show="false" maxWidth="md">
                                 <div class="p-6">
@@ -358,6 +359,7 @@
                                 })();
                                 </script>
                             </x-modal>
+                            @endpush
                             @endforeach
                             <tr data-empty-row class="hidden">
                                 <td colspan="9" class="px-4 py-6 text-center text-sm text-slate-500">Tidak ada data yang cocok dengan filter saat ini.</td>
@@ -614,84 +616,3 @@
     }
     </script>
 </x-app-layout>
-<script>
-    if (!window.tableSorterV2) {
-        window.tableSorterV2 = function () {
-            return {
-                table: null,
-                sortKey: null,
-                sortDir: 'asc',
-                init(el) {
-                    this.table = el;
-                    const head = el.tHead && el.tHead.rows[0];
-                    if (!head) return;
-                    Array.from(head.cells).forEach((th, idx) => {
-                        if (th.hasAttribute('data-nosort')) return;
-                        th.classList.add('select-none');
-                        th.style.cursor = 'pointer';
-                        const icon = document.createElement('span');
-                        icon.className = 'ml-1 inline-flex items-center text-sky-600';
-                        icon.innerHTML = '<svg class="h-4 w-4" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">\n  <path d="M10 3.5v13" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="opacity-40" data-stem></path>\n  <path data-icon-up d="M6.5 8l3.5-3.5 3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-40"></path>\n  <path data-icon-down d="M6.5 12l3.5 3.5 3.5-3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-40"></path>\n</svg>'
-                        th.appendChild(icon);
-                        th.addEventListener('click', () => this.sortBy(idx));
-                    });
-                    this.updateIcons();
-                },
-                getRows() {
-                    const tb = this.table.tBodies[0];
-                    return Array.from(tb.querySelectorAll('tr')).filter(r => !r.hasAttribute('data-empty-row'));
-                },
-                cellText(row, idx) {
-                    const cell = row.cells[idx];
-                    return cell ? cell.textContent.trim() : '';
-                },
-                asNumber(s) {
-                    const t = (s || '').replace(/\s+/g, '').replace(',', '.');
-                    return /^-?\d+(?:\.\d+)?$/.test(t) ? parseFloat(t) : null;
-                },
-                asDate(s) {
-                    const t = Date.parse(s);
-                    return Number.isNaN(t) ? null : t;
-                },
-                compare(a, b) {
-                    const na = this.asNumber(a), nb = this.asNumber(b);
-                    if (na !== null && nb !== null) return na - nb;
-                    const da = this.asDate(a), db = this.asDate(b);
-                    if (da !== null && db !== null) return da - db;
-                    return a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' });
-                },
-                updateIcons() {
-                    const head = this.table.tHead && this.table.tHead.rows[0];
-                    if (!head) return;
-                    Array.from(head.cells).forEach((th, idx) => {
-                        const up = th.querySelector('[data-icon-up]');
-                        const dn = th.querySelector('[data-icon-down]');
-                        if (!up || !dn) return;
-                        up.classList.add('opacity-40');
-                        dn.classList.add('opacity-40');
-                        up.classList.remove('opacity-100');
-                        dn.classList.remove('opacity-100');
-                        if (idx === this.sortKey) {
-                            if (this.sortDir === 'asc') up.classList.replace('opacity-40', 'opacity-100');
-                            else dn.classList.replace('opacity-40', 'opacity-100');
-                        }
-                    });
-                },
-                sortBy(idx) {
-                    if (this.sortKey === idx) this.sortDir = this.sortDir === 'asc' ? 'desc' : 'asc';
-                    else { this.sortKey = idx; this.sortDir = 'asc'; }
-                    const body = this.table.tBodies[0];
-                    const rows = this.getRows();
-                    rows.sort((r1, r2) => {
-                        const a = this.cellText(r1, idx);
-                        const b = this.cellText(r2, idx);
-                        const res = this.compare(a, b);
-                        return this.sortDir === 'asc' ? res : -res;
-                    });
-                    rows.forEach(r => body.appendChild(r));
-                    this.updateIcons();
-                }
-            }
-        }
-    }
-</script>
