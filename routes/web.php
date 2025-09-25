@@ -79,6 +79,7 @@ Route::middleware('auth')->group(function () {
 
     // Items
     Route::get('/items', [ItemController::class, 'index'])->name('items.index');
+    Route::get('/items/export', [ItemController::class, 'export'])->name('items.export');
     Route::post('/items', [ItemController::class, 'store'])->name('items.store');
     Route::put('/items/{item}', [ItemController::class, 'update'])->name('items.update');
     Route::delete('/items/{item}', [ItemController::class, 'destroy'])->name('items.destroy');
@@ -105,6 +106,9 @@ Route::middleware('auth')->group(function () {
 
     // Reports
     Route::get('/reports/damages', [ReportController::class, 'damageLogs'])->name('reports.damages');
+    Route::get('/reports/damages/export', [ReportController::class, 'exportDamageLogs'])->name('reports.damages.export');
 });
 
 require __DIR__.'/auth.php';
+
+

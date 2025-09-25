@@ -11,6 +11,7 @@
             <div x-data class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
                 <div class="text-sm text-slate-600 w-full sm:w-auto"></div>
                 <div class="flex flex-wrap gap-2 w-full sm:w-auto sm:justify-end">
+                    <a href="{{ route('items.export') }}" class="px-3 py-2 rounded border border-slate-300 text-slate-700 hover:bg-slate-50">Export Excel</a>
                     <button type="button" @click="$dispatch('open-modal', 'add-item')" class="px-3 py-2 rounded bg-slate-800 text-white">Tambah Barang</button>
                 </div>
             </div>
@@ -110,33 +111,85 @@
                     </div>
                 </form>
             </x-modal>
-            <div class="bg-white rounded-lg shadow">
-                <div class="p-3 overflow-x-auto">
-                    <table id="tabelBarang" class="min-w-[60rem] w-full text-sm">
-                        <thead class="bg-slate-100">
+            <div class="bg-white/90 supports-[backdrop-filter]:bg-white/70 backdrop-blur border border-slate-200 rounded-xl shadow-sm overflow-hidden" id="itemTableWrapper">
+                <div class="border-b border-slate-200 p-4 space-y-4 bg-slate-50" id="itemTableFilters">
+                    <div>
+                        <label for="itemFilterSearch" class="block text-xs font-medium text-slate-500">Pencarian</label>
+                        <input id="itemFilterSearch" type="text" data-filter-global class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-400/30 placeholder:text-slate-400" placeholder="Cari item...">
+                    </div>
+                    <div class="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
+                        <div class="flex flex-col gap-1">
+                            <label for="filterCategory" class="text-xs font-medium text-slate-600">Kategori</label>
+                            <select id="filterCategory" data-filter-select-column="2" class="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-400/30">
+                                <option value="">Semua kategori</option>
+                                @foreach($categories as $categoryOption)
+                                <option value="{{ $categoryOption->name }}">{{ $categoryOption->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <label for="filterCondition" class="text-xs font-medium text-slate-600">Kondisi</label>
+                            <select id="filterCondition" data-filter-condition class="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-400/30">
+                                <option value="">Semua kondisi</option>
+                                <option value="baik">Baik</option>
+                                <option value="rusak_ringan">Rusak Ringan</option>
+                                <option value="rusak_berat">Rusak Berat</option>
+                            </select>
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <label for="filterStatus" class="text-xs font-medium text-slate-600">Status</label>
+                            <select id="filterStatus" data-filter-status class="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-400/30">
+                                <option value="">Semua status</option>
+                                <option value="tersedia">Tersedia</option>
+                                <option value="dipinjam">Dipinjam</option>
+                                <option value="hilang">Hilang</option>
+                            </select>
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <label class="text-xs font-medium text-slate-600">Rentang Tahun Pengadaan</label>
+                            <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                                <input type="number" inputmode="numeric" min="1900" max="{{ now()->year }}" step="1" placeholder="Awal" data-filter-year="start" class="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-400/30">
+                                <input type="number" inputmode="numeric" min="1900" max="{{ now()->year }}" step="1" placeholder="Akhir" data-filter-year="end" class="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-400/30">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                        <span class="text-sm text-slate-500" data-filter-count></span>
+                        <button type="button" data-filter-reset class="inline-flex items-center justify-center rounded-full border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-100">Reset Filter</button>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table data-sortable id="tabelBarang" class="min-w-[60rem] w-full text-sm text-slate-700" x-data="tableSorterV2()" x-init="init($el)">
+                        <thead class="bg-slate-50 text-slate-600">
                             <tr>
-                                <th>Kode</th>
-                                <th>Nama</th>
-                                <th>Kategori</th>
-                                <th>Serial</th>
-                                <th>Tahun</th>
-                                <th>
+                                <th class="text-left font-semibold px-4 py-3">Kode</th>
+                                <th class="text-left font-semibold px-4 py-3">Nama</th>
+                                <th class="text-left font-semibold px-4 py-3">Kategori</th>
+                                <th class="text-left font-semibold px-4 py-3">Serial</th>
+                                <th class="text-left font-semibold px-4 py-3">Tahun</th>
+                                <th class="text-left font-semibold px-4 py-3">
                                     Kondisi
                                 </th>
-                                <th>Detail</th>
-                                <th>Status</th>
-                                <th></th>
+                                <th class="text-left font-semibold px-4 py-3">Detail</th>
+                                <th class="text-left font-semibold px-4 py-3">Status</th>
+                                <th class="text-left font-semibold px-4 py-3" data-nosort></th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($items as $it)
-                            <tr class="odd:bg-white even:bg-gray-50 border-b border-gray-200">
-                                <td>{{ $it->code }}</td>
-                                <td>{{ $it->name }}</td>
-                                <td>{{ $it->category->name }}</td>
-                                <td>{{ $it->serial_number }}</td>
-                                <td>{{ $it->procurement_year }}</td>
-                                <td>
+                            @php
+                            $statusLabel = ($it->is_missing)
+                                ? 'Hilang'
+                                : (($it->activeLoanItem && $it->activeLoanItem->loan) ? 'Dipinjam' : 'Tersedia');
+                            $procurementDate = $it->procurement_year ? $it->procurement_year . '-01-01' : null;
+                            @endphp
+                            <tr class="odd:bg-white even:bg-slate-50/60 hover:bg-slate-50 transition-colors" data-status="{{ strtolower($statusLabel) }}" data-condition="{{ strtolower($it->condition) }}" data-procurement-date="{{ $procurementDate ?? '' }}" data-procurement-year="{{ $it->procurement_year }}">
+                                <td class="px-4 py-3">{{ $it->code }}</td>
+                                <td class="px-4 py-3">{{ $it->name }}</td>
+                                <td class="px-4 py-3">{{ $it->category->name }}</td>
+                                <td class="px-4 py-3">{{ $it->serial_number }}</td>
+                                <td class="px-4 py-3">{{ $it->procurement_year }}</td>
+                                <td class="px-4 py-3">
                                     @if(str_replace('_',' ',$it->condition == "baik"))
                                     <span class="inline-flex items-center px-2 py-1 text-xs rounded bg-emerald-100 text-emerald-800">Baik</span>
                                     @elseif(str_replace('_',' ',$it->condition == "rusak_ringan"))
@@ -170,18 +223,20 @@
                                     @endif
                                 </td>
 
-                                <td>{{ $it->details }}</td>
-                                <td>
-                                    @if($it->activeLoanItem && $it->activeLoanItem->loan)
-                                    <a href="{{ route('loans.show', $it->activeLoanItem->loan) }}" class="inline-flex items-center px-2 py-1 text-xs rounded bg-red-100 text-red-800 hover:bg-red-200">
-                                        Dipinjam
-                                    </a>
+                                <td class="px-4 py-3">{{ $it->details }}</td>
+                                <td class="px-4 py-3">
+                                    @if($it->is_missing)
+                                        <span class="inline-flex items-center px-2 py-1 text-xs rounded bg-amber-100 text-amber-800">Hilang</span>
+                                    @elseif($it->activeLoanItem && $it->activeLoanItem->loan)
+                                        <a href="{{ route('loans.show', $it->activeLoanItem->loan) }}" class="inline-flex items-center px-2 py-1 text-xs rounded bg-red-100 text-red-800 hover:bg-red-200">
+                                            Dipinjam
+                                        </a>
                                     @else
-                                    <span class="inline-flex items-center px-2 py-1 text-xs rounded bg-emerald-100 text-emerald-800">Tersedia</span>
+                                        <span class="inline-flex items-center px-2 py-1 text-xs rounded bg-emerald-100 text-emerald-800">Tersedia</span>
                                     @endif
                                 </td>
-                                <td>
-                                    <div class="flex flex-wrap items-center gap-2">
+                                <td class="px-4 py-3">
+                                    <div class="flex items-center gap-2">
                                         <button type="button" @click="$dispatch('open-modal', 'cetak-{{ $it->id }}')" class="inline-flex w-full sm:w-auto items-center justify-center px-3 py-1.5 text-xs rounded-md border border-slate-300 text-slate-700 hover:bg-slate-50">Cetak</button>
                                         <button type="button" @click="$dispatch('open-modal', 'edit-item-{{ $it->id }}')" class="inline-flex w-full sm:w-auto items-center justify-center px-3 py-1.5 text-xs rounded-md border border-blue-300 text-blue-700 hover:bg-blue-50">Edit</button>
                                         <button type="button" @click="$dispatch('open-modal', 'delete-item-{{ $it->id }}')" class="inline-flex w-full sm:w-auto items-center justify-center px-3 py-1.5 text-xs rounded-md border border-red-300 text-red-600 hover:bg-red-50">Hapus</button>
@@ -271,6 +326,12 @@
                                             </div>
                                         </div>
                                         <div class="md:col-span-2">
+                                            <label class="inline-flex items-center gap-2 text-sm">
+                                                <input type="checkbox" name="is_missing" value="1" class="rounded border-slate-300" @checked($it->is_missing)>
+                                                <span>Tandai sebagai hilang</span>
+                                            </label>
+                                        </div>
+                                        <div class="md:col-span-2">
                                             <label class="block text-sm">Kode Barang</label>
                                             <input name="code" class="w-full border rounded p-2 bg-slate-100" value="{{ $it->code }}" readonly>
                                         </div>
@@ -298,6 +359,9 @@
                                 </script>
                             </x-modal>
                             @endforeach
+                            <tr data-empty-row class="hidden">
+                                <td colspan="9" class="px-4 py-6 text-center text-sm text-slate-500">Tidak ada data yang cocok dengan filter saat ini.</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -307,4 +371,327 @@
             {{-- <div class="mt-3">{{ $items->links() }}</div> --}}
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const wrapper = document.getElementById('itemTableWrapper');
+            const table = document.getElementById('tabelBarang');
+            if (!wrapper || !table) {
+                return;
+            }
+
+            const tbody = table.tBodies[0];
+            const rows = Array.from(tbody.querySelectorAll('tr')).filter(row => !row.hasAttribute('data-empty-row'));
+            const emptyRow = tbody.querySelector('[data-empty-row]');
+
+            const filters = {
+                global: wrapper.querySelector('[data-filter-global]'),
+                columns: Array.from(wrapper.querySelectorAll('[data-filter-column]')),
+                selectColumns: Array.from(wrapper.querySelectorAll('[data-filter-select-column]')),
+                condition: wrapper.querySelector('[data-filter-condition]'),
+                status: wrapper.querySelector('[data-filter-status]'),
+                yearStart: wrapper.querySelector('[data-filter-year="start"]'),
+                yearEnd: wrapper.querySelector('[data-filter-year="end"]'),
+                reset: wrapper.querySelector('[data-filter-reset]'),
+                count: wrapper.querySelector('[data-filter-count]'),
+            };
+
+            const inputs = [
+                filters.global,
+                ...filters.columns,
+                ...filters.selectColumns,
+                filters.condition,
+                filters.status,
+                filters.yearStart,
+                filters.yearEnd,
+            ].filter(Boolean);
+
+            const normalize = (value) => (value || '').toString().toLowerCase().trim();
+
+            const getCellText = (row, index) => {
+                const cell = row.cells[index];
+                return cell ? normalize(cell.textContent) : '';
+            };
+
+            const getYearFromRow = (row) => {
+                const raw = row.dataset.procurementYear || getCellText(row, 4);
+                const year = parseInt(raw, 10);
+                return Number.isNaN(year) ? null : year;
+            };
+
+            const rowMatches = (row) => {
+                if (filters.global) {
+                    const searchTerm = normalize(filters.global.value);
+                    if (searchTerm && !normalize(row.textContent).includes(searchTerm)) {
+                        return false;
+                    }
+                }
+
+                for (const input of filters.columns) {
+                    const value = normalize(input.value);
+                    if (!value) {
+                        continue;
+                    }
+                    const columnIndex = Number(input.dataset.filterColumn);
+                    if (!Number.isInteger(columnIndex)) {
+                        continue;
+                    }
+                    const cellValue = getCellText(row, columnIndex);
+                    if (!cellValue.includes(value)) {
+                        return false;
+                    }
+                }
+
+                for (const select of filters.selectColumns) {
+                    const value = normalize(select.value);
+                    if (!value) {
+                        continue;
+                    }
+                    const columnIndex = Number(select.dataset.filterSelectColumn);
+                    if (!Number.isInteger(columnIndex)) {
+                        continue;
+                    }
+                    const cellValue = getCellText(row, columnIndex);
+                    if (!cellValue.includes(value)) {
+                        return false;
+                    }
+                }
+
+                if (filters.condition) {
+                    const conditionValue = normalize(filters.condition.value);
+                    if (conditionValue) {
+                        const rowCondition = normalize(row.dataset.condition || getCellText(row, 5));
+                        if (!rowCondition.includes(conditionValue)) {
+                            return false;
+                        }
+                    }
+                }
+
+                if (filters.status) {
+                    const statusValue = normalize(filters.status.value);
+                    if (statusValue) {
+                        const rowStatus = normalize(row.dataset.status || getCellText(row, 7));
+                        if (!rowStatus.includes(statusValue)) {
+                            return false;
+                        }
+                    }
+                }
+
+                const startYear = filters.yearStart && filters.yearStart.value ? parseInt(filters.yearStart.value, 10) : null;
+                const endYear = filters.yearEnd && filters.yearEnd.value ? parseInt(filters.yearEnd.value, 10) : null;
+                if (startYear || endYear) {
+                    const itemYear = getYearFromRow(row);
+                    if (itemYear === null) {
+                        return false;
+                    }
+                    if (startYear && itemYear < startYear) {
+                        return false;
+                    }
+                    if (endYear && itemYear > endYear) {
+                        return false;
+                    }
+                }
+
+                return true;
+            };
+
+            const applyFilters = () => {
+                let visibleCount = 0;
+                for (const row of rows) {
+                    const isMatch = rowMatches(row);
+                    row.style.display = isMatch ? '' : 'none';
+                    if (isMatch) {
+                        visibleCount += 1;
+                    }
+                }
+
+                if (emptyRow) {
+                    emptyRow.style.display = visibleCount ? 'none' : '';
+                }
+
+                if (filters.count) {
+                    filters.count.textContent = visibleCount ? `${visibleCount} barang ditampilkan` : 'Tidak ada data yang cocok';
+                }
+            };
+
+            inputs.forEach((input) => {
+                const handler = () => window.requestAnimationFrame(applyFilters);
+                input.addEventListener('input', handler);
+                if (input.tagName === 'SELECT' || input.type === 'date') {
+                    input.addEventListener('change', handler);
+                }
+            });
+
+            if (filters.reset) {
+                filters.reset.addEventListener('click', () => {
+                    inputs.forEach((input) => {
+                        if (input.tagName === 'SELECT' || input.type === 'date') {
+                            input.value = '';
+                        } else if ('value' in input) {
+                            input.value = '';
+                        }
+                    });
+                    window.requestAnimationFrame(applyFilters);
+                });
+            }
+
+            applyFilters();
+        });
+    </script>
+    <script>
+    if(!window.__tableSorterDefined){
+      window.__tableSorterDefined = true;
+      window.tableSorter = function(){
+        return {
+          table: null,
+          sortKey: null,
+          sortDir: 'asc',
+          init(el){
+            this.table = el;
+            const head = el.tHead && el.tHead.rows[0];
+            if(!head) return;
+            Array.from(head.cells).forEach((th, idx) => {
+              const noSort = th.hasAttribute('data-nosort');
+              th.style.cursor = noSort ? 'default' : 'pointer';
+              if (noSort) return;
+              const icon = document.createElement('span');
+              icon.className = 'ml-1 inline-flex items-center';
+              icon.innerHTML = '<svg class="h-4 w-4" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">\n  <path d="M10 3.5v13" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="opacity-40" data-stem></path>\n  <path data-icon-up d="M6.5 8l3.5-3.5 3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-40"></path>\n  <path data-icon-down d="M6.5 12l3.5 3.5 3.5-3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-40"></path>\n</svg>'
+              th.appendChild(icon);
+              th.addEventListener('click', () => this.sortBy(idx));
+            });
+          },
+          getRows(){
+            const tb = this.table.tBodies[0];
+            return Array.from(tb.querySelectorAll('tr')).filter(r => !r.hasAttribute('data-empty-row'));
+          },
+          val(row, idx){
+            const cell = row.cells[idx];
+            return cell ? cell.textContent.trim() : '';
+          },
+          cmp(a,b){
+            const ax = this.val(a.row, this.sortKey);
+            const bx = this.val(b.row, this.sortKey);
+            const na = parseFloat(ax.replace(/[^0-9.-]/g, ''));
+            const nb = parseFloat(bx.replace(/[^0-9.-]/g, ''));
+            const an = !Number.isNa(na) && String(na) === ax;
+            const bn = !Number.isNa(nb) && String(nb) === bx;
+            if (an && bn) return na - nb;
+            const da = new Date(ax), db = new Date(bx);
+            if (!Number.isNa(da) && !Number.isNa(db)) return da - db;
+            return ax.localeCompare(bx, undefined, { numeric: true, sensitivity: 'base' });
+          },
+          updateIcons(){
+            const head = this.table.tHead && this.table.tHead.rows[0];
+            if(!head) return;
+            Array.from(head.cells).forEach((th, idx) => {
+              const up = th.querySelector('[data-icon-up]');
+              const dn = th.querySelector('[data-icon-down]');
+              if (!up || !dn) return;
+              up.classList.remove('opacity-100');
+              dn.classList.remove('opacity-100');
+              up.classList.add('opacity-30');
+              dn.classList.add('opacity-30');
+              if (idx === this.sortKey) {
+                if (this.sortDir === 'asc') up.classList.replace('opacity-30', 'opacity-100');
+                else dn.classList.replace('opacity-30', 'opacity-100');
+              }
+            });
+          },
+          sortBy(idx){
+            this.sortKey === idx ? this.sortDir = (this.sortDir === 'asc' ? 'desc' : 'asc') : (this.sortKey = idx, this.sortDir = 'asc');
+            const body = this.table.tBodies[0];
+            const rows = this.getRows().map((r,i) => ({ row: r, idx: i }));
+            rows.sort((a,b) => {
+              const res = this.cmp(a,b);
+              return this.sortDir === 'asc' ? res : -res;
+            });
+            rows.forEach(({row}) => body.appendChild(row));
+            this.updateIcons();
+          }
+        }
+      }
+    }
+    </script>
 </x-app-layout>
+<script>
+    if (!window.tableSorterV2) {
+        window.tableSorterV2 = function () {
+            return {
+                table: null,
+                sortKey: null,
+                sortDir: 'asc',
+                init(el) {
+                    this.table = el;
+                    const head = el.tHead && el.tHead.rows[0];
+                    if (!head) return;
+                    Array.from(head.cells).forEach((th, idx) => {
+                        if (th.hasAttribute('data-nosort')) return;
+                        th.classList.add('select-none');
+                        th.style.cursor = 'pointer';
+                        const icon = document.createElement('span');
+                        icon.className = 'ml-1 inline-flex items-center text-sky-600';
+                        icon.innerHTML = '<svg class="h-4 w-4" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">\n  <path d="M10 3.5v13" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="opacity-40" data-stem></path>\n  <path data-icon-up d="M6.5 8l3.5-3.5 3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-40"></path>\n  <path data-icon-down d="M6.5 12l3.5 3.5 3.5-3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-40"></path>\n</svg>'
+                        th.appendChild(icon);
+                        th.addEventListener('click', () => this.sortBy(idx));
+                    });
+                    this.updateIcons();
+                },
+                getRows() {
+                    const tb = this.table.tBodies[0];
+                    return Array.from(tb.querySelectorAll('tr')).filter(r => !r.hasAttribute('data-empty-row'));
+                },
+                cellText(row, idx) {
+                    const cell = row.cells[idx];
+                    return cell ? cell.textContent.trim() : '';
+                },
+                asNumber(s) {
+                    const t = (s || '').replace(/\s+/g, '').replace(',', '.');
+                    return /^-?\d+(?:\.\d+)?$/.test(t) ? parseFloat(t) : null;
+                },
+                asDate(s) {
+                    const t = Date.parse(s);
+                    return Number.isNaN(t) ? null : t;
+                },
+                compare(a, b) {
+                    const na = this.asNumber(a), nb = this.asNumber(b);
+                    if (na !== null && nb !== null) return na - nb;
+                    const da = this.asDate(a), db = this.asDate(b);
+                    if (da !== null && db !== null) return da - db;
+                    return a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' });
+                },
+                updateIcons() {
+                    const head = this.table.tHead && this.table.tHead.rows[0];
+                    if (!head) return;
+                    Array.from(head.cells).forEach((th, idx) => {
+                        const up = th.querySelector('[data-icon-up]');
+                        const dn = th.querySelector('[data-icon-down]');
+                        if (!up || !dn) return;
+                        up.classList.add('opacity-40');
+                        dn.classList.add('opacity-40');
+                        up.classList.remove('opacity-100');
+                        dn.classList.remove('opacity-100');
+                        if (idx === this.sortKey) {
+                            if (this.sortDir === 'asc') up.classList.replace('opacity-40', 'opacity-100');
+                            else dn.classList.replace('opacity-40', 'opacity-100');
+                        }
+                    });
+                },
+                sortBy(idx) {
+                    if (this.sortKey === idx) this.sortDir = this.sortDir === 'asc' ? 'desc' : 'asc';
+                    else { this.sortKey = idx; this.sortDir = 'asc'; }
+                    const body = this.table.tBodies[0];
+                    const rows = this.getRows();
+                    rows.sort((r1, r2) => {
+                        const a = this.cellText(r1, idx);
+                        const b = this.cellText(r2, idx);
+                        const res = this.compare(a, b);
+                        return this.sortDir === 'asc' ? res : -res;
+                    });
+                    rows.forEach(r => body.appendChild(r));
+                    this.updateIcons();
+                }
+            }
+        }
+    }
+</script>

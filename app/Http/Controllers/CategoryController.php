@@ -1,14 +1,26 @@
-<?php
+﻿<?php
 namespace App\Http\Controllers;
 use App\Models\Category;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $categories = Category::latest()->paginate(1000);
-        return view('categories.index', compact('categories'));
+        $q = trim((string) $request->query('q', ''));
+
+        $categories = Category::query()
+            ->when($q, function ($query) use ($q) {
+                $query->where(function ($w) use ($q) {
+                    $w->where('name', 'like', "%$q%")
+                      ->orWhere('code_category', 'like', "%$q%");
+                });
+            })
+            ->latest()
+            ->paginate(20)
+            ->withQueryString();
+
+        return view('categories.index', compact('categories', 'q'));
     }
 
     public function store(Request $r)
@@ -62,4 +74,3 @@ class CategoryController extends Controller
         }
     }
 }
-

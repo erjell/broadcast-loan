@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\ItemsExport;
 use App\Models\{Item, Category};
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ItemController extends Controller
 {
@@ -27,9 +29,11 @@ class ItemController extends Controller
             'serial_number' => 'nullable',
             'procurement_year' => 'nullable|integer',
             'condition' => 'required|in:baik,rusak_ringan,rusak_berat',
+            'is_missing' => 'sometimes|boolean',
         ]);
 
         try {
+            $data['is_missing'] = (bool)($data['is_missing'] ?? false);
             Item::create($data);
             return redirect()->route('items.index')->with('ok', 'Barang berhasil disimpan');
         } catch (\Throwable $e) {
@@ -46,6 +50,7 @@ class ItemController extends Controller
             'serial_number' => 'nullable',
             'procurement_year' => 'nullable|integer',
             'condition' => 'required|in:baik,rusak_ringan,rusak_berat',
+            'is_missing' => 'sometimes|boolean',
         ]);
 
         try {
@@ -58,6 +63,7 @@ class ItemController extends Controller
                     ->count() + 1;
                 $item->code = $prefix . str_pad($count, 3, '0', STR_PAD_LEFT);
             }
+            $data['is_missing'] = (bool)($data['is_missing'] ?? false);
             $item->update($data);
             return redirect()->route('items.index')->with('ok', 'Barang berhasil diperbarui');
         } catch (\Throwable $e) {
@@ -80,6 +86,7 @@ class ItemController extends Controller
         $q = $r->get('q', '');
 
         $items = Item::with('lastReturn')
+            ->where('is_missing', false)
             ->when($q, function ($qq) use ($q) {
                 $qq->where('code', 'like', "%$q%")
                     ->orWhere('serial_number', 'like', "%$q%")
@@ -111,8 +118,11 @@ class ItemController extends Controller
         }
 
         $item = Item::with('lastReturn')
-            ->where('code', $q)
-            ->orWhere('serial_number', $q)
+            ->where(function($qq) use ($q) {
+                $qq->where('code', $q)
+                   ->orWhere('serial_number', $q);
+            })
+            ->where('is_missing', false)
             ->first(['id', 'code', 'name', 'serial_number', 'condition']);
 
         if (!$item) {
@@ -179,4 +189,16 @@ class ItemController extends Controller
             'type' => $type,
         ]);
     }
+
+    public function export()
+    {
+        $items = Item::with(['category', 'lastReturn'])
+            ->orderBy('code')
+            ->get();
+
+        $fileName = 'daftar-barang-' . now()->format('Ymd_His') . '.xlsx';
+
+        return Excel::download(new ItemsExport($items), $fileName);
+    }
 }
+

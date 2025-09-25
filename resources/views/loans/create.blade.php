@@ -90,30 +90,30 @@
                 </div>
 
                 <div class="overflow-x-auto">
-                    <table class="min-w-[60rem] w-full text-sm border rounded">
-                        <thead class="bg-slate-100">
+                    <table data-sortable class="min-w-[60rem] w-full text-sm text-slate-700" x-data="tableSorterV2()" x-init="init($el)">
+                        <thead class="bg-slate-50 text-slate-600">
                             <tr>
-                                <th class="p-2 text-left">Kode</th>
-                                <th class="p-2 text-left">Nama</th>
-                                <th class="p-2 text-left">Serial Number</th>
-                                <th class="p-2 text-center">Kondisi</th>
-                                <th class="p-2">Catatan Kondisi</th>
-                                <th class="p-2"></th>
+                                <th class="text-left font-semibold px-4 py-3">Kode</th>
+                                <th class="text-left font-semibold px-4 py-3">Nama</th>
+                                <th class="text-left font-semibold px-4 py-3">Serial Number</th>
+                                <th class="text-center font-semibold px-4 py-3">Kondisi</th>
+                                <th class="font-semibold px-4 py-3">Catatan Kondisi</th>
+                                <th class="px-4 py-3" data-nosort></th>
                             </tr>
                         </thead>
                         <tbody>
                             <template x-for="(row,idx) in items" :key="row.id">
-                                <tr class="odd:bg-white even:bg-gray-50 border-b border-gray-200">
-                                    <td class="p-2" x-text="row.code"></td>
-                                    <td class="p-2" x-text="row.name"></td>
-                                    <td class="p-2" x-text="row.serial_number ?? '-'"></td>
-                                    <td class="p-2 text-center">
+                                <tr class="odd:bg-white even:bg-slate-50/60 hover:bg-slate-50 transition-colors">
+                                    <td class="px-4 py-3" x-text="row.code"></td>
+                                    <td class="px-4 py-3" x-text="row.name"></td>
+                                    <td class="px-4 py-3" x-text="row.serial_number ?? '-'"></td>
+                                    <td class="px-4 py-3 text-center">
                                         <span class="px-2 py-0.5 text-xs rounded-full" :class="row.condition==='rusak_berat' ? 'bg-red-100 text-red-700' : (row.condition==='rusak_ringan' ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700')" x-text="row.condition.replace('_',' ')"></span>
                                         <input type="hidden" :name="`items[${idx}][id]`" :value="row.id">
                                         <input type="hidden" :name="`items[${idx}][qty]`" :value="row.qty">
                                     </td>
-                                    <td class="p-2 whitespace-pre-line text-slate-600" x-text="row.last_return_notes ? row.last_return_notes : '-'"></td>
-                                    <td class="p-2 text-center">
+                                    <td class="px-4 py-3 whitespace-pre-line text-slate-600" x-text="row.last_return_notes ? row.last_return_notes : '-'"></td>
+                                    <td class="px-4 py-3 text-center">
                                         <button type="button" class="px-2 py-1 rounded bg-rose-100 text-rose-700" @click="remove(idx)">Hapus</button>
                                     </td>
                                 </tr>
@@ -225,4 +225,4 @@
   }
 }
     </script>
-</x-app-layout>
+    </x-app-layout>

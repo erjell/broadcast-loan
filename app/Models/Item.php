@@ -18,6 +18,7 @@ class Item extends Model
         'serial_number',
         'procurement_year',
         'condition',
+        'is_missing',
     ];
 
     public function category(): BelongsTo

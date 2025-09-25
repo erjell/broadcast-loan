@@ -52,7 +52,7 @@
                         <x-slot name="content">
                             <x-dropdown-link :href="route('items.index')">{{ __('Barang') }}</x-dropdown-link>
                             <x-dropdown-link :href="route('categories.index')">{{ __('Kategori') }}</x-dropdown-link>
-                            <x-dropdown-link :href="route('reports.damages')">{{ __('Log Kerusakan') }}</x-dropdown-link>
+                            <x-dropdown-link :href="route('reports.damages')">{{ __('Log Barang') }}</x-dropdown-link>
                         </x-slot>
                     </x-dropdown>
                 </div>

@@ -83,7 +83,7 @@ class LoanController extends Controller {
         $data = $r->validate([
             'returns' => 'required|array|min:1',
             'returns.*.loan_item_id' => ['required', Rule::exists('loan_items','id')->where('loan_id',$loan->id)],
-            'returns.*.condition' => ['required','in:baik,rusak_ringan,rusak_berat'],
+            'returns.*.condition' => ['required','in:baik,rusak_ringan,rusak_berat,hilang'],
             'returns.*.notes' => ['nullable','string']
         ]);
 
@@ -104,9 +104,17 @@ class LoanController extends Controller {
                     } else {
                         $item = $li->item()->lockForUpdate()->first();
                     }
-                    if ($item && $item->condition !== $row['condition']) {
-                        $item->condition = $row['condition'];
-                        $item->save();
+                    if ($item) {
+                        if ($row['condition'] === 'hilang') {
+                            // Tandai item sebagai hilang, kondisi fisik tidak diubah
+                            if (!$item->is_missing) {
+                                $item->is_missing = true;
+                                $item->save();
+                            }
+                        } else if ($item->condition !== $row['condition']) {
+                            $item->condition = $row['condition'];
+                            $item->save();
+                        }
                     }
                 }
 
