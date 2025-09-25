@@ -13,7 +13,8 @@ class ItemController extends Controller
     {
         // Eager-load latest return info (with notes) for tooltip rendering
         $items = Item::with(['category','activeLoanItem.loan','lastReturn'])
-            ->get();
+            ->orderBy('code')
+            ->paginate(20);
         // $items = Item::with('category')->latest()->paginate(10);
         
         $categories = Category::all();
@@ -190,15 +191,64 @@ class ItemController extends Controller
         ]);
     }
 
-    public function export()
+    public function export(Request $request)
     {
-        $items = Item::with(['category', 'lastReturn'])
-            ->orderBy('code')
-            ->get();
+        $q = trim((string) $request->query('q', ''));
+        $categoryName = trim((string) $request->query('category', ''));
+        $condition = (string) $request->query('condition', '');
+        $status = strtolower((string) $request->query('status', ''));
+        $yearStart = $request->query('year_start');
+        $yearEnd = $request->query('year_end');
+
+        $query = Item::query()
+            ->with(['category', 'lastReturn', 'activeLoanItem.loan']);
+
+        if ($q !== '') {
+            $query->where(function ($w) use ($q) {
+                $w->where('code', 'like', "%$q%")
+                  ->orWhere('serial_number', 'like', "%$q%")
+                  ->orWhere('name', 'like', "%$q%")
+                  ->orWhere('details', 'like', "%$q%")
+                  ->orWhereHas('category', function ($c) use ($q) {
+                      $c->where('name', 'like', "%$q%");
+                  });
+            });
+        }
+
+        if ($categoryName !== '') {
+            $query->whereHas('category', function ($c) use ($categoryName) {
+                $c->where('name', $categoryName);
+            });
+        }
+
+        if (in_array($condition, ['baik', 'rusak_ringan', 'rusak_berat'], true)) {
+            $query->where('condition', $condition);
+        }
+
+        if (in_array($status, ['tersedia', 'dipinjam', 'hilang'], true)) {
+            if ($status === 'hilang') {
+                $query->where('is_missing', true);
+            } elseif ($status === 'dipinjam') {
+                $query->whereHas('activeLoanItem');
+            } elseif ($status === 'tersedia') {
+                $query->where('is_missing', false)
+                      ->whereDoesntHave('activeLoanItem');
+            }
+        }
+
+        $startYear = is_null($yearStart) || $yearStart === '' ? null : (int) $yearStart;
+        $endYear = is_null($yearEnd) || $yearEnd === '' ? null : (int) $yearEnd;
+        if ($startYear !== null) {
+            $query->where('procurement_year', '>=', $startYear);
+        }
+        if ($endYear !== null) {
+            $query->where('procurement_year', '<=', $endYear);
+        }
+
+        $items = $query->orderBy('code')->get();
 
         $fileName = 'daftar-barang-' . now()->format('Ymd_His') . '.xlsx';
 
         return Excel::download(new ItemsExport($items), $fileName);
     }
 }
-

@@ -8,10 +8,10 @@
 
     <div class="py-12">
         <div x-data="{}" class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div x-data="{}" class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
+            <div x-data="itemExport({ exportBase: @js(route('items.export')) })" class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
                 <div class="text-sm text-slate-600 w-full sm:w-auto"></div>
                 <div class="flex flex-wrap gap-2 w-full sm:w-auto sm:justify-end">
-                    <a href="{{ route('items.export') }}" class="inline-flex items-center justify-center rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-100">Export Excel</a>
+                    <a :href="buildExportUrl()" @click.prevent="window.location = buildExportUrl()" href="{{ route('items.export') }}" class="inline-flex items-center justify-center rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-100">Export Excel</a>
                     <button type="button" @click="$dispatch('open-modal', 'add-item')" class="inline-flex items-center justify-center rounded-lg bg-slate-800 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-slate-900">Tambah Barang</button>
                 </div>
             </div>
@@ -115,7 +115,7 @@
                 <div class="border-b border-slate-200 p-4 space-y-4 bg-slate-50" id="itemTableFilters">
                     <div>
                         <label for="itemFilterSearch" class="block text-xs font-medium text-slate-500">Pencarian</label>
-                        <input id="itemFilterSearch" type="text" data-filter-global class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-400/30 placeholder:text-slate-400" placeholder="Cari item...">
+                        <input id="itemFilterSearch" type="text" data-filter-global class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-400/30 placeholder:text-slate-400" placeholder="Cari Barang...">
                     </div>
                     <div class="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
                         <div class="flex flex-col gap-1">
@@ -179,8 +179,8 @@
                             @foreach($items as $it)
                             @php
                             $statusLabel = ($it->is_missing)
-                                ? 'Hilang'
-                                : (($it->activeLoanItem && $it->activeLoanItem->loan) ? 'Dipinjam' : 'Tersedia');
+                            ? 'Hilang'
+                            : (($it->activeLoanItem && $it->activeLoanItem->loan) ? 'Dipinjam' : 'Tersedia');
                             $procurementDate = $it->procurement_year ? $it->procurement_year . '-01-01' : null;
                             @endphp
                             <tr class="odd:bg-white even:bg-slate-50/60 hover:bg-slate-50 transition-colors" data-status="{{ strtolower($statusLabel) }}" data-condition="{{ strtolower($it->condition) }}" data-procurement-date="{{ $procurementDate ?? '' }}" data-procurement-year="{{ $it->procurement_year }}">
@@ -226,13 +226,13 @@
                                 <td class="px-4 py-3">{{ $it->details }}</td>
                                 <td class="px-4 py-3">
                                     @if($it->is_missing)
-                                        <span class="inline-flex items-center px-2 py-1 text-xs rounded bg-amber-100 text-amber-800">Hilang</span>
+                                    <span class="inline-flex items-center px-2 py-1 text-xs rounded bg-amber-100 text-amber-800">Hilang</span>
                                     @elseif($it->activeLoanItem && $it->activeLoanItem->loan)
-                                        <a href="{{ route('loans.show', $it->activeLoanItem->loan) }}" class="inline-flex items-center px-2 py-1 text-xs rounded bg-red-100 text-red-800 hover:bg-red-200">
-                                            Dipinjam
-                                        </a>
+                                    <a href="{{ route('loans.show', $it->activeLoanItem->loan) }}" class="inline-flex items-center px-2 py-1 text-xs rounded bg-red-100 text-red-800 hover:bg-red-200">
+                                        Dipinjam
+                                    </a>
                                     @else
-                                        <span class="inline-flex items-center px-2 py-1 text-xs rounded bg-emerald-100 text-emerald-800">Tersedia</span>
+                                    <span class="inline-flex items-center px-2 py-1 text-xs rounded bg-emerald-100 text-emerald-800">Tersedia</span>
                                     @endif
                                 </td>
                                 <td class="px-4 py-3">
@@ -370,11 +370,40 @@
             </div>
 
 
-            {{-- <div class="mt-3">{{ $items->links() }}</div> --}}
+            <div class="mt-3">{{ $items->links() }}</div>
         </div>
     </div>
 
     <script>
+        function itemExport(initial){
+            return {
+                exportBase: initial.exportBase || '',
+                getFilters(){
+                    const w = document.getElementById('itemTableWrapper');
+                    if (!w) return {};
+                    return {
+                        q: w.querySelector('[data-filter-global]')?.value || '',
+                        category: document.getElementById('filterCategory')?.value || '',
+                        condition: w.querySelector('[data-filter-condition]')?.value || '',
+                        status: w.querySelector('[data-filter-status]')?.value || '',
+                        year_start: w.querySelector('[data-filter-year="start"]')?.value || '',
+                        year_end: w.querySelector('[data-filter-year="end"]')?.value || '',
+                    };
+                },
+                buildExportUrl(){
+                    const params = new URLSearchParams();
+                    const f = this.getFilters();
+                    if (f.q) params.set('q', f.q);
+                    if (f.category) params.set('category', f.category);
+                    if (f.condition) params.set('condition', f.condition);
+                    if (f.status) params.set('status', f.status);
+                    if (f.year_start) params.set('year_start', f.year_start);
+                    if (f.year_end) params.set('year_end', f.year_end);
+                    const qs = params.toString();
+                    return this.exportBase + (qs ? `?${qs}` : '');
+                }
+            }
+        }
         document.addEventListener('DOMContentLoaded', function () {
             const wrapper = document.getElementById('itemTableWrapper');
             const table = document.getElementById('tabelBarang');
@@ -541,7 +570,7 @@
         });
     </script>
     <script>
-    if(!window.__tableSorterDefined){
+        if(!window.__tableSorterDefined){
       window.__tableSorterDefined = true;
       window.tableSorter = function(){
         return {

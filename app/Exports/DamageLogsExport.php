@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 namespace App\Exports;
 
@@ -56,3 +56,4 @@ class DamageLogsExport implements FromCollection, WithHeadings, WithMapping, Sho
         ];
     }
 }
+
