@@ -13,7 +13,7 @@ class ItemController extends Controller
     {
         // Eager-load latest return info (with notes) for tooltip rendering
         $items = Item::with(['category','activeLoanItem.loan','lastReturn'])
-            ->orderBy('code')
+            ->latest('id')
             ->paginate(20);
         // $items = Item::with('category')->latest()->paginate(10);
         
