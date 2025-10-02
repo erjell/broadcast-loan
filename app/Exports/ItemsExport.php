@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 namespace App\Exports;
 
@@ -52,8 +52,7 @@ class ItemsExport implements FromCollection, WithHeadings, WithMapping, ShouldAu
             $item->procurement_year,
             ucfirst($condition),
             $item->is_missing ? 'Ya' : 'Tidak',
-            optional(optional($item->lastReturn)->return_notes) ?: '-',
+            ($item->lastReturn?->return_notes) ?: '-',
         ];
     }
 }
-

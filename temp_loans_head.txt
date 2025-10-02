@@ -1,4 +1,4 @@
-<!-- resources/views/loans/index.blade.php -->
+﻿<!-- resources/views/loans/index.blade.php -->
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
@@ -98,32 +98,6 @@
         </div>
     </div>
     <script>
-        function loanExport(initial){
-            return {
-                exportBase: initial.exportBase || '',
-                getFilters(){
-                    const w = document.getElementById('loanTableWrapper');
-                    if (!w) return {};
-                    return {
-                        q: w.querySelector('[data-filter-global]')?.value || '',
-                        status: w.querySelector('[data-filter-status]')?.value || '',
-                        from: w.querySelector('[data-filter-date="start"]')?.value || '',
-                        to: w.querySelector('[data-filter-date="end"]')?.value || '',
-                    };
-                },
-                buildExportUrl(){
-                    const f = this.getFilters();
-                    const params = new URLSearchParams();
-                    if (f.q) params.set('q', f.q);
-                    if (f.status) params.set('status', f.status);
-                    if (f.from) params.set('from', f.from);
-                    if (f.to) params.set('to', f.to);
-                    const qs = params.toString();
-                    return this.exportBase + (qs ? `?${qs}` : '');
-                }
-            }
-        }
-        
         document.addEventListener('DOMContentLoaded', function(){
             const wrapper = document.getElementById('loanTableWrapper');
             const table = document.getElementById('tabelPeminjaman');
@@ -144,117 +118,3 @@
 
             const inputs = [filters.global, filters.status, filters.dateStart, filters.dateEnd].filter(Boolean);
             const normalize = (v) => (v || '').toString().toLowerCase().trim();
-
-            const getCellText = (row, idx) => {
-                const cell = row.cells[idx];
-                return cell ? normalize(cell.textContent) : '';
-            };
-
-            const getDateFromRow = (row) => {
-                const raw = row.dataset.loanDate || getCellText(row, 2);
-                const d = new Date(raw);
-                return Number.isNaN(d.getTime()) ? null : d;
-            };
-
-            const rowMatches = (row) => {
-                if (filters.global) {
-                    const term = normalize(filters.global.value);
-                    if (term && !normalize(row.textContent).includes(term)) return false;
-                }
-
-                if (filters.status) {
-                    const val = normalize(filters.status.value);
-                    if (val) {
-                        const rowStatus = normalize(row.dataset.status || getCellText(row, 4));
-                        if (!rowStatus.includes(val)) return false;
-                    }
-                }
-
-                const startDate = filters.dateStart && filters.dateStart.value ? new Date(filters.dateStart.value) : null;
-                const endDate = filters.dateEnd && filters.dateEnd.value ? new Date(filters.dateEnd.value) : null;
-                if (startDate || endDate) {
-                    const d = getDateFromRow(row);
-                    if (!d) return false;
-                    if (startDate && d < startDate) return false;
-                    if (endDate) {
-                        const inclusiveEnd = new Date(filters.dateEnd.value);
-                        inclusiveEnd.setHours(23,59,59,999);
-                        if (d > inclusiveEnd) return false;
-                    }
-                }
-
-                return true;
-            };
-
-            const apply = () => {
-                let count = 0;
-                for (const r of rows) {
-                    const ok = rowMatches(r);
-                    r.style.display = ok ? '' : 'none';
-                    if (ok) count++;
-                }
-                if (emptyRow) emptyRow.style.display = count ? 'none' : '';
-                if (filters.count) filters.count.textContent = count ? `${count} peminjaman ditampilkan` : 'Tidak ada data yang cocok';
-            };
-
-            inputs.forEach((el) => {
-                const h = () => window.requestAnimationFrame(apply);
-                el.addEventListener('input', h);
-                el.addEventListener('change', h);
-            });
-
-            if (filters.reset) {
-                filters.reset.addEventListener('click', () => {
-                    inputs.forEach((el) => { el.value = ''; });
-                    window.requestAnimationFrame(apply);
-                });
-            }
-
-            apply();
-        });
-    </script>
-    <style>
-        @media print {
-            body {
-                background: #fff !important;
-                color: #000 !important;
-            }
-
-            nav,
-            .no-print {
-                display: none !important;
-            }
-
-            header.bg-white {
-                box-shadow: none !important;
-            }
-
-            main {
-                padding: 0 1.5rem !important;
-            }
-
-            .print-surface {
-                border: 1px solid #94a3b8 !important;
-                box-shadow: none !important;
-                background: #fff !important;
-            }
-
-            .print-table {
-                border-collapse: collapse !important;
-                width: 100% !important;
-            }
-
-            .print-table th,
-            .print-table td {
-                border: 1px solid #cbd5f5 !important;
-                padding: 8px 12px !important;
-                background: transparent !important;
-                color: #0f172a !important;
-            }
-
-            .print-table thead th {
-                background: #e2e8f0 !important;
-            }
-        }
-    </style>
-</x-app-layout>

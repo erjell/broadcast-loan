@@ -3,17 +3,20 @@
 // app/Http/Controllers/LoanController.php
 namespace App\Http\Controllers;
 
+use App\Exports\LoansExport;
 use App\Models\{Loan,LoanItem,Partner};
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
+use Maatwebsite\Excel\Facades\Excel;
 
 class LoanController extends Controller {
     public function index(){
         $loans = Loan::with('partner','items.item','user')
             ->orderByDesc('loan_date')
-            ->paginate(1000);
+            ->paginate(20)
+            ->withQueryString();
         // Jika ingin menampilkan lebih banyak per halaman, ubah angka di atas.
 
         return view('loans.index', compact('loans'));
@@ -63,6 +66,28 @@ class LoanController extends Controller {
     public function show(Loan $loan){
         $loan->load('partner','items.item','user');
         return view('loans.show', compact('loan'));
+    }
+    public function receiptPdf(Loan $loan){
+        $loan->load('partner','items.item','user');
+
+        $html = view('loans.receipt_pdf', compact('loan'))->render();
+
+        $options = new \Dompdf\Options();
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('isRemoteEnabled', true);
+
+        $dompdf = new \Dompdf\Dompdf($options);
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        $filename = 'serah-terima-' . $loan->code . '.pdf';
+        $disposition = request()->boolean('dl') ? 'attachment' : 'inline';
+
+        return response($dompdf->output(), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => $disposition . '; filename="' . $filename . '"',
+        ]);
     }
 
     public function returnForm(Loan $loan){
@@ -135,5 +160,41 @@ class LoanController extends Controller {
             ]);
             return back()->with('error','Pengembalian gagal diproses: '.$e->getMessage())->withInput();
         }
+    }
+
+    public function export(Request $request)
+    {
+        $q = trim((string) $request->query('q', ''));
+        $status = (string) $request->query('status', '');
+        $from = $request->query('from');
+        $to = $request->query('to');
+
+        $query = Loan::query()
+            ->with(['partner','user','items']);
+
+        if ($q !== '') {
+            $query->where(function($w) use ($q){
+                $w->where('code','like',"%$q%")
+                  ->orWhere('purpose','like',"%$q%")
+                  ->orWhereHas('partner', function($p) use ($q){ $p->where('name','like',"%$q%"); })
+                  ->orWhereHas('user', function($u) use ($q){ $u->where('name','like',"%$q%"); });
+            });
+        }
+
+        if (in_array($status, ['dipinjam','sebagian_kembali','selesai'], true)) {
+            $query->where('status', $status);
+        }
+
+        if (!empty($from)) {
+            $query->whereDate('loan_date', '>=', $from);
+        }
+        if (!empty($to)) {
+            $query->whereDate('loan_date', '<=', $to);
+        }
+
+        $loans = $query->orderByDesc('loan_date')->get();
+
+        $fileName = 'daftar-peminjaman-' . now()->format('Ymd_His') . '.xlsx';
+        return Excel::download(new LoansExport($loans), $fileName);
     }
 }

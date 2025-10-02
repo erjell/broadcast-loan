@@ -10,6 +10,7 @@ export default defineConfig({
                 "resources/js/Tables.js",
                 "resources/js/tooltip-kondisi.js",
                 "resources/images/logo.webp",
+                "resources/images/qrcode.png",
             ],
             refresh: true,
         }),

@@ -7,6 +7,12 @@
 
     <div class="py-10">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Toolbar: Tampilkan Barcode -->
+            <div class="mb-6">
+                <x-primary-button x-data @click="$dispatch('open-modal', 'barcode')">
+                    Feedback & Saran
+                </x-primary-button>
+            </div>
             <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 <!-- Total Transaksi Peminjaman -->
                 <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
@@ -179,4 +185,15 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal: Barcode Image -->
+    <x-modal name="barcode" :show="false" maxWidth="sm">
+        <div class="flex items-start justify-between mb-4">
+            <h3 class="text-lg font-semibold text-gray-900">Feedback dan Saran</h3>
+            <button type="button" class="text-gray-400 hover:text-gray-600 text-2xl leading-none" x-on:click="$dispatch('close-modal', 'barcode')">&times;</button>
+        </div>
+        <div class="flex justify-center">
+            <img src="{{ Vite::asset('resources/images/qrcode.png') }}" alt="qrcode" class="max-h-96 w-auto">
+        </div>
+    </x-modal>
 </x-app-layout>

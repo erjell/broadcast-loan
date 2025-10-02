@@ -1,4 +1,4 @@
-<!-- resources/views/reports/damage_logs.blade.php -->
+﻿<!-- resources/views/reports/damage_logs.blade.php -->
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
@@ -18,7 +18,6 @@
                 condition: @js($condition ?? ''),
                 from: @js(optional($dateFrom)->format('Y-m-d')),
                 to: @js(optional($dateTo)->format('Y-m-d')),
-                exportBase: @js(route('reports.damages.export')),
             })" x-init="init()">
                 <div class="p-6 border-b border-slate-200 bg-slate-50/60">
                     <div class="grid md:grid-cols-5 gap-4 items-end">
@@ -47,7 +46,7 @@
                         <div class="md:col-span-5 flex flex-col-reverse gap-3 sm:flex-row sm:justify-between sm:items-center pt-2">
                             <span class="text-sm text-slate-500" x-text="countText"></span>
                             <div class="flex gap-2 sm:justify-end no-print">
-                                <a :href="buildExportUrl()" href="{{ route('reports.damages.export') }}" class="w-full sm:w-auto inline-flex items-center justify-center rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-100">Export Excel</a>
+                                <a href="{{ route('reports.damages.export', request()->query()) }}" class="w-full sm:w-auto inline-flex items-center justify-center rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-100">Export Excel</a>
                                 <button type="button" @click="reset()" class="w-full sm:w-auto inline-flex items-center justify-center rounded-full border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-100">Reset</button>
                             </div>
                         </div>
@@ -122,7 +121,6 @@
                 condition: initial.condition || '',
                 from: initial.from || '',
                 to: initial.to || '',
-                exportBase: initial.exportBase || '',
                 count: 0,
                 get countText(){
                     return this.count ? `${this.count} log ditampilkan` : 'Tidak ada data yang cocok';
@@ -135,15 +133,6 @@
                         this.$watch('from', () => this.apply());
                         this.$watch('to', () => this.apply());
                     });
-                },
-                buildExportUrl(){
-                    const params = new URLSearchParams();
-                    if (this.search) params.set('q', this.search);
-                    if (this.condition) params.set('condition', this.condition);
-                    if (this.from) params.set('from', this.from);
-                    if (this.to) params.set('to', this.to);
-                    const qs = params.toString();
-                    return this.exportBase + (qs ? `?${qs}` : '');
                 },
                 normalize(v){ return (v || '').toString().toLowerCase().trim(); },
                 parseDate(v){ if(!v) return null; const d = new Date(v); return Number.isNaN(d.getTime()) ? null : d; },

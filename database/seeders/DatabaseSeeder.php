@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
             ItemSeeder::class,
             PartnerSeeder::class,
             LoanSeeder::class,
+            LoanDummySeeder::class,
         ]);
         
     }

@@ -6,9 +6,7 @@ use App\Models\{Loan, LoanItem, Item};
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 
-Route::get('/', fn () => redirect()->route('login'));
-
-Route::get('/dashboard', function () {
+$renderDashboard = function () {
     $totalLoans = Loan::count();
 
     // Total barang yang belum dikembalikan (berdasarkan baris loan_items yang belum memiliki return_condition)
@@ -68,9 +66,10 @@ Route::get('/dashboard', function () {
         'topItems',
         'topDamaged'
     ));
-})->middleware(['auth', 'verified'])->name('dashboard');
+};
 
-
+Route::get('/', $renderDashboard)->name('dashboard');
+Route::get('/dashboard', fn () => redirect()->route('dashboard'));
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -96,9 +95,11 @@ Route::middleware('auth')->group(function () {
 
     // Loans
     Route::get('/loans', [LoanController::class, 'index'])->name('loans.index');
+    Route::get('/loans/export', [LoanController::class, 'export'])->name('loans.export');
     Route::get('/loans/create', [LoanController::class, 'create'])->name('loans.create');
     Route::post('/loans', [LoanController::class, 'store'])->name('loans.store');
     Route::get('/loans/{loan}', [LoanController::class, 'show'])->name('loans.show');
+    Route::get('/loans/{loan}/receipt', [LoanController::class, 'receiptPdf'])->name('loans.receipt');
 
     // Returns
     Route::get('/loans/{loan}/return', [LoanController::class, 'returnForm'])->name('loans.return.form');

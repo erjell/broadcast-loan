@@ -15,6 +15,7 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+                    @auth
                     <x-nav-link :href="route('loans.index')" :active="request()->routeIs('loans.*')">
                         {{ __('Peminjaman') }}
                     </x-nav-link>
@@ -55,14 +56,16 @@
                             <x-dropdown-link :href="route('reports.damages')">{{ __('Log Barang') }}</x-dropdown-link>
                         </x-slot>
                     </x-dropdown>
+                    @endauth
                 </div>
             </div>
 
             <!-- Settings Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ms-6">
+                @auth
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
-                        <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
+                        <button class="btn btn-ghost btn-sm">
                             <div>{{ Auth::user()->name }}</div>
 
                             <div class="ms-1">
@@ -89,6 +92,12 @@
                         </form>
                     </x-slot>
                 </x-dropdown>
+                @else
+                <div class="flex items-center gap-3">
+                    <a href="{{ route('login') }}" class="btn btn-ghost btn-sm">{{ __('Masuk') }}</a>
+                    <a href="{{ route('register') }}" class="btn btn-primary btn-sm">{{ __('Daftar') }}</a>
+                </div>
+                @endauth
             </div>
 
             <!-- Hamburger -->
@@ -109,14 +118,17 @@
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
+            @auth
             <x-responsive-nav-link :href="route('loans.index')" :active="request()->routeIs('loans.*')">
                 {{ __('Peminjaman') }}
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('reports.damages')" :active="request()->routeIs('reports.*')">{{ __('Log Kerusakan') }}</x-responsive-nav-link>
             <x-responsive-nav-link :href="route('items.index')" :active="request()->routeIs('items.*')">{{ __('Barang') }}</x-responsive-nav-link>
             <x-responsive-nav-link :href="route('categories.index')" :active="request()->routeIs('categories.*')">{{ __('Kategori') }}</x-responsive-nav-link>
+            @endauth
         </div>
         <!-- Responsive Settings Options -->
+        @auth
         <div class="pt-4 pb-1 border-t border-gray-200">
             <div class="px-4">
                 <div class="font-medium text-base text-gray-800">{{ Auth::user()->name }}</div>
@@ -139,6 +151,14 @@
                 </form>
             </div>
         </div>
+        @else
+        <div class="pt-4 pb-1 border-t border-gray-200">
+            <div class="px-4 space-y-3">
+                <a href="{{ route('login') }}" class="block text-sm font-medium text-gray-700 hover:text-gray-900">{{ __('Masuk') }}</a>
+                <a href="{{ route('register') }}" class="block text-sm font-medium text-indigo-600 hover:text-indigo-500">{{ __('Daftar') }}</a>
+            </div>
+        </div>
+        @endauth
     </div>
 
     {{-- Kategori kini menjadi halaman tersendiri, modal dihapus --}}
