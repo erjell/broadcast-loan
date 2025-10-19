@@ -17,8 +17,7 @@ class CategoryController extends Controller
                 });
             })
             ->latest()
-            ->paginate(20)
-            ->withQueryString();
+            ->get();
 
         return view('categories.index', compact('categories', 'q'));
     }

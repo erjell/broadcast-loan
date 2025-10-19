@@ -19,6 +19,9 @@
                     <x-nav-link :href="route('loans.index')" :active="request()->routeIs('loans.*')">
                         {{ __('Peminjaman') }}
                     </x-nav-link>
+                    {{-- <x-nav-link :href="route('items.find')" :active="request()->routeIs('items.find')">
+                        {{ __('Cari Barang') }}
+                    </x-nav-link> --}}
                     {{-- @php
                     $laporanActive = request()->routeIs('reports.*');
                     @endphp --}}
@@ -122,6 +125,7 @@
             <x-responsive-nav-link :href="route('loans.index')" :active="request()->routeIs('loans.*')">
                 {{ __('Peminjaman') }}
             </x-responsive-nav-link>
+            {{-- <x-responsive-nav-link :href="route('items.find')" :active="request()->routeIs('items.find')">{{ __('Cari Barang') }}</x-responsive-nav-link> --}}
             <x-responsive-nav-link :href="route('reports.damages')" :active="request()->routeIs('reports.*')">{{ __('Log Kerusakan') }}</x-responsive-nav-link>
             <x-responsive-nav-link :href="route('items.index')" :active="request()->routeIs('items.*')">{{ __('Barang') }}</x-responsive-nav-link>
             <x-responsive-nav-link :href="route('categories.index')" :active="request()->routeIs('categories.*')">{{ __('Kategori') }}</x-responsive-nav-link>

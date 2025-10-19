@@ -13,10 +13,10 @@ class ReportController extends Controller
     {
         [$query, $q, $condition, $dateFrom, $dateTo] = $this->makeDamageLogsQuery($request);
 
+        // Muat semua log agar filter/pencarian sisi klien mencakup semua baris
         $logs = (clone $query)
             ->latest('updated_at')
-            ->paginate(1000)
-            ->withQueryString();
+            ->get();
 
         return view('reports.damage_logs', compact('logs', 'q', 'condition', 'dateFrom', 'dateTo'));
     }

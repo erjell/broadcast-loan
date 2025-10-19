@@ -17,7 +17,7 @@
 
             <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <p class="text-sm text-slate-600 mb-2 sm:mb-0 break-words">
-                    {{ $loan->partner->name }} • {{ $loan->purpose }} • {{ $loan->loan_date }} • Petugas: {{ optional($loan->user)->name }}
+                    {{ $loan->partner->name }} • {{ $loan->lokasi }} • {{ $loan->loan_date }} • Petugas: {{ optional($loan->user)->name }}
                 </p>
                 <div class="flex flex-wrap gap-2 no-print">
                     <a href="{{ route('loans.receipt', $loan) }}" target="_blank" class="inline-flex w-full sm:w-auto justify-center px-3 py-2 rounded border border-slate-300 text-slate-800 bg-white hover:bg-slate-50">

@@ -28,7 +28,7 @@ class LoansExport implements FromCollection, WithHeadings, WithMapping, ShouldAu
         return [
             'Kode Peminjaman',
             'Nama Peminjam',
-            'Keperluan',
+            'Lokasi',
             'Tanggal Pinjam',
             'Petugas',
             'Status',
@@ -50,7 +50,7 @@ class LoansExport implements FromCollection, WithHeadings, WithMapping, ShouldAu
         return [
             $loan->code,
             optional($loan->partner)->name,
-            $loan->purpose,
+            $loan->lokasi,
             optional($loan->loan_date) instanceof \Carbon\Carbon ? $loan->loan_date->format('Y-m-d') : (string) $loan->loan_date,
             optional($loan->user)->name,
             $loan->status,
@@ -59,4 +59,3 @@ class LoansExport implements FromCollection, WithHeadings, WithMapping, ShouldAu
         ];
     }
 }
-

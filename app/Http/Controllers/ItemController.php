@@ -9,66 +9,19 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class ItemController extends Controller
 {
-    public function index(Request $request)
+    public function find()
     {
-        // Server-side filtering + pagination so live search works with pagination
-        $q = trim((string) $request->query('q', ''));
-        $categoryName = trim((string) $request->query('category', ''));
-        $condition = (string) $request->query('condition', '');
-        $status = strtolower((string) $request->query('status', ''));
-        $yearStart = $request->query('year_start');
-        $yearEnd = $request->query('year_end');
+        // Render the responsive item search page (uses AJAX + html5-qrcode)
+        return view('items.find');
+    }
 
-        $query = Item::query()
-            ->with(['category','activeLoanItem.loan','lastReturn']);
-
-        if ($q !== '') {
-            $query->where(function ($w) use ($q) {
-                $w->where('code', 'like', "%$q%")
-                  ->orWhere('serial_number', 'like', "%$q%")
-                  ->orWhere('name', 'like', "%$q%")
-                  ->orWhere('merk', 'like', "%$q%")
-                  ->orWhere('tipe', 'like', "%$q%")
-                  ->orWhere('details', 'like', "%$q%")
-                  ->orWhere('lokasi', 'like', "%$q%")
-                  ->orWhereHas('category', function ($c) use ($q) {
-                      $c->where('name', 'like', "%$q%");
-                  });
-            });
-        }
-
-        if ($categoryName !== '') {
-            $query->whereHas('category', function ($c) use ($categoryName) {
-                $c->where('name', $categoryName);
-            });
-        }
-
-        if (in_array($condition, ['baik', 'rusak_ringan', 'rusak_berat'], true)) {
-            $query->where('condition', $condition);
-        }
-
-        if (in_array($status, ['tersedia', 'dipinjam', 'hilang'], true)) {
-            if ($status === 'hilang') {
-                $query->where('is_missing', true);
-            } elseif ($status === 'dipinjam') {
-                $query->whereHas('activeLoanItem');
-            } elseif ($status === 'tersedia') {
-                $query->where('is_missing', false)
-                      ->whereDoesntHave('activeLoanItem');
-            }
-        }
-
-        $startYear = is_null($yearStart) || $yearStart === '' ? null : (int) $yearStart;
-        $endYear = is_null($yearEnd) || $yearEnd === '' ? null : (int) $yearEnd;
-        if ($startYear !== null) {
-            $query->where('procurement_year', '>=', $startYear);
-        }
-        if ($endYear !== null) {
-            $query->where('procurement_year', '<=', $endYear);
-        }
-
-        $items = $query->orderBy('code')->paginate(20)->withQueryString();
-
+    public function index()
+    {
+        // Eager-load latest return info and load all items so client-side filter covers all rows
+        $items = Item::with(['category','activeLoanItem.loan','lastReturn'])
+            ->orderBy('code')
+            ->get();
+        
         $categories = Category::all();
         return view('items.index', compact('items', 'categories'));
     }
@@ -144,23 +97,39 @@ class ItemController extends Controller
     {
         $q = $r->get('q', '');
 
-        $items = Item::with('lastReturn')
-            ->where('is_missing', false)
+        $items = Item::with(['category', 'activeLoanItem.loan', 'lastReturn'])
             ->when($q, function ($qq) use ($q) {
                 $qq->where('code', 'like', "%$q%")
                     ->orWhere('serial_number', 'like', "%$q%")
-                    ->orWhere('name', 'like', "%$q%");
+                    ->orWhere('name', 'like', "%$q%")
+                    ->orWhere('merk', 'like', "%$q%")
+                    ->orWhere('tipe', 'like', "%$q%")
+                    ->orWhere('details', 'like', "%$q%")
+                    ->orWhere('lokasi', 'like', "%$q%")
+                    ->orWhereHas('category', function ($c) use ($q) {
+                        $c->where('name', 'like', "%$q%");
+                    });
             })
+            ->orderBy('code')
             ->limit(10)
-            ->get(['id', 'code', 'name', 'serial_number', 'condition']);
+            ->get();
 
         $payload = $items->map(function ($item) {
             return [
                 'id' => $item->id,
                 'code' => $item->code,
                 'name' => $item->name,
+                'merk' => $item->merk,
+                'tipe' => $item->tipe,
+                'details' => $item->details,
                 'serial_number' => $item->serial_number,
+                'procurement_year' => $item->procurement_year,
                 'condition' => $item->condition,
+                'category' => optional($item->category)->name,
+                'lokasi' => $item->lokasi,
+                'is_missing' => (bool) $item->is_missing,
+                'on_loan' => (bool) $item->activeLoanItem,
+                'loan_id' => optional(optional($item->activeLoanItem)->loan)->id,
                 'last_return_notes' => optional($item->lastReturn)->return_notes,
             ];
         });
@@ -176,13 +145,12 @@ class ItemController extends Controller
             return response()->json(['message' => 'Query required'], 422);
         }
 
-        $item = Item::with('lastReturn')
+        $item = Item::with(['category', 'activeLoanItem.loan', 'lastReturn'])
             ->where(function($qq) use ($q) {
                 $qq->where('code', $q)
                    ->orWhere('serial_number', $q);
             })
-            ->where('is_missing', false)
-            ->first(['id', 'code', 'name', 'serial_number', 'condition']);
+            ->first();
 
         if (!$item) {
             return response()->json(['message' => 'Item not found'], 404);
@@ -192,8 +160,17 @@ class ItemController extends Controller
             'id' => $item->id,
             'code' => $item->code,
             'name' => $item->name,
+            'merk' => $item->merk,
+            'tipe' => $item->tipe,
+            'details' => $item->details,
             'serial_number' => $item->serial_number,
+            'procurement_year' => $item->procurement_year,
             'condition' => $item->condition,
+            'category' => optional($item->category)->name,
+            'lokasi' => $item->lokasi,
+            'is_missing' => (bool) $item->is_missing,
+            'on_loan' => (bool) $item->activeLoanItem,
+            'loan_id' => optional(optional($item->activeLoanItem)->loan)->id,
             'last_return_notes' => optional($item->lastReturn)->return_notes,
         ]);
     }

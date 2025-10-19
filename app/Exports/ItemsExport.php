@@ -28,11 +28,14 @@ class ItemsExport implements FromCollection, WithHeadings, WithMapping, ShouldAu
         return [
             'Kode Barang',
             'Nama Barang',
+            'Merk',
+            'Tipe',
             'Kategori',
             'Serial Number',
             'Tahun Pengadaan',
             'Kondisi',
             'Status Hilang',
+            'Lokasi',
             'Catatan Pengembalian Terakhir',
         ];
     }
@@ -47,11 +50,14 @@ class ItemsExport implements FromCollection, WithHeadings, WithMapping, ShouldAu
         return [
             $item->code,
             $item->name,
+            $item->merk,
+            $item->tipe,
             optional($item->category)->name,
             $item->serial_number,
             $item->procurement_year,
             ucfirst($condition),
             $item->is_missing ? 'Ya' : 'Tidak',
+            $item->lokasi,
             ($item->lastReturn?->return_notes) ?: '-',
         ];
     }

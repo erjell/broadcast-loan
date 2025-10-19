@@ -23,21 +23,21 @@ class LoanSeeder extends Seeder
         $datasets = [
             [
                 'partner' => $partners[0],
-                'purpose' => 'Peliputan Acara A',
+                'lokasi'  => 'Peliputan Acara A',
                 'date'    => now()->subDays(7),
                 'status'  => 'dipinjam',
                 'item_idx'=> [0,1,2],
             ],
             [
                 'partner' => $partners[1],
-                'purpose' => 'Siaran Live B',
+                'lokasi'  => 'Siaran Live B',
                 'date'    => now()->subDays(3),
                 'status'  => 'sebagian_kembali',
                 'item_idx'=> [3,4],
             ],
             [
                 'partner' => $partners[2],
-                'purpose' => 'Produksi Konten C',
+                'lokasi'  => 'Produksi Konten C',
                 'date'    => now()->subDay(),
                 'status'  => 'selesai',
                 'item_idx'=> [5,6,7],
@@ -48,7 +48,7 @@ class LoanSeeder extends Seeder
             $loan = Loan::create([
                 'partner_id' => $data['partner']->id,
                 'loan_date'  => $data['date'],
-                'purpose'    => $data['purpose'],
+                'lokasi'     => $data['lokasi'],
                 'user_id'    => $user->id,
                 'status'     => $data['status'],
             ]);
@@ -64,4 +64,3 @@ class LoanSeeder extends Seeder
         }
     }
 }
-

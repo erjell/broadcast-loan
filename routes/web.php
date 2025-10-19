@@ -77,6 +77,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // Items
+    Route::get('/items/find', [ItemController::class, 'find'])->name('items.find');
     Route::get('/items', [ItemController::class, 'index'])->name('items.index');
     Route::get('/items/export', [ItemController::class, 'export'])->name('items.export');
     Route::post('/items', [ItemController::class, 'store'])->name('items.store');

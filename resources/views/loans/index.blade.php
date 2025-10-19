@@ -26,7 +26,7 @@
                     <div class="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
                         <div class="flex flex-col gap-1">
                             <label for="loanFilterSearch" class="text-xs font-medium text-slate-600">Pencarian</label>
-                            <input id="loanFilterSearch" type="text" data-filter-global class="rounded border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:ring-slate-500" placeholder="Cari nama peminjam, keperluan, petugas...">
+                            <input id="loanFilterSearch" type="text" data-filter-global class="rounded border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:ring-slate-500" placeholder="Cari nama peminjam, lokasi, petugas...">
                         </div>
                         <div class="flex flex-col gap-1">
                             <label for="loanFilterStatus" class="text-xs font-medium text-slate-600">Status</label>
@@ -55,7 +55,7 @@
                         <thead class="bg-slate-50 text-slate-600">
                             <tr>
                                 <th class="text-center font-semibold px-4 py-3">Nama Peminjam</th>
-                                <th class="text-center font-semibold px-4 py-3">Keperluan Acara/Lokasi</th>
+                                <th class="text-center font-semibold px-4 py-3">Lokasi</th>
                                 <th class="text-center font-semibold px-4 py-3">Tanggal Pinjam</th>
                                 <th class="text-center font-semibold px-4 py-3">Petugas</th>
                                 <th class="text-center font-semibold px-4 py-3">Status</th>
@@ -69,7 +69,7 @@
                             @endphp
                             <tr class="odd:bg-white even:bg-slate-50/60 hover:bg-slate-50 transition-colors" data-status="{{ strtolower($l->status) }}" data-loan-date="{{ $loanDate }}">
                                 <td class="px-4 py-3">{{ $l->partner->name }}</td>
-                                <td class="px-4 py-3">{{ $l->purpose }}</td>
+                                <td class="px-4 py-3">{{ $l->lokasi }}</td>
                                 <td class="px-4 py-3">{{ $l->loan_date }}</td>
                                 <td class="px-4 py-3">{{ optional($l->user)->name }}</td>
                                 <td class="px-4 py-3 text-center">
@@ -94,7 +94,9 @@
                     </table>
                 </div>
             </div>
+            @if (method_exists($loans, 'links'))
             <div class="mt-3">{{ $loans->links() }}</div>
+            @endif
         </div>
     </div>
     <script>

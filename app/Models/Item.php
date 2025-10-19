@@ -13,12 +13,15 @@ class Item extends Model
 {
     protected $fillable = [
         'name',
+        'merk',
+        'tipe',
         'details',
         'category_id',
         'serial_number',
         'procurement_year',
         'condition',
         'is_missing',
+        'lokasi',
     ];
 
     public function category(): BelongsTo

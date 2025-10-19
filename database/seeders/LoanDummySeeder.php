@@ -88,15 +88,15 @@ class LoanDummySeeder extends Seeder
                 ->subDays(random_int(0, 90))
                 ->setTime(random_int(8, 18), random_int(0, 59), 0);
 
-            $purposes = [
+            $lokasis = [
                 'Peliputan', 'Siaran Live', 'Produksi Konten', 'Dokumentasi', 'Workshop', 'Maintenance', 'Uji Coba'
             ];
-            $purpose = $purposes[array_rand($purposes)].' '.Str::upper(Str::random(3));
+            $lokasi = $lokasis[array_rand($lokasis)].' '.Str::upper(Str::random(3));
 
             $loan = Loan::create([
                 'partner_id' => $partner->id,
                 'loan_date'  => $loanDate,
-                'purpose'    => $purpose,
+                'lokasi'     => $lokasi,
                 'user_id'    => $user->id,
                 'status'     => $status,
             ]);
@@ -136,4 +136,3 @@ class LoanDummySeeder extends Seeder
         }
     }
 }
-

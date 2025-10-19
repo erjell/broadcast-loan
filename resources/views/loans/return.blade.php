@@ -17,7 +17,7 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
             <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                <p class="text-sm text-slate-600 mb-2 sm:mb-0">{{ $loan->partner->name }} • {{ $loan->purpose }} • Petugas: {{ optional($loan->user)->name }}</p>
+                <p class="text-sm text-slate-600 mb-2 sm:mb-0">{{ $loan->partner->name }} • {{ $loan->lokasi }} • Petugas: {{ optional($loan->user)->name }}</p>
 
             </div>
             <form action="{{ route('loans.return.process',$loan) }}" method="post" class="bg-white/90 supports-[backdrop-filter]:bg-white/70 backdrop-blur border border-slate-200 p-4 rounded-xl shadow-sm space-y-4 overflow-hidden print-surface">

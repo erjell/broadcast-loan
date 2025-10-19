@@ -97,6 +97,7 @@ $date = now()->format('d F Y');
 </head>
 
 <body>
+    <br><br><br><br><br><br>
     <h1>SERAH TERIMA BARANG</h1>
     <p class="mb-2">Diserahkan peralatan berupa:</p>
 
@@ -107,7 +108,7 @@ $date = now()->format('d F Y');
                 <th>Nama Barang</th>
                 <th style="width:45px">Kode</th>
                 <th style="width:220px">Serial Number</th>
-                <th style="width:120px">Keterangan</th>
+                <th style="width:120px">Kondisi</th>
             </tr>
         </thead>
         <tbody>
@@ -120,7 +121,7 @@ $date = now()->format('d F Y');
                 <td class="center">{{ $i+1 }}</td>
                 <td>{{ $li->item->name }}</td>
                 <td class="center">{{ $li->item->code }}</td>
-                <td>{!! nl2br(e($serial)) !!}</td>
+                <td class="center">{!! nl2br(e($serial)) !!}</td>
                 <td class="center">{{ $keterangan }}</td>
             </tr>
             @endforeach
@@ -128,7 +129,7 @@ $date = now()->format('d F Y');
     </table>
 
     <p class="mb-2">
-        Barang tersebut di atas sudah dilakukan pengujian dan dalam keadaan baik. Selanjutnya akan diserahkan kembali ke {{ $loan->partner->name }}.
+        Barang tersebut di atas sudah dilakukan pengujian dan dalam keadaan baik. Barang akan digunakan untuk keperluan/lokasi <b>{{ $loan->lokasi }}</b>. Selanjutnya akan diserahkan ke <b>{{ $loan->partner->name }}</b>.
     </p>
     <p class="mb-3">
         Demikian surat tanda terima barang tersebut, untuk dapat dipergunakan dengan sebagaimana mestinya.

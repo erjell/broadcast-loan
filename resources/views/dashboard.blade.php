@@ -12,6 +12,9 @@
                 <x-primary-button x-data @click="$dispatch('open-modal', 'barcode')">
                     Feedback & Saran
                 </x-primary-button>
+                <a href="{{ route('items.find') }}" class="btn btn-secondary">
+                    Cari Barang
+                </a>
             </div>
             <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 <!-- Total Transaksi Peminjaman -->

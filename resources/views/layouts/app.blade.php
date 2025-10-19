@@ -184,6 +184,18 @@
   });
 }
   </script>
+  <script>
+    // Tambahkan kelas border ke semua sel tabel di seluruh halaman
+    document.addEventListener('DOMContentLoaded', function(){
+      try {
+        document.querySelectorAll('table td').forEach(function(td){
+          td.classList.add('border-r','border-slate-100');
+        });
+      } catch (e) {
+        // no-op
+      }
+    });
+  </script>
 </body>
 
 </html>

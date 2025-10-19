@@ -110,7 +110,7 @@
                         </table>
                     </div>
 
-                    <div class="mt-4">{{ $logs->links() }}</div>
+                    <!-- Pagination dihapus: seluruh data dimuat agar pencarian live mencakup semua baris -->
                 </div>
             </div>
         </div>

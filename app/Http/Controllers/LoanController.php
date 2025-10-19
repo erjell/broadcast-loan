@@ -13,11 +13,10 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class LoanController extends Controller {
     public function index(){
+        // Muat semua data agar filter/pencarian di sisi klien mencakup seluruh transaksi
         $loans = Loan::with('partner','items.item','user')
             ->orderByDesc('loan_date')
-            ->paginate(20)
-            ->withQueryString();
-        // Jika ingin menampilkan lebih banyak per halaman, ubah angka di atas.
+            ->get();
 
         return view('loans.index', compact('loans'));
     }
@@ -29,7 +28,7 @@ class LoanController extends Controller {
     public function store(Request $r){
         $data = $r->validate([
             'partner_name' => ['required','string','max:255'],
-            'purpose'    => ['required','string','max:255'],
+            'lokasi'     => ['required','string','max:255'],
             'loan_date'  => ['required','date'],
             'items'      => ['required','array','min:1'],
             'items.*.id' => ['required','exists:items,id']
@@ -41,7 +40,7 @@ class LoanController extends Controller {
             DB::transaction(function() use ($data, $partner){
                 $loan = Loan::create([
                     'partner_id'=>$partner->id,
-                    'purpose'=>$data['purpose'],
+                    'lokasi'=>$data['lokasi'],
                     'loan_date'=>$data['loan_date'],
                     'user_id'=>auth()->id()
                 ]);
@@ -50,6 +49,12 @@ class LoanController extends Controller {
                         'loan_id'=>$loan->id,
                         'item_id'=>$row['id']
                     ]);
+                    // Update lokasi item sesuai lokasi peminjaman
+                    $item = \App\Models\Item::lockForUpdate()->find($row['id']);
+                    if ($item) {
+                        $item->lokasi = $data['lokasi'];
+                        $item->save();
+                    }
                 }
             });
 
@@ -175,7 +180,7 @@ class LoanController extends Controller {
         if ($q !== '') {
             $query->where(function($w) use ($q){
                 $w->where('code','like',"%$q%")
-                  ->orWhere('purpose','like',"%$q%")
+                  ->orWhere('lokasi','like',"%$q%")
                   ->orWhereHas('partner', function($p) use ($q){ $p->where('name','like',"%$q%"); })
                   ->orWhereHas('user', function($u) use ($q){ $u->where('name','like',"%$q%"); });
             });

@@ -24,8 +24,8 @@
 
                     </div>
                     <div>
-                        <label class="block text-sm">Keperluan / Lokasi</label>
-                        <input name="purpose" class="w-full border rounded p-2" placeholder="Liputan, Talkshow, dsb" required>
+                        <label class="block text-sm">Lokasi</label>
+                        <input name="lokasi" class="w-full border rounded p-2" placeholder="Lokasi barang dipinjam" required>
                     </div>
                     <div>
                         <label class="block text-sm">Tanggal Pinjam</label>

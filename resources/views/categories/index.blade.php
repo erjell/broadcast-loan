@@ -46,7 +46,7 @@
                                 <input type="text" x-model="searchTerm" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-2 pl-9 text-sm focus:border-slate-500 focus:ring-slate-500" placeholder="Ketik untuk mencari kategori...">
                             </div>
                         </div>
-                        <span class="text-xs font-medium uppercase tracking-wide text-slate-400" x-text="summaryLabel">{{ $categories->total() }} Kategori</span>
+                        <span class="text-xs font-medium uppercase tracking-wide text-slate-400" x-text="summaryLabel"></span>
                     </div>
 
                     <div class="overflow-hidden">
@@ -146,9 +146,7 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="px-6 py-4 border-t border-slate-100">
-                        {{ $categories->links() }}
-                    </div>
+                    <!-- Pagination dihapus: seluruh data dimuat agar pencarian live mencakup semua baris -->
                 </div>
             </div>
         </div>
