@@ -7,7 +7,7 @@
     </x-slot>
 
     <div class="py-12">
-        <div x-data="{}" class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div x-data="{}" class="max-w-[110rem] mx-auto sm:px-6 lg:px-8">
             <div x-data="itemExport({ exportBase: @js(route('items.export')) })" class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
                 <div class="text-sm text-slate-600 w-full sm:w-auto"></div>
                 <div class="flex flex-wrap gap-2 w-full sm:w-auto sm:justify-end">
@@ -27,6 +27,14 @@
                         <div class="md:col-span-2">
                             <label class="block text-sm">Nama Barang</label>
                             <input name="name" class="w-full border rounded p-2" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm">Merk</label>
+                            <input name="merk" class="w-full border rounded p-2">
+                        </div>
+                        <div>
+                            <label class="block text-sm">Tipe</label>
+                            <input name="tipe" class="w-full border rounded p-2">
                         </div>
                         <div class="md:col-span-2">
                             <label class="block text-sm">Detail Barang</label>
@@ -60,6 +68,10 @@
                                     </select>
                                 </div>
                             </div>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm">Lokasi</label>
+                            <input name="lokasi" class="w-full border rounded p-2" placeholder="Lokasi penyimpanan / penempatan">
                         </div>
                         <div class="md:col-span-2">
                             <label class="block text-sm">Kode Barang</label>
@@ -115,7 +127,7 @@
                 <div class="border-b border-slate-200 p-4 space-y-4 bg-slate-50" id="itemTableFilters">
                     <div>
                         <label for="itemFilterSearch" class="block text-xs font-medium text-slate-500">Pencarian</label>
-                        <input id="itemFilterSearch" type="text" data-filter-global class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-400/30 placeholder:text-slate-400" placeholder="Cari Barang...">
+                        <input id="itemFilterSearch" type="text" data-filter-global class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-400/30 placeholder:text-slate-400" placeholder="Cari Barang..." value="{{ request('q','') }}">
                     </div>
                     <div class="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
                         <div class="flex flex-col gap-1">
@@ -123,7 +135,7 @@
                             <select id="filterCategory" data-filter-select-column="2" class="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-400/30">
                                 <option value="">Semua kategori</option>
                                 @foreach($categories as $categoryOption)
-                                <option value="{{ $categoryOption->name }}">{{ $categoryOption->name }}</option>
+                                <option value="{{ $categoryOption->name }}" @selected(request('category')===$categoryOption->name)>{{ $categoryOption->name }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -131,39 +143,45 @@
                             <label for="filterCondition" class="text-xs font-medium text-slate-600">Kondisi</label>
                             <select id="filterCondition" data-filter-condition class="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-400/30">
                                 <option value="">Semua kondisi</option>
-                                <option value="baik">Baik</option>
-                                <option value="rusak_ringan">Rusak Ringan</option>
-                                <option value="rusak_berat">Rusak Berat</option>
+                                <option value="baik" @selected(request('condition')==='baik')>Baik</option>
+                                <option value="rusak_ringan" @selected(request('condition')==='rusak_ringan')>Rusak Ringan</option>
+                                <option value="rusak_berat" @selected(request('condition')==='rusak_berat')>Rusak Berat</option>
                             </select>
                         </div>
                         <div class="flex flex-col gap-1">
                             <label for="filterStatus" class="text-xs font-medium text-slate-600">Status</label>
                             <select id="filterStatus" data-filter-status class="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-400/30">
                                 <option value="">Semua status</option>
-                                <option value="tersedia">Tersedia</option>
-                                <option value="dipinjam">Dipinjam</option>
-                                <option value="hilang">Hilang</option>
+                                <option value="tersedia" @selected(request('status')==='tersedia')>Tersedia</option>
+                                <option value="dipinjam" @selected(request('status')==='dipinjam')>Dipinjam</option>
+                                <option value="hilang" @selected(request('status')==='hilang')>Hilang</option>
                             </select>
                         </div>
                         <div class="flex flex-col gap-1">
                             <label class="text-xs font-medium text-slate-600">Rentang Tahun Pengadaan</label>
                             <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                                <input type="number" inputmode="numeric" min="1900" max="{{ now()->year }}" step="1" placeholder="Awal" data-filter-year="start" class="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-400/30">
-                                <input type="number" inputmode="numeric" min="1900" max="{{ now()->year }}" step="1" placeholder="Akhir" data-filter-year="end" class="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-400/30">
+                                <input type="number" inputmode="numeric" min="1900" max="{{ now()->year }}" step="1" placeholder="Awal" data-filter-year="start" class="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-400/30" value="{{ request('year_start') }}">
+                                <input type="number" inputmode="numeric" min="1900" max="{{ now()->year }}" step="1" placeholder="Akhir" data-filter-year="end" class="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-400/30" value="{{ request('year_end') }}">
                             </div>
                         </div>
                     </div>
                     <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                        <span class="text-sm text-slate-500" data-filter-count></span>
+                        <span class="text-sm text-slate-500" data-filter-count>
+                            @if($items instanceof \Illuminate\Contracts\Pagination\LengthAwarePaginator)
+                                {{ $items->total() ? ('Menampilkan '.$items->firstItem().'–'.$items->lastItem().' dari '.$items->total().' barang') : 'Tidak ada data' }}
+                            @endif
+                        </span>
                         <button type="button" data-filter-reset class="inline-flex items-center justify-center rounded-full border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-100">Reset Filter</button>
                     </div>
                 </div>
                 <div class="overflow-x-auto">
-                    <table data-sortable id="tabelBarang" class="min-w-[64rem] w-full text-sm text-slate-700">
+                    <table data-sortable id="tabelBarang" class="min-w-[96rem] w-full text-sm text-slate-700 border border-slate-300 ">
                         <thead class="sticky top-0 z-10 bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/60 text-slate-700">
                             <tr class="border-b border-slate-200">
                                 <th class="text-left uppercase text-[11px] tracking-[0.08em] font-semibold px-4 py-3">Kode</th>
                                 <th class="text-left uppercase text-[11px] tracking-[0.08em] font-semibold px-4 py-3">Nama</th>
+                                <th class="text-left uppercase text-[11px] tracking-[0.08em] font-semibold px-4 py-3">Merk</th>
+                                <th class="text-left uppercase text-[11px] tracking-[0.08em] font-semibold px-4 py-3">Tipe</th>
                                 <th class="text-left uppercase text-[11px] tracking-[0.08em] font-semibold px-4 py-3">Kategori</th>
                                 <th class="text-left uppercase text-[11px] tracking-[0.08em] font-semibold px-4 py-3">Serial</th>
                                 <th class="text-left uppercase text-[11px] tracking-[0.08em] font-semibold px-4 py-3">Tahun</th>
@@ -172,6 +190,7 @@
                                 </th>
                                 <th class="text-left uppercase text-[11px] tracking-[0.08em] font-semibold px-4 py-3">Detail</th>
                                 <th class="text-left uppercase text-[11px] tracking-[0.08em] font-semibold px-4 py-3">Status</th>
+                                <th class="text-left uppercase text-[11px] tracking-[0.08em] font-semibold px-4 py-3">Lokasi</th>
                                 <th class="text-left uppercase text-[11px] tracking-[0.08em] font-semibold px-4 py-3" data-nosort></th>
                             </tr>
                         </thead>
@@ -183,13 +202,15 @@
                             : (($it->activeLoanItem && $it->activeLoanItem->loan) ? 'Dipinjam' : 'Tersedia');
                             $procurementDate = $it->procurement_year ? $it->procurement_year . '-01-01' : null;
                             @endphp
-                            <tr class="odd:bg-white even:bg-slate-50/60 hover:bg-slate-50 transition-colors" data-status="{{ strtolower($statusLabel) }}" data-condition="{{ strtolower($it->condition) }}" data-procurement-date="{{ $procurementDate ?? '' }}" data-procurement-year="{{ $it->procurement_year }}">
-                                <td class="px-4 py-3">{{ $it->code }}</td>
-                                <td class="px-4 py-3">{{ $it->name }}</td>
-                                <td class="px-4 py-3">{{ $it->category->name }}</td>
-                                <td class="px-4 py-3">{{ $it->serial_number }}</td>
-                                <td class="px-4 py-3">{{ $it->procurement_year }}</td>
-                                <td class="px-4 py-3">
+                            <tr class="odd:bg-white even:bg-slate-50/60 hover:bg-slate-50 transition-colors " data-status="{{ strtolower($statusLabel) }}" data-condition="{{ strtolower($it->condition) }}" data-procurement-date="{{ $procurementDate ?? '' }}" data-procurement-year="{{ $it->procurement_year }}">
+                                <td class="px-4 py-3 border-r border-slate-100">{{ $it->code }}</td>
+                                <td class="px-4 py-3 border-r border-slate-100">{{ $it->name }}</td>
+                                <td class="px-4 py-3 border-r border-slate-100">{{ $it->merk }}</td>
+                                <td class="px-4 py-3 border-r border-slate-100">{{ $it->tipe }}</td>
+                                <td class="px-4 py-3 border-r border-slate-100">{{ $it->category->name }}</td>
+                                <td class="px-4 py-3 border-r border-slate-100">{{ $it->serial_number }}</td>
+                                <td class="px-4 py-3 border-r border-slate-100">{{ $it->procurement_year }}</td>
+                                <td class="px-4 py-3 border-r border-slate-100">
                                     @if(str_replace('_',' ',$it->condition == "baik"))
                                     <span class="inline-flex items-center px-2 py-1 text-xs rounded bg-emerald-100 text-emerald-800">Baik</span>
                                     @elseif(str_replace('_',' ',$it->condition == "rusak_ringan"))
@@ -223,8 +244,8 @@
                                     @endif
                                 </td>
 
-                                <td class="px-4 py-3">{{ $it->details }}</td>
-                                <td class="px-4 py-3">
+                                <td class="px-4 py-3 border-r border-slate-100">{{ $it->details }}</td>
+                                <td class="px-4 py-3 border-r border-slate-100">
                                     @if($it->is_missing)
                                     <span class="inline-flex items-center px-2 py-1 text-xs rounded bg-amber-100 text-amber-800">Hilang</span>
                                     @elseif($it->activeLoanItem && $it->activeLoanItem->loan)
@@ -235,7 +256,8 @@
                                     <span class="inline-flex items-center px-2 py-1 text-xs rounded bg-emerald-100 text-emerald-800">Tersedia</span>
                                     @endif
                                 </td>
-                                <td class="px-4 py-3">
+                                <td class="px-4 py-3 border-r border-slate-100">{{ $it->lokasi }}</td>
+                                <td class="px-4 py-3 ">
                                     <div class="flex items-center gap-2">
                                         <button type="button" @click="$dispatch('open-modal', 'cetak-{{ $it->id }}')" class="inline-flex w-full sm:w-auto items-center justify-center px-3 py-1.5 text-xs rounded-md border border-slate-300 text-slate-700 hover:bg-slate-50">Cetak</button>
                                         <button type="button" @click="$dispatch('open-modal', 'edit-item-{{ $it->id }}')" class="inline-flex w-full sm:w-auto items-center justify-center px-3 py-1.5 text-xs rounded-md border border-blue-300 text-blue-700 hover:bg-blue-50">Edit</button>
@@ -293,6 +315,14 @@
                                             <label class="block text-sm">Nama Barang</label>
                                             <input name="name" class="w-full border rounded p-2" value="{{ $it->name }}" required>
                                         </div>
+                                        <div>
+                                            <label class="block text-sm">Merk</label>
+                                            <input name="merk" class="w-full border rounded p-2" value="{{ $it->merk }}">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm">Tipe</label>
+                                            <input name="tipe" class="w-full border rounded p-2" value="{{ $it->tipe }}">
+                                        </div>
                                         <div class="md:col-span-2">
                                             <label class="block text-sm">Detail Barang</label>
                                             <textarea name="details" class="w-full border rounded p-2">{{ $it->details }}</textarea>
@@ -325,6 +355,10 @@
                                                     </select>
                                                 </div>
                                             </div>
+                                        </div>
+                                        <div class="md:col-span-2">
+                                            <label class="block text-sm">Lokasi</label>
+                                            <input name="lokasi" class="w-full border rounded p-2" value="{{ $it->lokasi }}" placeholder="Lokasi penyimpanan / penempatan">
                                         </div>
                                         <div class="md:col-span-2">
                                             <label class="inline-flex items-center gap-2 text-sm">
@@ -362,13 +396,12 @@
                             @endpush
                             @endforeach
                             <tr data-empty-row class="hidden">
-                                <td colspan="9" class="px-4 py-6 text-center text-sm text-slate-500">Tidak ada data yang cocok dengan filter saat ini.</td>
+                                <td colspan="12" class="px-4 py-6 text-center text-sm text-slate-500">Tidak ada data yang cocok dengan filter saat ini.</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
-
 
             <div class="mt-3">{{ $items->links() }}</div>
         </div>
@@ -406,167 +439,47 @@
         }
         document.addEventListener('DOMContentLoaded', function () {
             const wrapper = document.getElementById('itemTableWrapper');
-            const table = document.getElementById('tabelBarang');
-            if (!wrapper || !table) {
-                return;
-            }
+            if (!wrapper) return;
 
-            const tbody = table.tBodies[0];
-            const rows = Array.from(tbody.querySelectorAll('tr')).filter(row => !row.hasAttribute('data-empty-row'));
-            const emptyRow = tbody.querySelector('[data-empty-row]');
-
-            const filters = {
-                global: wrapper.querySelector('[data-filter-global]'),
-                columns: Array.from(wrapper.querySelectorAll('[data-filter-column]')),
-                selectColumns: Array.from(wrapper.querySelectorAll('[data-filter-select-column]')),
-                condition: wrapper.querySelector('[data-filter-condition]'),
-                status: wrapper.querySelector('[data-filter-status]'),
-                yearStart: wrapper.querySelector('[data-filter-year="start"]'),
-                yearEnd: wrapper.querySelector('[data-filter-year="end"]'),
-                reset: wrapper.querySelector('[data-filter-reset]'),
-                count: wrapper.querySelector('[data-filter-count]'),
+            const buildUrl = () => {
+                const base = '{{ route('items.index') }}';
+                const params = new URLSearchParams();
+                const q = wrapper.querySelector('[data-filter-global]')?.value || '';
+                const category = document.getElementById('filterCategory')?.value || '';
+                const condition = wrapper.querySelector('[data-filter-condition]')?.value || '';
+                const status = wrapper.querySelector('[data-filter-status]')?.value || '';
+                const yearStart = wrapper.querySelector('[data-filter-year="start"]')?.value || '';
+                const yearEnd = wrapper.querySelector('[data-filter-year="end"]')?.value || '';
+                if (q) params.set('q', q);
+                if (category) params.set('category', category);
+                if (condition) params.set('condition', condition);
+                if (status) params.set('status', status);
+                if (yearStart) params.set('year_start', yearStart);
+                if (yearEnd) params.set('year_end', yearEnd);
+                const qs = params.toString();
+                return base + (qs ? `?${qs}` : '');
             };
 
-            const inputs = [
-                filters.global,
-                ...filters.columns,
-                ...filters.selectColumns,
-                filters.condition,
-                filters.status,
-                filters.yearStart,
-                filters.yearEnd,
-            ].filter(Boolean);
+            const go = () => { window.location = buildUrl(); };
 
-            const normalize = (value) => (value || '').toString().toLowerCase().trim();
+            const global = wrapper.querySelector('[data-filter-global]');
+            const cat = document.getElementById('filterCategory');
+            const cond = wrapper.querySelector('[data-filter-condition]');
+            const stat = wrapper.querySelector('[data-filter-status]');
+            const ys = wrapper.querySelector('[data-filter-year="start"]');
+            const ye = wrapper.querySelector('[data-filter-year="end"]');
+            const resetBtn = wrapper.querySelector('[data-filter-reset]');
 
-            const getCellText = (row, index) => {
-                const cell = row.cells[index];
-                return cell ? normalize(cell.textContent) : '';
-            };
-
-            const getYearFromRow = (row) => {
-                const raw = row.dataset.procurementYear || getCellText(row, 4);
-                const year = parseInt(raw, 10);
-                return Number.isNaN(year) ? null : year;
-            };
-
-            const rowMatches = (row) => {
-                if (filters.global) {
-                    const searchTerm = normalize(filters.global.value);
-                    if (searchTerm && !normalize(row.textContent).includes(searchTerm)) {
-                        return false;
-                    }
-                }
-
-                for (const input of filters.columns) {
-                    const value = normalize(input.value);
-                    if (!value) {
-                        continue;
-                    }
-                    const columnIndex = Number(input.dataset.filterColumn);
-                    if (!Number.isInteger(columnIndex)) {
-                        continue;
-                    }
-                    const cellValue = getCellText(row, columnIndex);
-                    if (!cellValue.includes(value)) {
-                        return false;
-                    }
-                }
-
-                for (const select of filters.selectColumns) {
-                    const value = normalize(select.value);
-                    if (!value) {
-                        continue;
-                    }
-                    const columnIndex = Number(select.dataset.filterSelectColumn);
-                    if (!Number.isInteger(columnIndex)) {
-                        continue;
-                    }
-                    const cellValue = getCellText(row, columnIndex);
-                    if (!cellValue.includes(value)) {
-                        return false;
-                    }
-                }
-
-                if (filters.condition) {
-                    const conditionValue = normalize(filters.condition.value);
-                    if (conditionValue) {
-                        const rowCondition = normalize(row.dataset.condition || getCellText(row, 5));
-                        if (!rowCondition.includes(conditionValue)) {
-                            return false;
-                        }
-                    }
-                }
-
-                if (filters.status) {
-                    const statusValue = normalize(filters.status.value);
-                    if (statusValue) {
-                        const rowStatus = normalize(row.dataset.status || getCellText(row, 7));
-                        if (!rowStatus.includes(statusValue)) {
-                            return false;
-                        }
-                    }
-                }
-
-                const startYear = filters.yearStart && filters.yearStart.value ? parseInt(filters.yearStart.value, 10) : null;
-                const endYear = filters.yearEnd && filters.yearEnd.value ? parseInt(filters.yearEnd.value, 10) : null;
-                if (startYear || endYear) {
-                    const itemYear = getYearFromRow(row);
-                    if (itemYear === null) {
-                        return false;
-                    }
-                    if (startYear && itemYear < startYear) {
-                        return false;
-                    }
-                    if (endYear && itemYear > endYear) {
-                        return false;
-                    }
-                }
-
-                return true;
-            };
-
-            const applyFilters = () => {
-                let visibleCount = 0;
-                for (const row of rows) {
-                    const isMatch = rowMatches(row);
-                    row.style.display = isMatch ? '' : 'none';
-                    if (isMatch) {
-                        visibleCount += 1;
-                    }
-                }
-
-                if (emptyRow) {
-                    emptyRow.style.display = visibleCount ? 'none' : '';
-                }
-
-                if (filters.count) {
-                    filters.count.textContent = visibleCount ? `${visibleCount} barang ditampilkan` : 'Tidak ada data yang cocok';
-                }
-            };
-
-            inputs.forEach((input) => {
-                const handler = () => window.requestAnimationFrame(applyFilters);
-                input.addEventListener('input', handler);
-                if (input.tagName === 'SELECT' || input.type === 'date') {
-                    input.addEventListener('change', handler);
-                }
-            });
-
-            if (filters.reset) {
-                filters.reset.addEventListener('click', () => {
-                    inputs.forEach((input) => {
-                        if (input.tagName === 'SELECT' || input.type === 'date') {
-                            input.value = '';
-                        } else if ('value' in input) {
-                            input.value = '';
-                        }
-                    });
-                    window.requestAnimationFrame(applyFilters);
+            if (global) {
+                global.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') { e.preventDefault(); go(); }
                 });
             }
+            [cat, cond, stat, ys, ye].forEach((el) => { if (el) el.addEventListener('change', go); });
 
-            applyFilters();
+            if (resetBtn) {
+                resetBtn.addEventListener('click', () => { window.location = '{{ route('items.index') }}'; });
+            }
         });
     </script>
     <script>

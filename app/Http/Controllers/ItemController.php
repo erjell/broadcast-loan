@@ -9,14 +9,66 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class ItemController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        // Eager-load latest return info (with notes) for tooltip rendering
-        $items = Item::with(['category','activeLoanItem.loan','lastReturn'])
-            ->latest('id')
-            ->paginate(20);
-        // $items = Item::with('category')->latest()->paginate(10);
-        
+        // Server-side filtering + pagination so live search works with pagination
+        $q = trim((string) $request->query('q', ''));
+        $categoryName = trim((string) $request->query('category', ''));
+        $condition = (string) $request->query('condition', '');
+        $status = strtolower((string) $request->query('status', ''));
+        $yearStart = $request->query('year_start');
+        $yearEnd = $request->query('year_end');
+
+        $query = Item::query()
+            ->with(['category','activeLoanItem.loan','lastReturn']);
+
+        if ($q !== '') {
+            $query->where(function ($w) use ($q) {
+                $w->where('code', 'like', "%$q%")
+                  ->orWhere('serial_number', 'like', "%$q%")
+                  ->orWhere('name', 'like', "%$q%")
+                  ->orWhere('merk', 'like', "%$q%")
+                  ->orWhere('tipe', 'like', "%$q%")
+                  ->orWhere('details', 'like', "%$q%")
+                  ->orWhere('lokasi', 'like', "%$q%")
+                  ->orWhereHas('category', function ($c) use ($q) {
+                      $c->where('name', 'like', "%$q%");
+                  });
+            });
+        }
+
+        if ($categoryName !== '') {
+            $query->whereHas('category', function ($c) use ($categoryName) {
+                $c->where('name', $categoryName);
+            });
+        }
+
+        if (in_array($condition, ['baik', 'rusak_ringan', 'rusak_berat'], true)) {
+            $query->where('condition', $condition);
+        }
+
+        if (in_array($status, ['tersedia', 'dipinjam', 'hilang'], true)) {
+            if ($status === 'hilang') {
+                $query->where('is_missing', true);
+            } elseif ($status === 'dipinjam') {
+                $query->whereHas('activeLoanItem');
+            } elseif ($status === 'tersedia') {
+                $query->where('is_missing', false)
+                      ->whereDoesntHave('activeLoanItem');
+            }
+        }
+
+        $startYear = is_null($yearStart) || $yearStart === '' ? null : (int) $yearStart;
+        $endYear = is_null($yearEnd) || $yearEnd === '' ? null : (int) $yearEnd;
+        if ($startYear !== null) {
+            $query->where('procurement_year', '>=', $startYear);
+        }
+        if ($endYear !== null) {
+            $query->where('procurement_year', '<=', $endYear);
+        }
+
+        $items = $query->orderBy('code')->paginate(20)->withQueryString();
+
         $categories = Category::all();
         return view('items.index', compact('items', 'categories'));
     }
@@ -25,12 +77,15 @@ class ItemController extends Controller
     {
         $data = $r->validate([
             'name' => 'required',
+            'merk' => 'nullable|string|max:255',
+            'tipe' => 'nullable|string|max:255',
             'details' => 'nullable',
             'category_id' => 'required|exists:categories,id',
             'serial_number' => 'nullable',
             'procurement_year' => 'nullable|integer',
             'condition' => 'required|in:baik,rusak_ringan,rusak_berat',
             'is_missing' => 'sometimes|boolean',
+            'lokasi' => 'nullable|string|max:255',
         ]);
 
         try {
@@ -46,12 +101,15 @@ class ItemController extends Controller
     {
         $data = $r->validate([
             'name' => 'required',
+            'merk' => 'nullable|string|max:255',
+            'tipe' => 'nullable|string|max:255',
             'details' => 'nullable',
             'category_id' => 'required|exists:categories,id',
             'serial_number' => 'nullable',
             'procurement_year' => 'nullable|integer',
             'condition' => 'required|in:baik,rusak_ringan,rusak_berat',
             'is_missing' => 'sometimes|boolean',
+            'lokasi' => 'nullable|string|max:255',
         ]);
 
         try {
@@ -208,7 +266,10 @@ class ItemController extends Controller
                 $w->where('code', 'like', "%$q%")
                   ->orWhere('serial_number', 'like', "%$q%")
                   ->orWhere('name', 'like', "%$q%")
+                  ->orWhere('merk', 'like', "%$q%")
+                  ->orWhere('tipe', 'like', "%$q%")
                   ->orWhere('details', 'like', "%$q%")
+                  ->orWhere('lokasi', 'like', "%$q%")
                   ->orWhereHas('category', function ($c) use ($q) {
                       $c->where('name', 'like', "%$q%");
                   });
