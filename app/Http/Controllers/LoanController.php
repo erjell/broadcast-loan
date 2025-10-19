@@ -27,15 +27,22 @@ class LoanController extends Controller {
 
     public function store(Request $r){
         $data = $r->validate([
-            'partner_name' => ['required','string','max:255'],
-            'lokasi'     => ['required','string','max:255'],
-            'loan_date'  => ['required','date'],
-            'items'      => ['required','array','min:1'],
-            'items.*.id' => ['required','exists:items,id']
+            'partner_name'  => ['required','string','max:255'],
+            'partner_phone' => ['nullable','string','max:30'],
+            'partner_unit'  => ['nullable','string','max:255'],
+            'lokasi'        => ['required','string','max:255'],
+            'loan_date'     => ['required','date'],
+            'items'         => ['required','array','min:1'],
+            'items.*.id'    => ['required','exists:items,id']
         ]);
 
         try {
             $partner = Partner::firstOrCreate(['name'=>$data['partner_name']]);
+            // Simpan/Perbarui info partner jika diisi
+            $changed = false;
+            if (!empty($data['partner_phone'])) { $partner->phone = $data['partner_phone']; $changed = true; }
+            if (!empty($data['partner_unit']))  { $partner->unit  = $data['partner_unit'];  $changed = true; }
+            if ($changed) { $partner->save(); }
 
             DB::transaction(function() use ($data, $partner){
                 $loan = Loan::create([

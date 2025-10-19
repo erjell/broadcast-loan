@@ -16,7 +16,7 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
             <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                <p class="text-sm text-slate-600 mb-2 sm:mb-0 break-words">
+                <p class="text-sm text-slate-600 mb-2 sm:mb-0 break-words hidden">
                     {{ $loan->partner->name }} • {{ $loan->lokasi }} • {{ $loan->loan_date }} • Petugas: {{ optional($loan->user)->name }}
                 </p>
                 <div class="flex flex-wrap gap-2 no-print">
@@ -28,6 +28,64 @@
                     </a>
                 </div>
             </div>
+
+            @php
+            $loanDate = $loan->loan_date instanceof \Carbon\Carbon
+            ? $loan->loan_date->format('d M Y H:i')
+            : (string) $loan->loan_date;
+            $statusLabel = [
+            'dipinjam' => 'Dipinjam',
+            'sebagian_kembali' => 'Sebagian Kembali',
+            'selesai' => 'Selesai',
+            ][$loan->status] ?? ucfirst($loan->status);
+            @endphp
+
+            <div class="mt-4 grid gap-4">
+                <div class="bg-white/90 supports-[backdrop-filter]:bg-white/70 backdrop-blur border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                    <div class="px-4 py-3 border-b border-slate-200 bg-slate-50">
+                        <h3 class="font-semibold text-slate-800">Informasi Peminjam</h3>
+                    </div>
+                    <div class="p-4">
+                        <dl class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div>
+                                <dt class="text-xs uppercase tracking-wide text-slate-500">Nama</dt>
+                                <dd class="text-slate-800">{{ $loan->partner->name }}</dd>
+                            </div>
+                            <div>
+                                <dt class="text-xs uppercase tracking-wide text-slate-500">Nomor Telepon</dt>
+                                <dd class="text-slate-800">{{ $loan->partner->phone ?: '-' }}</dd>
+                            </div>
+                            <div>
+                                <dt class="text-xs uppercase tracking-wide text-slate-500">Unit (Satuan Kerja)</dt>
+                                <dd class="text-slate-800">{{ $loan->partner->unit ?: '-' }}</dd>
+                            </div>
+                            <div>
+                                <dt class="text-xs uppercase tracking-wide text-slate-500">Lokasi</dt>
+                                <dd class="text-slate-800">{{ $loan->lokasi }}</dd>
+                            </div>
+                            <div>
+                                <dt class="text-xs uppercase tracking-wide text-slate-500">Tanggal Pinjam</dt>
+                                <dd class="text-slate-800">{{ $loanDate }}</dd>
+                            </div>
+                            <div>
+                                <dt class="text-xs uppercase tracking-wide text-slate-500">Petugas</dt>
+                                <dd class="text-slate-800">{{ optional($loan->user)->name }}</dd>
+                            </div>
+                            <div>
+                                <dt class="text-xs uppercase tracking-wide text-slate-500">Status</dt>
+                                <dd class="text-slate-800">
+                                    <span class="px-2 py-0.5 text-s rounded-full @class([
+                                        'bg-red-100 text-red-800' => $loan->status==='dipinjam',
+                                        'bg-amber-100 text-amber-800' => $loan->status==='sebagian_kembali',
+                                        'bg-emerald-100 text-emerald-800' => $loan->status==='selesai',
+                                    ])">{{ $statusLabel }}</span>
+                                </dd>
+                            </div>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+
             <div class="mt-4 bg-white/90 supports-[backdrop-filter]:bg-white/70 backdrop-blur border border-slate-200 rounded-xl shadow-sm overflow-hidden print-surface">
                 <div class="overflow-x-auto">
                     <table data-sortable class="min-w-[60rem] w-full text-sm text-slate-700 print-table" x-data="tableSorterV2()" x-init="init($el)">

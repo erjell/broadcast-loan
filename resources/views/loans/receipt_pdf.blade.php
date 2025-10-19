@@ -93,12 +93,36 @@ $date = now()->format('d F Y');
         .nowrap {
             white-space: nowrap;
         }
+
+        #borrower-info td {
+            border: none;
+            padding: 2px 4px;
+        }
     </style>
 </head>
 
 <body>
     <br><br><br><br><br><br>
     <h1>SERAH TERIMA BARANG</h1>
+
+    <!-- Informasi Peminjam -->
+    <table id="borrower-info" class="mb-3">
+        <tbody>
+            <tr>
+                <td style="width:180px"><strong>Nama</strong></td>
+                <td>: {{ $loan->partner->name }}</td>
+            </tr>
+            <tr>
+                <td><strong>Nomor Telepon</strong></td>
+                <td>: {{ $loan->partner->phone ?: '-' }}</td>
+            </tr>
+            <tr>
+                <td><strong>Unit (Satuan Kerja)</strong></td>
+                <td>: {{ $loan->partner->unit ?: '-' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
     <p class="mb-2">Diserahkan peralatan berupa:</p>
 
     <table class="mb-3">
