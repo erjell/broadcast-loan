@@ -20,6 +20,9 @@
                     {{ $loan->partner->name }} • {{ $loan->lokasi }} • {{ $loan->loan_date }} • Petugas: {{ optional($loan->user)->name }}
                 </p>
                 <div class="flex flex-wrap gap-2 no-print">
+                    <a href="{{ route('loans.edit', $loan) }}" class="inline-flex w-full sm:w-auto justify-center px-3 py-2 rounded border border-slate-300 text-slate-800 bg-white hover:bg-slate-50">
+                        Edit Peminjaman
+                    </a>
                     <a href="{{ route('loans.receipt', $loan) }}" target="_blank" class="inline-flex w-full sm:w-auto justify-center px-3 py-2 rounded border border-slate-300 text-slate-800 bg-white hover:bg-slate-50">
                         Cetak Serah Terima
                     </a>

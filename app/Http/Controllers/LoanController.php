@@ -79,6 +79,54 @@ class LoanController extends Controller {
         $loan->load('partner','items.item','user');
         return view('loans.show', compact('loan'));
     }
+    public function edit(Loan $loan){
+        $loan->load('partner','items.item','user');
+        return view('loans.edit', compact('loan'));
+    }
+
+    public function update(Request $r, Loan $loan){
+        $data = $r->validate([
+            'partner_name'  => ['required','string','max:255'],
+            'partner_phone' => ['nullable','string','max:30'],
+            'partner_unit'  => ['nullable','string','max:255'],
+            'lokasi'        => ['required','string','max:255'],
+            'loan_date'     => ['required','date'],
+        ]);
+
+        try {
+            DB::transaction(function() use ($data, $loan){
+                // Update/attach partner
+                $partner = Partner::firstOrCreate(['name' => $data['partner_name']]);
+                $changed = false;
+                if (array_key_exists('partner_phone', $data)) { $partner->phone = $data['partner_phone']; $changed = true; }
+                if (array_key_exists('partner_unit', $data))  { $partner->unit  = $data['partner_unit'];  $changed = true; }
+                if ($changed) { $partner->save(); }
+
+                // Update loan header
+                $loan->partner_id = $partner->id;
+                $loan->lokasi = $data['lokasi'];
+                $loan->loan_date = $data['loan_date'];
+                $loan->save();
+
+                // Sinkronkan lokasi barang yang masih dipinjam dengan lokasi baru
+                $loan->loadMissing('items.item');
+                foreach ($loan->items as $li) {
+                    if (is_null($li->return_condition) && $li->item) {
+                        $li->item->lokasi = $data['lokasi'];
+                        $li->item->save();
+                    }
+                }
+            });
+
+            return redirect()->route('loans.show', $loan)->with('ok','Peminjaman diperbarui.');
+        } catch (\Throwable $e) {
+            Log::error('Gagal memperbarui peminjaman', [
+                'loan_id' => $loan->id,
+                'error' => $e->getMessage(),
+            ]);
+            return back()->with('error','Peminjaman gagal diperbarui: '.$e->getMessage())->withInput();
+        }
+    }
     public function receiptPdf(Loan $loan){
         $loan->load('partner','items.item','user');
 
