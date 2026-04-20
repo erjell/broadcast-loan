@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Exports\ItemsExport;
 use App\Models\{Item, Category};
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ItemController extends Controller
@@ -15,15 +17,30 @@ class ItemController extends Controller
         return view('items.find');
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        // Eager-load latest return info and load all items so client-side filter covers all rows
-        $items = Item::with(['category','activeLoanItem.loan','lastReturn'])
+        $filters = $this->extractFilters($request);
+
+        $itemsQuery = Item::with(['category', 'activeLoanItem.loan', 'lastReturn']);
+        $this->applyFilters($itemsQuery, $filters);
+
+        $items = $itemsQuery
             ->orderBy('code')
-            ->get();
-        
-        $categories = Category::all();
-        return view('items.index', compact('items', 'categories'));
+            ->paginate(25)
+            ->withQueryString();
+
+        $categories = Category::orderBy('name')->get();
+
+        $exportParams = array_filter(
+            Arr::only($filters, ['q', 'category', 'condition', 'status', 'year_start', 'year_end']),
+            static fn ($value) => $value !== null && $value !== ''
+        );
+
+        if ($request->ajax()) {
+            return view('items._list', compact('items', 'categories', 'filters'));
+        }
+
+        return view('items.index', compact('items', 'categories', 'filters', 'exportParams'));
     }
 
     public function store(Request $r)
@@ -226,43 +243,57 @@ class ItemController extends Controller
         ]);
     }
 
-    public function export(Request $request)
+    protected function extractFilters(Request $request): array
     {
-        $q = trim((string) $request->query('q', ''));
-        $categoryName = trim((string) $request->query('category', ''));
-        $condition = (string) $request->query('condition', '');
-        $status = strtolower((string) $request->query('status', ''));
-        $yearStart = $request->query('year_start');
-        $yearEnd = $request->query('year_end');
+        return [
+            'q' => trim((string) $request->query('q', '')),
+            'category' => $request->query('category', ''),
+            'condition' => (string) $request->query('condition', ''),
+            'status' => strtolower((string) $request->query('status', '')),
+            'year_start' => $request->query('year_start', ''),
+            'year_end' => $request->query('year_end', ''),
+        ];
+    }
 
-        $query = Item::query()
-            ->with(['category', 'lastReturn', 'activeLoanItem.loan']);
-
+    /**
+     * @param  Builder  $query
+     * @param  array<string, mixed>  $filters
+     */
+    protected function applyFilters(Builder $query, array $filters): void
+    {
+        $q = $filters['q'] ?? '';
         if ($q !== '') {
             $query->where(function ($w) use ($q) {
                 $w->where('code', 'like', "%$q%")
-                  ->orWhere('serial_number', 'like', "%$q%")
-                  ->orWhere('name', 'like', "%$q%")
-                  ->orWhere('merk', 'like', "%$q%")
-                  ->orWhere('tipe', 'like', "%$q%")
-                  ->orWhere('details', 'like', "%$q%")
-                  ->orWhere('lokasi', 'like', "%$q%")
-                  ->orWhereHas('category', function ($c) use ($q) {
-                      $c->where('name', 'like', "%$q%");
-                  });
+                    ->orWhere('serial_number', 'like', "%$q%")
+                    ->orWhere('name', 'like', "%$q%")
+                    ->orWhere('merk', 'like', "%$q%")
+                    ->orWhere('tipe', 'like', "%$q%")
+                    ->orWhere('details', 'like', "%$q%")
+                    ->orWhere('lokasi', 'like', "%$q%")
+                    ->orWhereHas('category', function ($c) use ($q) {
+                        $c->where('name', 'like', "%$q%");
+                    });
             });
         }
 
-        if ($categoryName !== '') {
-            $query->whereHas('category', function ($c) use ($categoryName) {
-                $c->where('name', $categoryName);
-            });
+        $categoryValue = $filters['category'] ?? '';
+        if ($categoryValue !== '' && $categoryValue !== null) {
+            if (ctype_digit((string) $categoryValue)) {
+                $query->where('category_id', (int) $categoryValue);
+            } else {
+                $query->whereHas('category', function ($c) use ($categoryValue) {
+                    $c->where('name', $categoryValue);
+                });
+            }
         }
 
+        $condition = $filters['condition'] ?? '';
         if (in_array($condition, ['baik', 'rusak_ringan', 'rusak_berat'], true)) {
             $query->where('condition', $condition);
         }
 
+        $status = $filters['status'] ?? '';
         if (in_array($status, ['tersedia', 'dipinjam', 'hilang'], true)) {
             if ($status === 'hilang') {
                 $query->where('is_missing', true);
@@ -270,18 +301,39 @@ class ItemController extends Controller
                 $query->whereHas('activeLoanItem');
             } elseif ($status === 'tersedia') {
                 $query->where('is_missing', false)
-                      ->whereDoesntHave('activeLoanItem');
+                    ->whereDoesntHave('activeLoanItem');
             }
         }
 
-        $startYear = is_null($yearStart) || $yearStart === '' ? null : (int) $yearStart;
-        $endYear = is_null($yearEnd) || $yearEnd === '' ? null : (int) $yearEnd;
-        if ($startYear !== null) {
+        $startYear = $this->normalizeYear($filters['year_start'] ?? null);
+        $endYear = $this->normalizeYear($filters['year_end'] ?? null);
+        if (!is_null($startYear)) {
             $query->where('procurement_year', '>=', $startYear);
         }
-        if ($endYear !== null) {
+        if (!is_null($endYear)) {
             $query->where('procurement_year', '<=', $endYear);
         }
+    }
+
+    protected function normalizeYear($year): ?int
+    {
+        if ($year === '' || $year === null) {
+            return null;
+        }
+
+        $year = filter_var($year, FILTER_VALIDATE_INT);
+
+        return $year === false ? null : (int) $year;
+    }
+
+    public function export(Request $request)
+    {
+        $filters = $this->extractFilters($request);
+
+        $query = Item::query()
+            ->with(['category', 'lastReturn', 'activeLoanItem.loan']);
+
+        $this->applyFilters($query, $filters);
 
         $items = $query->orderBy('code')->get();
 
@@ -290,3 +342,4 @@ class ItemController extends Controller
         return Excel::download(new ItemsExport($items), $fileName);
     }
 }
+

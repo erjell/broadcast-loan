@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 
 use App\Exports\LoansExport;
 use App\Models\{Loan,LoanItem,Partner};
+use App\Models\Item;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -79,52 +80,97 @@ class LoanController extends Controller {
         $loan->load('partner','items.item','user');
         return view('loans.show', compact('loan'));
     }
-    public function edit(Loan $loan){
+
+    public function editItems(Loan $loan)
+    {
         $loan->load('partner','items.item','user');
-        return view('loans.edit', compact('loan'));
+        $initialItems = $loan->items->map(function($li){
+            return [
+                'loan_item_id' => $li->id,
+                'item_id' => optional($li->item)->id,
+                'code' => optional($li->item)->code,
+                'name' => optional($li->item)->name,
+                'serial' => optional($li->item)->serial_number,
+                'returned' => !is_null($li->return_condition),
+            ];
+        })->values();
+        return view('loans.edit_items', [
+            'loan' => $loan,
+            'initialItems' => $initialItems,
+        ]);
     }
 
-    public function update(Request $r, Loan $loan){
+    public function updateItems(Request $r, Loan $loan)
+    {
         $data = $r->validate([
-            'partner_name'  => ['required','string','max:255'],
-            'partner_phone' => ['nullable','string','max:30'],
-            'partner_unit'  => ['nullable','string','max:255'],
-            'lokasi'        => ['required','string','max:255'],
-            'loan_date'     => ['required','date'],
+            'add' => ['sometimes','array'],
+            'add.*' => ['integer','exists:items,id'],
+            'remove' => ['sometimes','array'],
+            'remove.*' => ['integer'], // loan_item ids
         ]);
 
+        $addIds = collect($data['add'] ?? [])->map(fn($v)=>(int)$v)->unique()->values();
+        $removeIds = collect($data['remove'] ?? [])->map(fn($v)=>(int)$v)->unique()->values();
+
+        $blockedRemovals = collect();
+
         try {
-            DB::transaction(function() use ($data, $loan){
-                // Update/attach partner
-                $partner = Partner::firstOrCreate(['name' => $data['partner_name']]);
-                $changed = false;
-                if (array_key_exists('partner_phone', $data)) { $partner->phone = $data['partner_phone']; $changed = true; }
-                if (array_key_exists('partner_unit', $data))  { $partner->unit  = $data['partner_unit'];  $changed = true; }
-                if ($changed) { $partner->save(); }
+            DB::transaction(function() use ($loan, $addIds, $removeIds, &$blockedRemovals){
+                // Prepare existing item ids within this loan to avoid duplicates
+                $existingItemIds = $loan->items()->pluck('item_id')->all();
 
-                // Update loan header
-                $loan->partner_id = $partner->id;
-                $loan->lokasi = $data['lokasi'];
-                $loan->loan_date = $data['loan_date'];
-                $loan->save();
-
-                // Sinkronkan lokasi barang yang masih dipinjam dengan lokasi baru
-                $loan->loadMissing('items.item');
-                foreach ($loan->items as $li) {
-                    if (is_null($li->return_condition) && $li->item) {
-                        $li->item->lokasi = $data['lokasi'];
-                        $li->item->save();
+                // Add new items: skip those already in this loan
+                $toInsert = $addIds->reject(fn($id) => in_array($id, $existingItemIds, true));
+                foreach ($toInsert as $itemId) {
+                    LoanItem::create([
+                        'loan_id' => $loan->id,
+                        'item_id' => $itemId,
+                    ]);
+                    // Update item lokasi to follow this loan's lokasi
+                    $item = Item::lockForUpdate()->find($itemId);
+                    if ($item) {
+                        $item->lokasi = $loan->lokasi;
+                        $item->save();
                     }
                 }
+
+                // Remove only loan_items that belong to this loan and are not returned yet
+                if ($removeIds->isNotEmpty()) {
+                    $toRemove = LoanItem::whereIn('id', $removeIds)
+                        ->where('loan_id', $loan->id)
+                        ->get();
+
+                    // Split removable vs blocked (already returned)
+                    $removable = $toRemove->filter(fn($li) => is_null($li->return_condition));
+                    $blockedRemovals = $toRemove->filter(fn($li) => !is_null($li->return_condition));
+
+                    // Delete removable rows
+                    if ($removable->isNotEmpty()) {
+                        LoanItem::whereIn('id', $removable->pluck('id'))->delete();
+                    }
+                }
+
+                // Recalculate loan status based on items returned
+                $total = $loan->items()->count();
+                $returned = $loan->items()->whereNotNull('return_condition')->count();
+                $loan->status = $returned === 0
+                    ? ($total > 0 ? 'dipinjam' : 'dipinjam')
+                    : ($returned < $total ? 'sebagian_kembali' : 'selesai');
+                $loan->save();
             });
 
-            return redirect()->route('loans.show', $loan)->with('ok','Peminjaman diperbarui.');
+            $msg = 'Perubahan barang berhasil disimpan.';
+            if ($blockedRemovals->isNotEmpty()) {
+                $msg .= ' Catatan: ' . $blockedRemovals->count() . ' barang tidak dapat dihapus karena sudah dikembalikan.';
+            }
+
+            return redirect()->route('loans.show', $loan)->with('ok', $msg);
         } catch (\Throwable $e) {
-            Log::error('Gagal memperbarui peminjaman', [
+            Log::error('Gagal memperbarui barang peminjaman', [
                 'loan_id' => $loan->id,
                 'error' => $e->getMessage(),
             ]);
-            return back()->with('error','Peminjaman gagal diperbarui: '.$e->getMessage())->withInput();
+            return back()->with('error','Perubahan gagal disimpan: '.$e->getMessage())->withInput();
         }
     }
     public function receiptPdf(Loan $loan){

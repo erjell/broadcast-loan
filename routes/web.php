@@ -100,13 +100,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/loans/create', [LoanController::class, 'create'])->name('loans.create');
     Route::post('/loans', [LoanController::class, 'store'])->name('loans.store');
     Route::get('/loans/{loan}', [LoanController::class, 'show'])->name('loans.show');
-    Route::get('/loans/{loan}/edit', [LoanController::class, 'edit'])->name('loans.edit');
-    Route::put('/loans/{loan}', [LoanController::class, 'update'])->name('loans.update');
     Route::get('/loans/{loan}/receipt', [LoanController::class, 'receiptPdf'])->name('loans.receipt');
 
     // Returns
     Route::get('/loans/{loan}/return', [LoanController::class, 'returnForm'])->name('loans.return.form');
     Route::post('/loans/{loan}/return', [LoanController::class, 'processReturn'])->name('loans.return.process');
+
+    // Edit Items in a Loan
+    Route::get('/loans/{loan}/items/edit', [LoanController::class, 'editItems'])->name('loans.items.edit');
+    Route::post('/loans/{loan}/items', [LoanController::class, 'updateItems'])->name('loans.items.update');
 
     // Reports
     Route::get('/reports/damages', [ReportController::class, 'damageLogs'])->name('reports.damages');

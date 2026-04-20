@@ -22,7 +22,8 @@
             </div>
             <form action="{{ route('loans.return.process',$loan) }}" method="post" class="bg-white/90 supports-[backdrop-filter]:bg-white/70 backdrop-blur border border-slate-200 p-4 rounded-xl shadow-sm space-y-4 overflow-hidden print-surface">
                 @csrf
-                <div class="overflow-x-auto">
+                <!-- Desktop table -->
+                <div class="hidden md:block overflow-x-auto">
                     <table data-sortable class="min-w-[60rem] w-full text-sm text-slate-700 print-table" x-data="tableSorterV2()" x-init="init($el)">
                         <thead class="bg-slate-50 text-slate-600">
                             <tr>
@@ -61,6 +62,40 @@
                             @endforeach
                         </tbody>
                     </table>
+                </div>
+                <!-- Mobile cards -->
+                <div class="md:hidden space-y-2">
+                    @foreach($loan->items as $i => $li)
+                    <div class="border border-slate-200 rounded-xl p-3 bg-white">
+                        <div class="flex items-center justify-between">
+                            <div class="text-sm font-medium text-slate-800">{{ $li->item->name }}</div>
+                            <label class="inline-flex items-center gap-2 text-xs text-slate-700">
+                                <input type="checkbox" name="returns[{{ $i }}][selected]" value="1" class="w-4 h-4">
+                                Pilih
+                            </label>
+                        </div>
+                        <input type="hidden" name="returns[{{ $i }}][loan_item_id]" value="{{ $li->id }}">
+                        <div class="mt-1 text-xs text-slate-600">
+                            <div><span class="text-slate-500">Kode:</span> <span class="font-mono">{{ $li->item->code }}</span></div>
+                            <div><span class="text-slate-500">Serial:</span> <span class="font-mono">{{ $li->item->serial_number }}</span></div>
+                        </div>
+                        <div class="mt-2 grid grid-cols-1 gap-2">
+                            <div>
+                                <label class="text-xs text-slate-600">Kondisi</label>
+                                <select name="returns[{{ $i }}][condition]" class="mt-1 w-full border rounded p-2 text-sm">
+                                    <option value="baik">Baik</option>
+                                    <option value="rusak_ringan">Rusak ringan</option>
+                                    <option value="rusak_berat">Rusak berat</option>
+                                    <option value="hilang">Hilang</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-xs text-slate-600">Catatan</label>
+                                <input name="returns[{{ $i }}][notes]" class="mt-1 w-full border rounded p-2 text-sm" placeholder="Catatan (opsional)">
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
                 </div>
 
                 <div class="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end no-print">

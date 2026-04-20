@@ -27,6 +27,39 @@ class UserSeeder extends Seeder
                 'password' => Hash::make('password'),
             ]
         );
+
+        // Accounts based on provided first names
+        $fullNames = [
+            'DWI YULIARSA',
+            'BAHTIAR RIFAII',
+            'JEFFRY C SANDYAGA',
+            'BRIAN PURNOMO',
+            'TRI WAHYUDIONO',
+            'DUKE IMANUEL',
+            'OCEAN FAT ILHAM',
+            'DENY ARDIYAN',
+            'YONGKY A SETYAWAN',
+            'AHMAD FERRI F',
+            'HASAN',
+            'RIFQI RIZHANSYAH',
+            'RIZAL A',
+            'FARQIE',
+            'DHIA MAULANA',
+            'SALMAN',
+            'DANIEL TUAHTARAS',
+            'NAFA ADEVY PUTRI',
+        ];
+
+        foreach ($fullNames as $fullName) {
+            $firstName = strtolower(strtok($fullName, ' '));
+            $email = $firstName . '@be.id';
+            User::firstOrCreate(
+                ['email' => $email],
+                [
+                    'name' => ucwords(strtolower($fullName)),
+                    'password' => Hash::make('ngadmin123'),
+                ]
+            );
+        }
     }
 }
-

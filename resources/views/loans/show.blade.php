@@ -20,8 +20,8 @@
                     {{ $loan->partner->name }} • {{ $loan->lokasi }} • {{ $loan->loan_date }} • Petugas: {{ optional($loan->user)->name }}
                 </p>
                 <div class="flex flex-wrap gap-2 no-print">
-                    <a href="{{ route('loans.edit', $loan) }}" class="inline-flex w-full sm:w-auto justify-center px-3 py-2 rounded border border-slate-300 text-slate-800 bg-white hover:bg-slate-50">
-                        Edit Peminjaman
+                    <a href="{{ route('loans.items.edit', $loan) }}" class="inline-flex w-full sm:w-auto justify-center px-3 py-2 rounded border border-slate-300 text-slate-800 bg-white hover:bg-slate-50">
+                        Edit Barang
                     </a>
                     <a href="{{ route('loans.receipt', $loan) }}" target="_blank" class="inline-flex w-full sm:w-auto justify-center px-3 py-2 rounded border border-slate-300 text-slate-800 bg-white hover:bg-slate-50">
                         Cetak Serah Terima
@@ -90,7 +90,8 @@
             </div>
 
             <div class="mt-4 bg-white/90 supports-[backdrop-filter]:bg-white/70 backdrop-blur border border-slate-200 rounded-xl shadow-sm overflow-hidden print-surface">
-                <div class="overflow-x-auto">
+                <!-- Desktop table -->
+                <div class="hidden md:block overflow-x-auto">
                     <table data-sortable class="min-w-[60rem] w-full text-sm text-slate-700 print-table" x-data="tableSorterV2()" x-init="init($el)">
                         <thead class="bg-slate-50 text-slate-600">
                             <tr>
@@ -128,6 +129,40 @@
                             @endforeach
                         </tbody>
                     </table>
+                </div>
+                <!-- Mobile cards -->
+                <div class="md:hidden p-3 space-y-2">
+                    @foreach ($loan->items as $li)
+                    <div class="border border-slate-200 rounded-xl p-3 bg-white">
+                        <div class="flex items-center justify-between">
+                            <div class="font-medium text-slate-800">{{ $li->item->name }}</div>
+                            <div>
+                                @if ($li->return_condition)
+                                <span class="text-[10px] px-2 py-0.5 rounded bg-emerald-100 text-emerald-700">Dikembalikan</span>
+                                @else
+                                <span class="text-[10px] px-2 py-0.5 rounded bg-slate-200 text-slate-700">Dipinjam</span>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="mt-1 text-xs text-slate-600">
+                            <div><span class="text-slate-500">Kode:</span> <span class="font-mono">{{ $li->item->code }}</span></div>
+                            <div><span class="text-slate-500">Serial:</span> <span class="font-mono">{{ $li->item->serial_number ?: '-' }}</span></div>
+                            <div class="mt-1">
+                                <span class="text-[10px] px-2 py-0.5 rounded @class([
+                                    'bg-emerald-100 text-emerald-700'=> $li->item->condition==='baik',
+                                    'bg-amber-100 text-amber-700' => $li->item->condition==='rusak_ringan',
+                                    'bg-red-100 text-red-700' => $li->item->condition==='rusak_berat',
+                                ])">{{ str_replace('_',' ',$li->item->condition) }}</span>
+                            </div>
+                        </div>
+                        @if ($li->return_notes)
+                        <div class="mt-2 text-xs text-slate-600">
+                            <div class="text-slate-500">Catatan:</div>
+                            <div class="whitespace-pre-line">{{ $li->return_notes }}</div>
+                        </div>
+                        @endif
+                    </div>
+                    @endforeach
                 </div>
             </div>
         </div>

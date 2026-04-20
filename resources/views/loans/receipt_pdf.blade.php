@@ -5,10 +5,11 @@ try {
 $dateObj = $loan->loan_date instanceof \Carbon\Carbon
 ? $loan->loan_date
 : (\Carbon\Carbon::parse((string) $loan->loan_date));
-$date = $dateObj->translatedFormat('d F Y');
+$date = $dateObj->locale('id')->translatedFormat('d F Y');
 } catch (\Throwable $e) {
 $date = now()->format('d F Y');
 }
+$year = now()->year;
 @endphp
 <!DOCTYPE html>
 <html lang="id">
@@ -167,6 +168,32 @@ $date = now()->format('d F Y');
         <tr class="no-border">
             <td class="no-border sig-col center">Yang menerima,<br>{{ $loan->partner->name }}</td>
             <td class="no-border sig-col center ">Yang menyerahkan,<br>{{ $loan->user->name }}</td>
+        </tr>
+        <tr class="no-border">
+            <td class="no-border sig-col sig-title">&nbsp;</td>
+            <td class="no-border sig-col sig-title">&nbsp;</td>
+        </tr>
+        <tr class="no-border">
+            <td class="no-border sig-col sig-title">&nbsp;</td>
+            <td class="no-border sig-col sig-title">&nbsp;</td>
+        </tr>
+        <tr class="no-border">
+            <td class="no-border sig-col sig-title">&nbsp;</td>
+            <td class="no-border sig-col sig-title">&nbsp;</td>
+        </tr>
+        <tr class="no-border">
+            <td class="no-border sig-col center">(__________________)</td>
+            <td class="no-border sig-col center">(__________________)</td>
+        </tr>
+    </table>
+    <table class="no-border signature-block">
+        <tr class="no-border">
+            <td class="no-border sig-col"></td>
+            <td class="no-border sig-col center">{{ $city }}, ............................ {{ $year }}</td>
+        </tr>
+        <tr class="no-border">
+            <td class="no-border sig-col center">Yang menerima pengembalian,<br><br>........................</td>
+            <td class="no-border sig-col center ">Yang menyerahkan pengembalian,<br><br>........................</td>
         </tr>
         <tr class="no-border">
             <td class="no-border sig-col sig-title">&nbsp;</td>

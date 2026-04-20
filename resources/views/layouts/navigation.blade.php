@@ -98,7 +98,10 @@
                 @else
                 <div class="flex items-center gap-3">
                     <a href="{{ route('login') }}" class="btn btn-ghost btn-sm">{{ __('Masuk') }}</a>
+                    {{-- <a href="{{ route('register') }}" class="btn btn-primary btn-sm">{{ __('Daftar') }}</a> --}}
+                    @if (Route::has('register'))
                     <a href="{{ route('register') }}" class="btn btn-primary btn-sm">{{ __('Daftar') }}</a>
+                    @endif
                 </div>
                 @endauth
             </div>
@@ -159,7 +162,7 @@
         <div class="pt-4 pb-1 border-t border-gray-200">
             <div class="px-4 space-y-3">
                 <a href="{{ route('login') }}" class="block text-sm font-medium text-gray-700 hover:text-gray-900">{{ __('Masuk') }}</a>
-                <a href="{{ route('register') }}" class="block text-sm font-medium text-indigo-600 hover:text-indigo-500">{{ __('Daftar') }}</a>
+                {{-- <a href="{{ route('register') }}" class="block text-sm font-medium text-indigo-600 hover:text-indigo-500">{{ __('Daftar') }}</a> --}}
             </div>
         </div>
         @endauth

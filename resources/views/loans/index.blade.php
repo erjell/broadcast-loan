@@ -82,9 +82,8 @@
                                     @endif
 
                                 </td>
-                                <td class="p-2 text-center sm:text-right space-x-1">
+                                <td class="p-2 text-center sm:text-right">
                                     <a href="{{ route('loans.show',$l) }}" class="inline-flex w-full sm:w-auto justify-center px-3 py-1.5 rounded bg-slate-800 text-white">Detail</a>
-                                    <a href="{{ route('loans.edit',$l) }}" class="inline-flex w-full sm:w-auto justify-center px-3 py-1.5 rounded border border-slate-300 text-slate-800 bg-white hover:bg-slate-50">Edit</a>
                                 </td>
                             </tr>
                             @endforeach
